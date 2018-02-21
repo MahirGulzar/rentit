@@ -26,8 +26,12 @@ public class PlantInventoryEntryRepositoryTest {
     public void Test1()
     {
 //        System.out.println(repo.findAll());
-        assertThat(repo.findAll()).hasSize(14);
+        assertThat(repo.count()).isEqualTo(14);
 //        assertThat(repo.findMethod("xca")).hasSize((14));
     }
+
+
+
+
 
 }

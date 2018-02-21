@@ -12,7 +12,8 @@ import java.math.BigDecimal;
 public class DemoApplication {
 
 	public static void main(String[] args) {
-		ConfigurableApplicationContext context = SpringApplication.run(DemoApplication.class, args);
+		ConfigurableApplicationContext context =SpringApplication.run(DemoApplication.class, args);
+
 		PlantInventoryEntry entry = new PlantInventoryEntry();
 		entry.setName("Bike");
 		entry.setDescription("Nice and shiny");
