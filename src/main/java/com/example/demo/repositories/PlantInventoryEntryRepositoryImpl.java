@@ -13,6 +13,8 @@ public class PlantInventoryEntryRepositoryImpl implements CustomPlantInventoryEn
 
     @Override
     public List<PlantInventoryEntry> findMethod(String name) {
+
+
         return em.createQuery("select e from PlantInventoryEntry e where e.name like concat('%',:name,'%')")
                 .setParameter("name",name)
                 .getResultList();
