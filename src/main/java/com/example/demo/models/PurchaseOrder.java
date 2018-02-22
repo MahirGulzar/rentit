@@ -1,5 +1,7 @@
 package com.example.demo.models;
 
+import com.example.demo.models.enums.POStatus;
+import com.example.demo.models.objectvalue.BusinessPeriod;
 import lombok.Data;
 
 import javax.persistence.*;

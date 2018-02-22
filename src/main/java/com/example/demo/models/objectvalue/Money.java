@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor(force=true,access= AccessLevel.PRIVATE)
 @AllArgsConstructor(staticName="of")
 
-public class money {
+public class Money {
 
     BigDecimal price;
 
