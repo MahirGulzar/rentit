@@ -1,11 +1,9 @@
 package com.example.demo.models;
 
-import com.example.demo.models.objectvalue.Money;
+import com.example.demo.models.valueobject.Money;
 import lombok.Data;
-import lombok.Getter;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 
 @Entity
 @Data
