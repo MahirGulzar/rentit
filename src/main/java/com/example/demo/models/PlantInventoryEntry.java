@@ -1,11 +1,10 @@
 package com.example.demo.models;
 
+import com.example.demo.models.objectvalue.Money;
 import lombok.Data;
 import lombok.Getter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -16,5 +15,6 @@ public class PlantInventoryEntry {
     Long id;
     String name;
     String description;
-    BigDecimal price;
+    @Embedded
+    Money price;
 }

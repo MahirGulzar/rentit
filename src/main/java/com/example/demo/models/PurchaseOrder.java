@@ -1,12 +1,14 @@
 package com.example.demo.models;
 
+
+import com.example.demo.models.enums.POStatus;
+import com.example.demo.models.objectvalue.BusinessPeriod;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-
 
 @Entity
 @Data
@@ -15,7 +17,10 @@ public class PurchaseOrder {
     @GeneratedValue
     Long id;
 
+    @OneToMany
     List<PlantReservation> reservations;
+
+    @ManyToOne
     PlantInventoryEntry plant;
 
     LocalDate issueDate;
@@ -26,7 +31,6 @@ public class PurchaseOrder {
     @Enumerated(EnumType.STRING)
     POStatus status;
 
-    // Replace startDate & endDate with a BusinessPeriod
     @Embedded
     BusinessPeriod rentalPeriod;
 }
