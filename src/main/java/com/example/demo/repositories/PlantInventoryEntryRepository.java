@@ -15,6 +15,8 @@ public interface PlantInventoryEntryRepository extends JpaRepository<PlantInvent
     List<PlantInventoryEntry> findByNameLike(String name);
     List<PlantInventoryEntry> findByNameContaining(String name);
 
+
+
 //    @Query("select e from PlantInventoryEntry e where e.name like concat('%',:name,'%')")
 //    List<PlantInventoryEntry> findMethod(@Param("name") String name);
 

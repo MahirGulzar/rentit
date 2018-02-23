@@ -1,5 +1,6 @@
 package com.example.demo.models;
 
+
 import com.example.demo.models.objectvalue.BusinessPeriod;
 import lombok.Data;
 
@@ -15,6 +16,6 @@ public class PlantReservation {
     @Embedded
     BusinessPeriod schedule;
 
-    //@ManyToOne
-    //PlantInventoryItem plant;
+    @ManyToOne
+    PlantInventoryItem plant;
 }
