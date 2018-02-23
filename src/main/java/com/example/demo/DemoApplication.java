@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import com.example.demo.models.PlantInventoryEntry;
+import com.example.demo.models.valueobject.Money;
 import com.example.demo.repositories.PlantInventoryEntryRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,7 +18,7 @@ public class DemoApplication {
 		PlantInventoryEntry entry = new PlantInventoryEntry();
 		entry.setName("Bike");
 		entry.setDescription("Nice and shiny");
-		entry.setPrice(new BigDecimal(100));
+		entry.setPrice(Money.of(new BigDecimal(100)));
 
 
 		PlantInventoryEntryRepository repo = context.getBean(PlantInventoryEntryRepository.class);
@@ -27,7 +28,7 @@ public class DemoApplication {
 		entry = new PlantInventoryEntry();
 		entry.setName("Truck");
 		entry.setDescription("A bit rusty");
-		entry.setPrice(new BigDecimal(800));
+		entry.setPrice(Money.of(new BigDecimal(100)));
 
 		repo.save(entry);
 

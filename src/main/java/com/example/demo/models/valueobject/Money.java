@@ -13,9 +13,9 @@ import java.math.BigDecimal;
 @Value
 @NoArgsConstructor(force=true,access= AccessLevel.PRIVATE)
 @AllArgsConstructor(staticName="of")
-
 public class Money {
 
     BigDecimal price;
+
 
 }
