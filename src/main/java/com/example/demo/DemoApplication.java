@@ -38,7 +38,7 @@ public class DemoApplication {
 		System.out.println(repo.findByNameContaining("ik"));
 
 
-		System.out.println(repo.findMethod("ik"));
+//		System.out.println(repo.findMethod("ik"));
 
 
 
