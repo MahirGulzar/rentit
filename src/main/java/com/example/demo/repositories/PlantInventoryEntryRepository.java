@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface PlantInventoryEntryRepository extends JpaRepository<PlantInventoryEntry,Long>, CustomPlantInventoryEntryRepository {
+public interface PlantInventoryEntryRepository extends JpaRepository<PlantInventoryEntry,Long> {
 
     // To Specify by query
 
