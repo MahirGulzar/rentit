@@ -10,6 +10,8 @@ target/
 .springBeans
 
 ### IntelliJ IDEA ###
+.idea/workspace.xml
+.idea/tasks.xml
 *.iws
 *.iml
 *.ipr
@@ -22,4 +24,3 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-.idea/
