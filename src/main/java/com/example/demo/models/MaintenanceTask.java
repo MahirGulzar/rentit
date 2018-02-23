@@ -1,7 +1,7 @@
 package com.example.demo.models;
 
 import com.example.demo.models.enums.TypeOfWork;
-import com.example.demo.models.objectvalue.money;
+import com.example.demo.models.valueobject.Money;
 import lombok.Data;
 
 import javax.persistence.*;

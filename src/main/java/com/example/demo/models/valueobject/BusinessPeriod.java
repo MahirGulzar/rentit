@@ -1,4 +1,4 @@
-package com.example.demo.models.objectvalue;
+package com.example.demo.models.valueobject;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
