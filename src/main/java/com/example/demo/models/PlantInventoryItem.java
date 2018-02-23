@@ -1,12 +1,10 @@
 package com.example.demo.models;
 
 
+import com.example.demo.models.enums.EquipmentCondition;
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @Data
@@ -15,11 +13,14 @@ public class PlantInventoryItem {
     @GeneratedValue
     Long id;
 
-    String name;
-    String description;
+    String serialNumber;
+    @Enumerated(EnumType.STRING)
+    EquipmentCondition equipmentCondition;
 
-    @ManyToOne
-    PlantInventoryEntry plant_info;
+    @OneToOne
+    PlantInventoryEntry plantInventoryEntry;
+    @OneToOne
+    PlantReservation plantReservation;
 
 
 }

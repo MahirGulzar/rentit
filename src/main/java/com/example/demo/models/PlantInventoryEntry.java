@@ -15,4 +15,13 @@ public class PlantInventoryEntry {
     String description;
     @Embedded
     Money price;
+
+    @OneToOne
+    PurchaseOrder purchaseOrder;
+
+    @OneToOne
+    MaintenancePlan maintenancePlan;
+
+    @OneToOne
+    PlantInventoryItem plantInventoryItem;
 }

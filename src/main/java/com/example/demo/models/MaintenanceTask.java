@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import com.example.demo.models.enums.TypeOfWork;
+import com.example.demo.models.valueobject.BusinessPeriod;
 import com.example.demo.models.valueobject.Money;
 import lombok.Data;
 
@@ -14,15 +15,19 @@ public class MaintenanceTask {
     @GeneratedValue
     Long id;
 
-    @OneToOne
-    PlantReservation plantReservation;
+    String description;
+    @Enumerated(EnumType.STRING)
+    TypeOfWork typeOfWork;
+    @Embedded
+    BusinessPeriod maintenancePeriod;
+    @Embedded
+    Money price;
 
-    @OneToOne //TODO we need to check this will be here or not.
+
+//    @OneToOne
+//    PlantReservation plantReservation;
+
+    @ManyToOne //TODO we need to check this will be here or not.
     MaintenancePlan maintenancePlan;
 
-    String description;
-    TypeOfWork typeOfWork;
-    LocalDate startDate;
-    LocalDate endDate;
-    Money price;
 }

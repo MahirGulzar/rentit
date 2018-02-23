@@ -20,7 +20,7 @@ public class PurchaseOrder {
     @OneToMany
     List<PlantReservation> reservations;
 
-    @ManyToOne
+    @OneToOne
     PlantInventoryEntry plant;
 
     LocalDate issueDate;

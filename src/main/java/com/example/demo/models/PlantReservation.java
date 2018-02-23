@@ -13,9 +13,13 @@ public class PlantReservation {
     @GeneratedValue
     Long id;
 
+    @ManyToOne
+    PurchaseOrder purchaseOrder;
+    @OneToOne
+    PlantInventoryItem plantInventoryItem;
+    @OneToOne // TODO need to check
+    MaintenancePlan maintenancePlan;
+
     @Embedded
     BusinessPeriod schedule;
-
-    @ManyToOne
-    PlantInventoryItem plant;
 }
