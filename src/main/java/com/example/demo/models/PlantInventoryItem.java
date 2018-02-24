@@ -18,6 +18,6 @@ public class PlantInventoryItem {
     EquipmentCondition equipmentCondition;
 
     @OneToOne
-    PlantInventoryEntry plantInventoryEntry;
+    PlantInventoryEntry plantInfo;
 
 }
