@@ -19,8 +19,5 @@ public class PlantInventoryItem {
 
     @OneToOne
     PlantInventoryEntry plantInventoryEntry;
-    @OneToOne
-    PlantReservation plantReservation;
-
 
 }

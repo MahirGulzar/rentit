@@ -17,6 +17,7 @@ public class PlantReservation {
     PurchaseOrder purchaseOrder;
     @OneToOne
     PlantInventoryItem plantInventoryItem;
+
     @OneToOne // TODO need to check
     MaintenancePlan maintenancePlan;
 

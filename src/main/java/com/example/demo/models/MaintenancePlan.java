@@ -18,6 +18,7 @@ public class MaintenancePlan {
 
     @OneToMany(cascade={CascadeType.ALL})
     List<MaintenanceTask> maintenanceTaskList;
+
     @OneToOne
     PlantInventoryEntry plantInventoryEntry;
     @OneToOne

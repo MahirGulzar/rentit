@@ -24,10 +24,8 @@ public class MaintenanceTask {
     Money price;
 
 
-//    @OneToOne
-//    PlantReservation plantReservation;
+    @OneToOne
+    PlantReservation plantReservation;
 
-    @ManyToOne //TODO we need to check this will be here or not.
-    MaintenancePlan maintenancePlan;
 
 }

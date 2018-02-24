@@ -16,12 +16,4 @@ public class PlantInventoryEntry {
     @Embedded
     Money price;
 
-    @OneToOne
-    PurchaseOrder purchaseOrder;
-
-    @OneToOne
-    MaintenancePlan maintenancePlan;
-
-    @OneToOne
-    PlantInventoryItem plantInventoryItem;
 }
