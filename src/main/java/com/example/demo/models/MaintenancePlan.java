@@ -20,7 +20,5 @@ public class MaintenancePlan {
     List<MaintenanceTask> maintenanceTaskList;
 
     @OneToOne
-    PlantInventoryEntry plantInventoryEntry;
-    @OneToOne
-    PlantReservation plantReservation;
+    PlantInventoryItem plantInventoryItem;
 }
