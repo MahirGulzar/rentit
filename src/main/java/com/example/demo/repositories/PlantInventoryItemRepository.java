@@ -20,12 +20,15 @@ public interface PlantInventoryItemRepository extends JpaRepository<PlantInvento
 //    List<PlantInventoryItem> findPlantsNotHiredForPeriod(LocalDate startData,LocalDate endDate);
 
 
+
     //-----------------------------------------------------------------------------------------
 
-    @Query("select plt from PlantInventoryItem plt where plt not in " +
-            "(select pr.plant from PlantReservation pr where pr.schedule.startDate between ?1 and ?2 " +
-            "and pr.schedule.endDate between ?1 and ?2 )")
+    @Query("SELECT plt FROM PlantInventoryItem plt WHERE plt NOT IN " +
+            "(SELECT pr.plant FROM PlantReservation pr WHERE pr.schedule.startDate BETWEEN ?1 AND ?2 " +
+            "AND pr.schedule.endDate BETWEEN ?1 AND ?2 )")
     List<PlantInventoryItem> findPlantsNotHiredForPeriod(LocalDate startData,LocalDate endDate);
+
+    List<PlantInventoryItem> findByPlantInfo(PlantInventoryEntry entry);
 
     //-----------------------------------------------------------------------------------------
 
