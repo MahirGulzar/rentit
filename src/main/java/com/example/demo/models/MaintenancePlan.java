@@ -14,11 +14,11 @@ public class MaintenancePlan {
     @GeneratedValue
     Long id;
 
-    LocalDate yearOfAction;
+    int yearOfAction;
 
     @OneToMany(cascade={CascadeType.ALL})
-    List<MaintenanceTask> maintenanceTaskList;
+    List<MaintenanceTask> tasks;
 
     @OneToOne
-    PlantInventoryItem plantInventoryItem;
+    PlantInventoryItem plant;
 }
