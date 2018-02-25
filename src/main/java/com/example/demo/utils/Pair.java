@@ -14,4 +14,10 @@ public class Pair<F,S> {
         Pair other = (Pair) o;
         return first.equals(other.first) && second.equals(other.second);
     }
+
+//    public Pair(F,S)
+//    {
+//        this.first = F;
+//        this.second=S;
+//    }
 }

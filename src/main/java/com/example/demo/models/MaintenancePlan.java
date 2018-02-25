@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,7 +18,7 @@ public class MaintenancePlan {
     int yearOfAction;
 
     @OneToMany(cascade={CascadeType.ALL})
-    List<MaintenanceTask> tasks;
+    List<MaintenanceTask> tasks = new ArrayList<>();
 
     @OneToOne
     PlantInventoryItem plant;

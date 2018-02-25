@@ -55,7 +55,7 @@ public class InventoryRepositoryTests {
         plantReservationRepository.save(reservation);
     }
 
-  /*  @Test
+/*    @Test
     public void plantsAvailableForABusinessPeriod() {
         LocalDate from = LocalDate.now();
         LocalDate to = from.plusDays(2);

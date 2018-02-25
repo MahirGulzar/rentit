@@ -9,11 +9,15 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface MaintenancePlanRepository extends JpaRepository<MaintenancePlan,Long>,CustomMaintenancePlanRepository {
+public interface MaintenancePlanRepository extends JpaRepository<MaintenancePlan,Long>, CustomMaintenancePlanRepository {
 
     /*@Query("select new com.example.demo.utils.Pair<f,s>() y.yearOfAction, count(y.) from MaintenancePlan y where y >= year and y <= thisyear group by y order by count(y) desc")
 
     List<Pair<Integer, Long>> findCorrectiveRepairsByYearForPeriod(int year, int thisyear);*/
+
+//    @Query("select new com.example.demo.utils.Pair(mp.yearofAction,count(mp)) " +
+//            "from MaintenancePlan mp")
+//    List<Pair<Integer, Long>> findCorrectiveRepairsByYearForPeriod();
 
 
 }
