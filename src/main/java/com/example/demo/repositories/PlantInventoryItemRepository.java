@@ -37,4 +37,5 @@ public interface PlantInventoryItemRepository extends JpaRepository<PlantInvento
 //    List<PlantInventoryItem> findPlantsNotHiredForPeriod(LocalDate startData,LocalDate endDate);
 
 
+
 }
