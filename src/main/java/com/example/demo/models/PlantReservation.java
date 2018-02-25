@@ -5,6 +5,7 @@ import com.example.demo.models.valueobject.BusinessPeriod;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -23,4 +24,5 @@ public class PlantReservation {
 
     @Embedded
     BusinessPeriod schedule;
+
 }

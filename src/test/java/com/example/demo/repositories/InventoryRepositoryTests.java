@@ -55,8 +55,7 @@ public class InventoryRepositoryTests {
         plantReservationRepository.save(reservation);
     }
 
-/*
-    @Test
+  /*  @Test
     public void plantsAvailableForABusinessPeriod() {
         LocalDate from = LocalDate.now();
         LocalDate to = from.plusDays(2);
@@ -70,15 +69,17 @@ public class InventoryRepositoryTests {
         excavators = excavators.subList(0, 3);
         // and then create plant inventory items for them
         // (2 for the first one in the shuffled list and 1 for the two remaining)
-        for (PlantInventoryEntry excavator: excavators) createPIItemFor(excavator, EquipmentCondition.SERVICEABLE);
+        for (PlantInventoryEntry excavator: excavators)
+            createPIItemFor(excavator, EquipmentCondition.SERVICEABLE);
+
         createPIItemFor(excavators.get(0), EquipmentCondition.SERVICEABLE);
         createPIItemFor(excavators.get(1), EquipmentCondition.UNSERVICEABLE_REPAIRABLE);
 
+
+
         // Let us check that we have exactly three different types excavators with a least one
         // available physical equipment for each one of them
-        List<PlantInventoryItem> availableExcavators = plantInventoryEntryRepository.findAvailable("excavator", from, to);
-
-
+        List<PlantsWithCount> availableExcavators = plantInventoryEntryRepository.findAvailable("excavator", from, to);
         assertThat(availableExcavators.stream().map(tuple -> tuple.getEntry()).collect(Collectors.toList()))
                 .containsAll(excavators)
                 .hasSize(3);
@@ -98,8 +99,8 @@ public class InventoryRepositoryTests {
         // Sanity check!
         assertThat(plantInventoryEntryRepository.findAvailable("excavator", from.plusWeeks(1), to.plusWeeks(1)))
                 .hasSize(3);
-    }
-*/
+    }*/
+/*
 
     @Test
     public void checkingIfPlantIsAvailable() {
@@ -113,7 +114,7 @@ public class InventoryRepositoryTests {
         // We select one excavator (entry) at random and add one plant (item) for it
         PlantInventoryEntry excavator = excavators.get(random.nextInt(excavators.size()));
         PlantInventoryItem item = createPIItemFor(excavator, EquipmentCondition.SERVICEABLE);
-        createPIItemFor(excavator, EquipmentCondition.UNSERVICEABLE_REPAIRABLE);
+//        createPIItemFor(excavator, EquipmentCondition.UNSERVICEABLE_REPAIRABLE);
 
         // We query availability that excavator (it must return true)
         assertThat(plantInventoryEntryRepository.isThereAnyAvailableItem(excavator, from, to))
@@ -123,14 +124,15 @@ public class InventoryRepositoryTests {
         createReservationFor(item, from, to);
 
         // The plant should not be available for the same period as above
-      //  assertThat(plantInventoryEntryRepository.isThereAnyAvailableItem(excavator, from, to))
-        //        .isFalse();
+        assertThat(plantInventoryEntryRepository.isThereAnyAvailableItem(excavator, from, to))
+                .isFalse();
         // But it should be available for the week after
-        //assertThat(plantInventoryEntryRepository.isThereAnyAvailableItem(excavator, from.plusWeeks(1), to.plusWeeks(1)))
-          //      .isTrue();
+        assertThat(plantInventoryEntryRepository.isThereAnyAvailableItem(excavator, from.plusWeeks(1), to.plusWeeks(1)))
+                .isTrue();
     }
+*/
 
-/*    @Test
+    @Test
     public void findPlantsNotHiredForAGivenPeriodOfTime() {
         Random random = new Random();
         LocalDate beginningOfPeriod = LocalDate.now().minusMonths(6);
@@ -164,5 +166,7 @@ public class InventoryRepositoryTests {
         assertThat(plantInventoryItemRepository.findPlantsNotHiredForPeriod(beginningOfPeriod, LocalDate.now()))
                 .containsAll(idleItems)
                 .doesNotContainAnyElementsOf(hiredItems);
-    }*/
+
+
+    }
 }
