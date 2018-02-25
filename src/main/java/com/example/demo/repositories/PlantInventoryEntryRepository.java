@@ -37,10 +37,10 @@ public interface PlantInventoryEntryRepository extends JpaRepository<PlantInvent
 
 
 
-    @Query("SELECT Case when count(item) >=1 then true else false end from PlantInventoryItem item where" +
-            " item not in (Select pr.plant from PlantReservation pr where pr.schedule.startDate between ?2 and ?3 " +
-            "and pr.schedule.endDate between ?2 and ?3)" +
-            " and item.plantInfo = ?1 and item.equipmentCondition= com.example.demo.models.enums.EquipmentCondition.SERVICEABLE")
+    @Query("SELECT CASE WHEN COUNT(item) >=1 THEN true ELSE false END FROM PlantInventoryItem item WHERE" +
+            " item NOT IN (SELECT pr.plant FROM PlantReservation pr WHERE pr.schedule.startDate BETWEEN ?2 AND ?3 " +
+            "AND pr.schedule.endDate BETWEEN ?2 AND ?3)" +
+            " AND item.plantInfo = ?1 AND item.equipmentCondition= com.example.demo.models.enums.EquipmentCondition.SERVICEABLE")
     Boolean isThereAnyAvailableItem(PlantInventoryEntry entry, LocalDate startDate,LocalDate endDate);
 
 
