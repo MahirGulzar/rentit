@@ -28,11 +28,13 @@ public interface PlantInventoryEntryRepository extends JpaRepository<PlantInvent
             "and p not in (select pr.plant from PlantReservation pr where ?2 < pr.schedule.endDate and ?3 > pr.schedule.startDate)")
     List<PlantInventoryItem> findAvailable(String name, LocalDate startDate, LocalDate endDate);*/
 
-/*
-    @Query("select new com.example.demo.models.PlantsWithCount(pEntry,count(pItem)) from PlantInventoryItem p where p.plantInfo.name like %?1% " +
-            "and p not in (select pr.plant from PlantReservation pr where ?2 < pr.schedule.endDate and ?3 > pr.schedule.startDate)")
-    List<PlantInventoryItem> findAvailable(String name, LocalDate startDate, LocalDate endDate);
-*/
+
+    @Query("SELECT new com.example.demo.models.PlantsWithCount(item.plantInfo,count(item.plantInfo)) FROM PlantInventoryItem item WHERE item.plantInfo.name LIKE %?1% " +
+            "AND item.equipmentCondition= com.example.demo.models.enums.EquipmentCondition.SERVICEABLE " +
+            "AND item NOT IN (SELECT pr.plant FROM PlantReservation pr WHERE pr.schedule.startDate BETWEEN ?2 AND ?3 " +
+            "AND pr.schedule.endDate BETWEEN ?2 AND ?3) GROUP BY item.plantInfo.id")
+    List<PlantsWithCount> findAvailable(String name, LocalDate startDate, LocalDate endDate);
+
 
 
     @Query("SELECT Case when count(item) >=1 then true else false end from PlantInventoryItem item where" +

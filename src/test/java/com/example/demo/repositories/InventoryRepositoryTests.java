@@ -55,7 +55,7 @@ public class InventoryRepositoryTests {
         plantReservationRepository.save(reservation);
     }
 
-  /*  @Test
+    @Test
     public void plantsAvailableForABusinessPeriod() {
         LocalDate from = LocalDate.now();
         LocalDate to = from.plusDays(2);
@@ -80,6 +80,8 @@ public class InventoryRepositoryTests {
         // Let us check that we have exactly three different types excavators with a least one
         // available physical equipment for each one of them
         List<PlantsWithCount> availableExcavators = plantInventoryEntryRepository.findAvailable("excavator", from, to);
+
+
         assertThat(availableExcavators.stream().map(tuple -> tuple.getEntry()).collect(Collectors.toList()))
                 .containsAll(excavators)
                 .hasSize(3);
@@ -99,7 +101,8 @@ public class InventoryRepositoryTests {
         // Sanity check!
         assertThat(plantInventoryEntryRepository.findAvailable("excavator", from.plusWeeks(1), to.plusWeeks(1)))
                 .hasSize(3);
-    }*/
+
+    }
 
     @Test
     public void checkingIfPlantIsAvailable() {
