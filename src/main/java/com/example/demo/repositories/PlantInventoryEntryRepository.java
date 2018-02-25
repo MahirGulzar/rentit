@@ -33,7 +33,7 @@ public interface PlantInventoryEntryRepository extends JpaRepository<PlantInvent
             "AND item.equipmentCondition= com.example.demo.models.enums.EquipmentCondition.SERVICEABLE " +
             "AND item NOT IN (SELECT pr.plant FROM PlantReservation pr WHERE pr.schedule.startDate BETWEEN ?2 AND ?3 " +
             "AND pr.schedule.endDate BETWEEN ?2 AND ?3) GROUP BY item.plantInfo.id")
-    List<PlantsWithCount> findAvailable(String name, LocalDate startDate, LocalDate endDate);
+    List<PlantsWithCount> findAvailable(String name, LocalDate startDate, LocalDate endDate); //TODO need to check other way from plant reservation
 
 
 

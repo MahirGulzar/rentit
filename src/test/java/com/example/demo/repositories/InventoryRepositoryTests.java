@@ -69,19 +69,13 @@ public class InventoryRepositoryTests {
         excavators = excavators.subList(0, 3);
         // and then create plant inventory items for them
         // (2 for the first one in the shuffled list and 1 for the two remaining)
-        for (PlantInventoryEntry excavator: excavators)
-            createPIItemFor(excavator, EquipmentCondition.SERVICEABLE);
-
+        for (PlantInventoryEntry excavator: excavators) createPIItemFor(excavator, EquipmentCondition.SERVICEABLE);
         createPIItemFor(excavators.get(0), EquipmentCondition.SERVICEABLE);
         createPIItemFor(excavators.get(1), EquipmentCondition.UNSERVICEABLE_REPAIRABLE);
-
-
 
         // Let us check that we have exactly three different types excavators with a least one
         // available physical equipment for each one of them
         List<PlantsWithCount> availableExcavators = plantInventoryEntryRepository.findAvailable("excavator", from, to);
-
-
         assertThat(availableExcavators.stream().map(tuple -> tuple.getEntry()).collect(Collectors.toList()))
                 .containsAll(excavators)
                 .hasSize(3);
@@ -101,7 +95,6 @@ public class InventoryRepositoryTests {
         // Sanity check!
         assertThat(plantInventoryEntryRepository.findAvailable("excavator", from.plusWeeks(1), to.plusWeeks(1)))
                 .hasSize(3);
-
     }
 
     @Test
