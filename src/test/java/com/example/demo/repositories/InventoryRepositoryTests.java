@@ -100,7 +100,6 @@ public class InventoryRepositoryTests {
         assertThat(plantInventoryEntryRepository.findAvailable("excavator", from.plusWeeks(1), to.plusWeeks(1)))
                 .hasSize(3);
     }*/
-/*
 
     @Test
     public void checkingIfPlantIsAvailable() {
@@ -130,7 +129,6 @@ public class InventoryRepositoryTests {
         assertThat(plantInventoryEntryRepository.isThereAnyAvailableItem(excavator, from.plusWeeks(1), to.plusWeeks(1)))
                 .isTrue();
     }
-*/
 
     @Test
     public void findPlantsNotHiredForAGivenPeriodOfTime() {

@@ -29,7 +29,7 @@ public interface PlantInventoryItemRepository extends JpaRepository<PlantInvento
 
     //-----------------------------------------------------------------------------------------
 
-    
+
 //    @Query("select pr.plant from PlantReservation pr where pr.schedule.startDate not between ?1 and ?2")
 //    List<PlantInventoryItem> findPlantsNotHiredForPeriod(LocalDate startData,LocalDate endDate);
 

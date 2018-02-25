@@ -6,6 +6,7 @@ import com.example.demo.models.PlantsWithCount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import com.example.demo.models.enums.EquipmentCondition;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,19 +24,23 @@ public interface PlantInventoryEntryRepository extends JpaRepository<PlantInvent
     List<Object[]> findAvailable(String name, LocalDate startDate, LocalDate endDate);
 */
 
-//    @Query("select new com.example.demo.models.PlantsWithCount(p,count(p)) from PlantInventoryItem p where p.plantInfo.name like %?1% " +
-//            "and p not in (select pr.plant from PlantReservation pr where ?2 < pr.schedule.endDate and ?3 > pr.schedule.startDate)")
-//    List<PlantInventoryItem> findAvailable(String name, LocalDate startDate, LocalDate endDate);
+/*    @Query("select new com.example.demo.models.PlantsWithCount(p,count(p)) from PlantInventoryItem p where p.plantInfo.name like %?1% " +
+            "and p not in (select pr.plant from PlantReservation pr where ?2 < pr.schedule.endDate and ?3 > pr.schedule.startDate)")
+    List<PlantInventoryItem> findAvailable(String name, LocalDate startDate, LocalDate endDate);*/
 
-//    @Query("select CASE WHEN (count(p.id) > 0) THEN TRUE ELSE FALSE END from PlantInventoryItem p where p.plantInfo = ?1" +
-//            "and p.equipmentCondition = com.example.inventory.domain.model.EquipmentCondition.SERVICEABLE " +
-//            "and p not in (select pr.plant from PlantReservation pr where pr.schedule.endDate > ?2 and  pr.schedule.startDate < ?3 )")
-//    Boolean isThereAnyAvailableItem(PlantInventoryEntry plantInventoryEntry, LocalDate startDate, LocalDate endDate);
+/*
+    @Query("select new com.example.demo.models.PlantsWithCount(pEntry,count(pItem)) from PlantInventoryItem p where p.plantInfo.name like %?1% " +
+            "and p not in (select pr.plant from PlantReservation pr where ?2 < pr.schedule.endDate and ?3 > pr.schedule.startDate)")
+    List<PlantInventoryItem> findAvailable(String name, LocalDate startDate, LocalDate endDate);
+*/
 
-//    @Query("SELECT CASE WHEN count(select pr from PlantReservation pr where " +
-//            "?1=pr.plantInfo and pr.schedule.startDate not between ?2 and ?3) >= 1 THEN true ELSE false END")
-//    Boolean isThereAnyAvailableItem(PlantInventoryEntry plantInventoryEntry, LocalDate startDate, LocalDate endDate);
-//
+
+    @Query("SELECT Case when count(item) >=1 then true else false end from PlantInventoryItem item where" +
+            " item not in (Select pr.plant from PlantReservation pr where pr.schedule.startDate between ?2 and ?3 " +
+            "and pr.schedule.endDate between ?2 and ?3)" +
+            " and item.plantInfo = ?1 and item.equipmentCondition= com.example.demo.models.enums.EquipmentCondition.SERVICEABLE")
+    Boolean isThereAnyAvailableItem(PlantInventoryEntry entry, LocalDate startDate,LocalDate endDate);
+
 
 
 
