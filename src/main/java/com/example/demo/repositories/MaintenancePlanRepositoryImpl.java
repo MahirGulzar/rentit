@@ -12,9 +12,11 @@ import java.util.List;
 public class MaintenancePlanRepositoryImpl implements CustomMaintenancePlanRepository {
     @Autowired
     EntityManager em;
+/*
     @Override
     public List<Pair<Integer, Long>> findCorrectiveRepairsByYearForPeriod(int year, int thisyear) {
-       /* Query query = em.createQuery("select new com.example.demo.utils.Pair(mp.yearOfAction,count(corr)) from " +
+       */
+/* Query query = em.createQuery("select new com.example.demo.utils.Pair(mp.yearOfAction,count(corr)) from " +
                 "com.example.demo.models.MaintenancePlan mp,MaintenanceTask corr " +
                 "where corr = (select corr1 from MaintenanceTask corr1 where " +
                 "corr1.plantReservation.maintenancePlan = mp and " +
@@ -22,7 +24,8 @@ public class MaintenancePlanRepositoryImpl implements CustomMaintenancePlanRepos
                 "and corr1.plantReservation.maintenancePlan.yearOfAction >=2014 and " +
                 "corr1.plantReservation.maintenancePlan.yearOfAction <=2018)" +
                 "member " +
-                "group by mp.yearOfAction");*/
+                "group by mp.yearOfAction");*//*
+
 
         Query query = em.createQuery("select new com.example.demo.utils.Pair(mp.yearOfAction,count(corr)) from " +
                 "com.example.demo.models.MaintenancePlan mp,MaintenanceTask corr " +
@@ -40,7 +43,8 @@ public class MaintenancePlanRepositoryImpl implements CustomMaintenancePlanRepos
         return (List<Pair<Integer,Long>>)query.getResultList();
     }
 
-
+*/
+    @Override
     public List<Pair<Integer, Long>> findCorrectiveRepairCostsByYear(int year, int thisyear) {
 
         Query query = em.createQuery("select new com.example.demo.utils.Pair(mp.yearOfAction,sum(mt.price.price)) from " +
@@ -51,7 +55,8 @@ public class MaintenancePlanRepositoryImpl implements CustomMaintenancePlanRepos
                 "mp.yearOfAction <=(:thisyear)" +
                 "group by mp.yearOfAction")
                 .setParameter("year",year)
-                .setParameter("thisyear",thisyear);
+                .setParameter("thisyear",thisyear)
+                .addScalar("count", LongType.INSTANCE);
 
 
         return (List<Pair<Integer,Long>>)query.getResultList();

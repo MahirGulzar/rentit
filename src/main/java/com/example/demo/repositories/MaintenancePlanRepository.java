@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface MaintenancePlanRepository extends JpaRepository<MaintenancePlan,Long> {
+public interface MaintenancePlanRepository extends JpaRepository<MaintenancePlan,Long>, CustomMaintenancePlanRepository {
 
     @Query("SELECT new com.example.demo.utils.Pair(mp.yearOfAction,count(corr)) from MaintenancePlan mp,MaintenanceTask corr " +
             "WHERE corr MEMBER OF mp.tasks AND " +
