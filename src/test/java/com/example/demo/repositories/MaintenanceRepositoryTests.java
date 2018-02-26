@@ -41,7 +41,7 @@ public class MaintenanceRepositoryTests {
         maintenancePlanRepository.save(plan);
     }
 
-/*
+
     @Test
     public void findCorrectiveRepairsByYear() {
         int thisYear = LocalDate.now().getYear();
@@ -69,7 +69,6 @@ public class MaintenanceRepositoryTests {
         assertThat(maintenancePlanRepository.findCorrectiveRepairsByYearForPeriod(thisYear - 4, thisYear - 1))
                 .containsAll(expectedResult.stream().filter(pair -> !pair.getFirst().equals(thisYear)).collect(Collectors.toList()));
     }
-*/
 
     @Test
     public void findCorrectiveRepairCostsByYear() {
