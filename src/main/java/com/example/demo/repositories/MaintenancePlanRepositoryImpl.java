@@ -1,6 +1,7 @@
 package com.example.demo.repositories;
 
 import com.example.demo.utils.Pair;
+import org.hibernate.type.LongType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
@@ -36,6 +37,23 @@ public class MaintenancePlanRepositoryImpl implements CustomMaintenancePlanRepos
 
 //        TypedQuery<List<Pair>> query =  em.createQuery("select com.example.demo.utils.Pair(mp.yearOfAction,size(mp))" +
 //                " from MaintenancePlan mp",Pair.class)
+        return (List<Pair<Integer,Long>>)query.getResultList();
+    }
+
+
+    public List<Pair<Integer, Long>> findCorrectiveRepairCostsByYear(int year, int thisyear) {
+
+        Query query = em.createQuery("select new com.example.demo.utils.Pair(mp.yearOfAction,sum(mt.price.price)) from " +
+                "com.example.demo.models.MaintenancePlan mp,MaintenanceTask mt " +
+                "where mt member of mp.tasks and " +
+                "mt.typeOfWork = com.example.demo.models.enums.TypeOfWork.CORRECTIVE and " +
+                "mp.yearOfAction >=(:year) and " +
+                "mp.yearOfAction <=(:thisyear)" +
+                "group by mp.yearOfAction")
+                .setParameter("year",year)
+                .setParameter("thisyear",thisyear);
+
+
         return (List<Pair<Integer,Long>>)query.getResultList();
     }
 }
