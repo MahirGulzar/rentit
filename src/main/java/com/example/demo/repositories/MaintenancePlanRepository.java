@@ -6,18 +6,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface MaintenancePlanRepository extends JpaRepository<MaintenancePlan,Long>, CustomMaintenancePlanRepository {
+public interface MaintenancePlanRepository extends JpaRepository<MaintenancePlan,Long> {
 
-    /*@Query("select new com.example.demo.utils.Pair<f,s>() y.yearOfAction, count(y.) from MaintenancePlan y where y >= year and y <= thisyear group by y order by count(y) desc")
-
-    List<Pair<Integer, Long>> findCorrectiveRepairsByYearForPeriod(int year, int thisyear);*/
-
-//    @Query("select new com.example.demo.utils.Pair(mp.yearofAction,count(mp)) " +
-//            "from MaintenancePlan mp")
-//    List<Pair<Integer, Long>> findCorrectiveRepairsByYearForPeriod();
-
-
+    @Query("SELECT new com.example.demo.utils.Pair(mp.yearOfAction,count(corr)) from MaintenancePlan mp,MaintenanceTask corr " +
+            "WHERE corr MEMBER OF mp.tasks AND " +
+            "corr.typeOfWork = com.example.demo.models.enums.TypeOfWork.CORRECTIVE AND " +
+            "mp.yearOfAction >=?1 AND mp.yearOfAction <=?2 group by mp.yearOfAction")
+    List<Pair<Integer,Long>> findCorrectiveRepairsByYearForPeriod(int year, int thisyear);
 }
