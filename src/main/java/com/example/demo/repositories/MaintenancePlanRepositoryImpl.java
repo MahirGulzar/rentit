@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import java.math.BigDecimal;
 import java.util.List;
 
 public class MaintenancePlanRepositoryImpl implements CustomMaintenancePlanRepository {
@@ -45,7 +46,7 @@ public class MaintenancePlanRepositoryImpl implements CustomMaintenancePlanRepos
 
 */
     @Override
-    public List<Pair<Integer, Long>> findCorrectiveRepairCostsByYear(int year, int thisyear) {
+    public List<Pair<Integer, BigDecimal>> findCorrectiveRepairCostsByYear(int year, int thisyear) {
 
         Query query = em.createQuery("select new com.example.demo.utils.Pair(mp.yearOfAction,sum(mt.price.price)) from " +
                 "com.example.demo.models.MaintenancePlan mp,MaintenanceTask mt " +
@@ -55,10 +56,9 @@ public class MaintenancePlanRepositoryImpl implements CustomMaintenancePlanRepos
                 "mp.yearOfAction <=(:thisyear)" +
                 "group by mp.yearOfAction")
                 .setParameter("year",year)
-                .setParameter("thisyear",thisyear)
-                .addScalar("count", LongType.INSTANCE);
+                .setParameter("thisyear",thisyear);
 
 
-        return (List<Pair<Integer,Long>>)query.getResultList();
+        return (List<Pair<Integer,BigDecimal>>)query.getResultList();
     }
 }

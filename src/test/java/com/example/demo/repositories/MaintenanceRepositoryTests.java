@@ -74,14 +74,14 @@ public class MaintenanceRepositoryTests {
     @Test
     public void findCorrectiveRepairCostsByYear() {
         int thisYear = LocalDate.now().getYear();
-        List<Pair<Integer, Long>> expectedResult = new ArrayList<>();
+        List<Pair<Integer, BigDecimal>> expectedResult = new ArrayList<>();
         Random random = new Random();
 
         // We add a random number of corrective tasks per year in a fixed period
         for (int year = thisYear - 4; year <= thisYear; year++) {
             int correctiveTasks = random.nextInt(10) + 1;
             // We assume that the cost per repair is 150
-            expectedResult.add(new Pair<>(year, new Long(correctiveTasks * 150)));
+            expectedResult.add(new Pair<>(year, new BigDecimal(correctiveTasks * 150)));
             for (int task = 0; task < correctiveTasks; task++)
                 createMaintenanceTaskForYear(year, TypeOfWork.CORRECTIVE, new BigDecimal(150), null);
         }
@@ -89,7 +89,7 @@ public class MaintenanceRepositoryTests {
         assertThat(maintenancePlanRepository
                         .findCorrectiveRepairCostsByYear(thisYear - 4, thisYear)
                         .stream()
-                        .map(pair -> new Pair<Integer,Long>(pair.getFirst(), pair.getSecond().longValue()))
+                        .map(pair -> new Pair<Integer,BigDecimal>(pair.getFirst(), new BigDecimal(pair.getSecond().longValue())))
                         .collect(Collectors.toList())
                 // Please note that we translate BigNumber into Long because comparison of
                 // BigNumbers is tricky (we would need to consider range & precision)
