@@ -41,6 +41,7 @@ public class MaintenanceRepositoryTests {
         maintenancePlanRepository.save(plan);
     }
 
+/*
     @Test
     public void findCorrectiveRepairsByYear() {
         int thisYear = LocalDate.now().getYear();
@@ -68,8 +69,9 @@ public class MaintenanceRepositoryTests {
         assertThat(maintenancePlanRepository.findCorrectiveRepairsByYearForPeriod(thisYear - 4, thisYear - 1))
                 .containsAll(expectedResult.stream().filter(pair -> !pair.getFirst().equals(thisYear)).collect(Collectors.toList()));
     }
+*/
 
-/*    @Test
+    @Test
     public void findCorrectiveRepairCostsByYear() {
         int thisYear = LocalDate.now().getYear();
         List<Pair<Integer, Long>> expectedResult = new ArrayList<>();
@@ -92,5 +94,5 @@ public class MaintenanceRepositoryTests {
                 // Please note that we translate BigNumber into Long because comparison of
                 // BigNumbers is tricky (we would need to consider range & precision)
         ).containsAll(expectedResult);
-    }*/
+    }
 }
