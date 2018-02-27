@@ -17,4 +17,12 @@ public interface MaintenancePlanRepository extends JpaRepository<MaintenancePlan
             "corr.typeOfWork = com.example.demo.models.enums.TypeOfWork.CORRECTIVE AND " +
             "mp.yearOfAction >=?1 AND mp.yearOfAction <=?2 group by mp.yearOfAction")
     List<Pair<Integer,Long>> findCorrectiveRepairsByYearForPeriod(int year, int thisyear);
+
+    @Query("select new com.example.demo.utils.Pair(mp.yearOfAction,sum(mt.price.price)) from MaintenancePlan mp,MaintenanceTask mt " +
+            "where mt member of mp.tasks and " +
+            "mt.typeOfWork = com.example.demo.models.enums.TypeOfWork.CORRECTIVE and " +
+            "mp.yearOfAction >=?1 and mp.yearOfAction <=?2 " +
+            "group by mp.yearOfAction")
+    List<Pair<Integer,Long>> findCorrectiveRepairCostsByYear2(int year, int thisyear);
 }
+
