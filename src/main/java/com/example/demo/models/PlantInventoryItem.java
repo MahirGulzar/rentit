@@ -14,10 +14,12 @@ public class PlantInventoryItem {
     Long id;
 
     String serialNumber;
+    @OneToOne
+    PlantInventoryEntry plantInfo;
+
     @Enumerated(EnumType.STRING)
     EquipmentCondition equipmentCondition;
 
-    @OneToOne
-    PlantInventoryEntry plantInfo;
+
 
 }
