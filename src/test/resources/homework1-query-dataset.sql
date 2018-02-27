@@ -126,21 +126,21 @@ insert into plant_reservation (id, plant_id, start_date, end_date)
 
 
 insert into plant_reservation (id, plant_id, start_date, end_date)
-    values (14, 12, '2015-03-22', '2015-03-24');
+    values (17, 12, '2015-03-22', '2015-03-24');
 insert into plant_reservation (id, plant_id, start_date, end_date)
-    values (15, 12, '2015-04-22', '2015-04-24');
+    values (18, 12, '2015-04-22', '2015-04-24');
 insert into plant_reservation (id, plant_id, start_date, end_date)
-    values (16, 13, '2015-03-22', '2015-03-24');
+    values (19, 13, '2015-03-22', '2015-03-24');
 insert into plant_reservation (id, plant_id, start_date, end_date)
-    values (17, 13, '2015-04-22', '2015-04-24');
+    values (20, 13, '2015-04-22', '2015-04-24');
 
 
     ------------
 
 insert into plant_reservation (id, plant_id, start_date, end_date)
-    values (18, 12, '2016-03-22', '2016-03-24');
+    values (21, 12, '2016-03-22', '2016-03-24');
 insert into plant_reservation (id, plant_id, start_date, end_date)
-    values (19, 13, '2016-03-22', '2016-03-24');
+    values (22, 13, '2016-03-22', '2016-03-24');
 
     ------------
 /*

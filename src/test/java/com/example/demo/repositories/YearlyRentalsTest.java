@@ -7,6 +7,7 @@ import com.example.demo.models.MaintenanceTask;
 import com.example.demo.models.PlantInventoryItem;
 import com.example.demo.models.PlantReservation;
 import com.example.demo.models.enums.TypeOfWork;
+import com.example.demo.models.valueobject.BusinessPeriod;
 import com.example.demo.models.valueobject.Money;
 import com.example.demo.utils.Pair;
 import org.junit.Test;
@@ -33,21 +34,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class YearlyRentalsTest {
 
     @Autowired
+    PlantInventoryEntryRepository plantInventoryEntryRepository;
+    @Autowired
     PlantInventoryItemRepository plantInventoryItemRepository;
     @Autowired
     PlantReservationRepository plantReservationRepository;
-
-
-
     @Autowired
     MaintenancePlanRepository maintenancePlanRepository;
 
+
     private void createMaintenanceTaskForYear(int year, TypeOfWork typeOfWork, BigDecimal price, PlantInventoryItem item) {
         MaintenancePlan plan = new MaintenancePlan();
-        for(PlantReservation reservation: plantReservationRepository.findAll())
-        {
-
-        }
         plan.setYearOfAction(year);
         plan.setPlant(item);
         MaintenanceTask task = new MaintenanceTask();
@@ -62,7 +59,6 @@ public class YearlyRentalsTest {
     @Test
     public void yearlyRentals() {
         int thisYear = LocalDate.now().getYear();
-        List<Pair<Integer, Long>> expectedResult = new ArrayList<>();
         Random random = new Random();
 
 
@@ -74,7 +70,7 @@ public class YearlyRentalsTest {
 
             for(PlantInventoryItem item: plantInventoryItemRepository.findAll())
             {
-                int correctiveTasks = random.nextInt(10) + 1;
+                int correctiveTasks = 10;
                 for (int task = 0; task < correctiveTasks; task++)
                     createMaintenanceTaskForYear(year, TypeOfWork.CORRECTIVE, null, item);
             }
@@ -82,13 +78,23 @@ public class YearlyRentalsTest {
         }
 
 
+        //Initial Checks
+
+        // Check 14 items in PlantInventoryItemRepository
+        assertThat(plantInventoryItemRepository.findAll()).hasSize(14);
+        // Check 14 entries in PlantInventoryEntryRepository
+        assertThat(plantInventoryEntryRepository.findAll()).hasSize(14);
+        // Check 22 reservations in PlantReservationRepository
+        assertThat(plantReservationRepository.findAll()).hasSize(22);
+
+        // Check 2 years maintenance Data
+        List<Pair<Integer,Long>> yearlyPlans = maintenancePlanRepository.findCorrectiveRepairsByYearForPeriod(thisYear - 4, thisYear);
+        assertThat(yearlyPlans)
+                .hasSize(2);
+        assertThat(yearlyPlans.get(0).getSecond().equals(new Long(140)));
+        assertThat(yearlyPlans.get(1).getSecond().equals(new Long(140)));
 
 
-
-        // We expect that the database query returns the right number of corrective tasks
-        // per year (we try with the original period of years and with two more shorter periods)
-//        assertThat(maintenancePlanRepository.findCorrectiveRepairsByYearForPeriod(thisYear - 3, thisYear-2))
-//                .containsAll(expectedResult);
 
     }
 
