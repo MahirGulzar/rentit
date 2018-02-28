@@ -96,31 +96,7 @@ public class MaintenanceRepositoryTests {
     }
 
 
-    @Test //TODO will delete it later
-    public void findCorrectiveRepairCostsByYear2() {
-        int thisYear = LocalDate.now().getYear();
-        List<Pair<Integer, Long>> expectedResult = new ArrayList<>();
-        Random random = new Random();
 
-        // We add a random number of corrective tasks per year in a fixed period
-        for (int year = thisYear - 4; year <= thisYear; year++) {
-            int correctiveTasks = random.nextInt(10) + 1;
-            // We assume that the cost per repair is 150
-            expectedResult.add(new Pair<>(year, new Long(correctiveTasks * 150)));
-            for (int task = 0; task < correctiveTasks; task++)
-                createMaintenanceTaskForYear(year, TypeOfWork.CORRECTIVE, new BigDecimal(150), null);
-        }
-
-        assertThat(maintenancePlanRepository
-                        .findCorrectiveRepairCostsByYear2(thisYear - 4, thisYear)
-                        .stream()
-                        .map(pair -> new Pair<Integer,Long>(pair.getFirst(), pair.getSecond().longValue()))
-                        .collect(Collectors.toList())
-                // Please note that we translate BigNumber into Long because comparison of
-                // BigNumbers is tricky (we would need to consider range & precision)
-        )
-                .containsAll(expectedResult);
-    }
 
 
 }

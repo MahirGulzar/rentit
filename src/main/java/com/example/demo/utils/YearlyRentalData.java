@@ -4,7 +4,7 @@ import com.example.demo.models.PlantInventoryEntry;
 
 public class YearlyRentalData {
     int year;
-    PlantInventoryEntry plant;
+    String plant;
     int numberOfRental;
     int numberOfCorrectives;
 }

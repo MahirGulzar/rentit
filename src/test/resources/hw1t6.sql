@@ -69,6 +69,21 @@ insert into plant_reservation (id, plant_id, start_date, end_date) values ('7', 
 
 -- insert into purchase_order (id, issue_date, payment_schedule, total, start_date, end_date, status, plant_id) values ('1', '2018-02-10', '2018-02-13', 200, '2017-02-11', '2017-02-12', 'CLOSED', '1');
 
+
+insert into maintenance_plan (id, year, plant_id) values ('1', 2017, '1');
+insert into maintenance_plan (id, year, plant_id) values ('2', 2017, '2');
+insert into maintenance_plan (id, year, plant_id) values ('3', 2017, '3');
+insert into maintenance_plan (id, year, plant_id) values ('4', 2017, '4');
+insert into maintenance_plan (id, year, plant_id) values ('5', 2017, '5');
+insert into maintenance_plan (id, year, plant_id) values ('6', 2018, '1');
+insert into maintenance_plan (id, year, plant_id) values ('7', 2018, '2');
+insert into maintenance_plan (id, year, plant_id) values ('8', 2018, '3');
+insert into maintenance_plan (id, year, plant_id) values ('9', 2018, '4');
+insert into maintenance_plan (id, year, plant_id) values ('10', 2018, '5');
+insert into maintenance_plan (id, year, plant_id) values ('11', 2018, '6');
+insert into maintenance_plan (id, year, plant_id) values ('12', 2018, '7');
+
+
 insert into maintenance_task (id, reservation_id, maintenance_plan_id, type, description, price, start_date, end_date) values ('1', '2', '7', 'PREVENTIVE', 'fix', 200, '2018-03-22', '2018-03-24');
 insert into maintenance_task (id, reservation_id, maintenance_plan_id, type, description, price, start_date, end_date) values ('2', '3', '8', 'CORRECTIVE', 'fix', 200, '2018-03-02', '2018-03-04');
 insert into maintenance_task (id, reservation_id, maintenance_plan_id, type, description, price, start_date, end_date) values ('3', '4', '1', 'PREVENTIVE', 'fix', 200, '2017-02-11', '2017-02-12');

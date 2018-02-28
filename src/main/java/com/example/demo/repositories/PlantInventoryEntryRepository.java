@@ -3,6 +3,7 @@ package com.example.demo.repositories;
 import com.example.demo.models.PlantInventoryEntry;
 import com.example.demo.models.PlantInventoryItem;
 import com.example.demo.models.PlantsWithCount;
+import com.example.demo.utils.YearlyRentalData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -37,14 +38,19 @@ public interface PlantInventoryEntryRepository extends JpaRepository<PlantInvent
             "AND pr.schedule.endDate BETWEEN ?2 AND ?3) GROUP BY item.plantInfo.id")
     List<PlantsWithCount> findAvailable(String name, LocalDate startDate, LocalDate endDate); //TODO need to check other way from plant reservation
 
-
-
-    @Query("SELECT CASE WHEN COUNT(item) >=1 THEN true ELSE false END FROM PlantInventoryItem item WHERE" +
+    @Query("SELECT (COUNT(item) <> 0)  FROM PlantInventoryItem item WHERE" +
             " item NOT IN (SELECT pr.plant FROM PlantReservation pr WHERE pr.schedule.startDate BETWEEN ?2 AND ?3 " +
             "AND pr.schedule.endDate BETWEEN ?2 AND ?3)" +
-            " AND item.plantInfo = ?1 AND item.equipmentCondition= com.example.demo.models.enums.EquipmentCondition.SERVICEABLE")
+            "AND item.plantInfo = ?1 AND item.equipmentCondition= com.example.demo.models.enums.EquipmentCondition.SERVICEABLE")
     Boolean isThereAnyAvailableItem(PlantInventoryEntry entry, LocalDate startDate,LocalDate endDate);
 
+
+/*    @Query("SELECT new com.example.demo.utils.YearlyRentalData(year(pr.schedule.startDate),pr.plant.plantinfo.name,sum(pr.id),count(pr.maintenancePlan.tasks)) FROM PlantReservation pr " +
+            "WHERE (EXTRACT(YEAR pr.schedule.startDate) BETWEEN ?1 and ?2  ) OR EXTRACT(WEEK pr.schedule.endDate) BETWEEN ?1 and ?2 )) " +
+            "AND EXTRACT(YEAR mp.yearOfAction) BETWEEN ?1 and ?2" +
+            "AND EXTRACT(YEAR mp.tasks.TypeOfWork=com.example.demo.models.enums.TypeOfWork.CORRECTIVE) " +
+            "")
+    List<YearlyRentalData> getExtensivelyUsedPlant(int start, int end);*/
 
 
 

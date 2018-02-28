@@ -22,13 +22,13 @@ public class PlantInventoryEntryRepositoryTest {
     @Autowired
     PlantInventoryEntryRepository repo;
 
-    @Test
+/*    @Test
     public void Test1()
     {
 //        System.out.println(repo.findAll());
         assertThat(repo.count()).isEqualTo(14);
 //        assertThat(repo.findMethod("xca")).hasSize((14));
-    }
+    }*/
 
 
 

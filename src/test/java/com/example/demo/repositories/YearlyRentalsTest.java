@@ -2,14 +2,12 @@ package com.example.demo.repositories;
 
 
 import com.example.demo.DemoApplication;
-import com.example.demo.models.MaintenancePlan;
-import com.example.demo.models.MaintenanceTask;
-import com.example.demo.models.PlantInventoryItem;
-import com.example.demo.models.PlantReservation;
+import com.example.demo.models.*;
 import com.example.demo.models.enums.TypeOfWork;
 import com.example.demo.models.valueobject.BusinessPeriod;
 import com.example.demo.models.valueobject.Money;
 import com.example.demo.utils.Pair;
+import com.example.demo.utils.YearlyRentalData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,12 +59,12 @@ public class YearlyRentalsTest {
         int thisYear = LocalDate.now().getYear();
         Random random = new Random();
 
-
-
+        int from = thisYear - 3;
+        int to = thisYear-2;
 
         // We add a random number of maintenance tasks per year in a fixed period
         // Some of the maintenance tasks are corrective and others are preventive
-        for (int year = thisYear - 3; year <= thisYear-2; year++) {
+        for (int year = from; year <= to; year++) {
 
             for(PlantInventoryItem item: plantInventoryItemRepository.findAll())
             {
@@ -95,7 +93,19 @@ public class YearlyRentalsTest {
         assertThat(yearlyPlans.get(1).getSecond().equals(new Long(140)));
 
 
+        // test
+
+
+       // List<YearlyRentalData> extensiveUsedPlant = plantInventoryEntryRepository.getExtensivelyUsedPlant(from, to);
+
+/*
+        for (PlantsWithCount item: availableExcavators) {
+            System.out.println(item.getEntry().getName()+ " +++ " + item.getCount());
+        }
+*/
+
+
+
 
     }
-
 }

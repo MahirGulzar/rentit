@@ -77,11 +77,10 @@ public class InventoryRepositoryTests {
         // available physical equipment for each one of them
         List<PlantsWithCount> availableExcavators = plantInventoryEntryRepository.findAvailable("excavator", from, to);
 
-/*
-        for (PlantsWithCount item: availableExcavators) {
-            System.out.println(item.getEntry().getName()+ " +++ " + item.getCount());
-        }
-*/
+
+        //for (PlantsWithCount item: availableExcavators) {
+           // System.out.println(item.getEntry().getName()+ " +++ " + item.getCount());
+        //}
         assertThat(availableExcavators.stream().map(tuple -> tuple.getEntry()).collect(Collectors.toList()))
                 .containsAll(excavators)
                 .hasSize(3);

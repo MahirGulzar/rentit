@@ -143,15 +143,25 @@ insert into plant_reservation (id, plant_id, start_date, end_date)
     values (22, 13, '2016-03-22', '2016-03-24');
 
     ------------
-/*
-insert into plant_reservation (id, plant_id, start_date, end_date)
-    values (21, 12, '2016-03-22', '2016-03-24');
-insert into plant_reservation (id, plant_id, start_date, end_date)
-    values (22, 13, '2016-03-22', '2016-03-24');
 
-    ------------*/
+insert into maintenance_plan (id, year_of_action, plant_id) values ('1', 2015, '1');
+insert into maintenance_plan (id, year_of_action, plant_id) values ('2', 2015, '2');
+insert into maintenance_plan (id, year_of_action, plant_id) values ('3', 2015, '3');
+insert into maintenance_plan (id, year_of_action, plant_id) values ('4', 2015, '4');
+insert into maintenance_plan (id, year_of_action, plant_id) values ('5', 2015, '5');
+insert into maintenance_plan (id, year_of_action, plant_id) values ('6', 2016, '1');
+insert into maintenance_plan (id, year_of_action, plant_id) values ('7', 2016, '2');
+insert into maintenance_plan (id, year_of_action, plant_id) values ('8', 2016, '3');
+insert into maintenance_plan (id, year_of_action, plant_id) values ('9', 2016, '4');
+insert into maintenance_plan (id, year_of_action, plant_id) values ('10', 2016, '5');
+insert into maintenance_plan (id, year_of_action, plant_id) values ('11', 2016, '6');
+insert into maintenance_plan (id, year_of_action, plant_id) values ('12', 2016, '7');
 
 
----------------------------------------------------------------
-
+insert into maintenance_task (id, plant_reservation_id, maintenance_plan_id, type, description, price, start_date, end_date) values ('1', '2', '7', 'PREVENTIVE', 'fix', 200, '2015-03-22', '2018-03-24');
+insert into maintenance_task (id, plant_reservation_id, maintenance_plan_id, type, description, price, start_date, end_date) values ('2', '3', '8', 'CORRECTIVE', 'fix', 200, '2015-03-02', '2018-03-04');
+insert into maintenance_task (id, plant_reservation_id, maintenance_plan_id, type, description, price, start_date, end_date) values ('3', '4', '1', 'PREVENTIVE', 'fix', 200, '2015-02-11', '2017-02-12');
+insert into maintenance_task (id, plant_reservation_id, maintenance_plan_id, type, description, price, start_date, end_date) values ('4', '5', '7', 'CORRECTIVE', 'fix', 200, '2016-02-11', '2017-02-12');
+insert into maintenance_task (id, plant_reservation_id, maintenance_plan_id, type, description, price, start_date, end_date) values ('5', '6', '11', 'PREVENTIVE', 'fix', 200, '2016-03-10', '2018-03-20');
+insert into maintenance_task (id, plant_reservation_id, maintenance_plan_id, type, description, price, start_date, end_date) values ('6', '7', '12', 'CORRECTIVE', 'fix', 200, '2016-03-10', '2018-03-20');
 
