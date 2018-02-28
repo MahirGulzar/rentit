@@ -5,6 +5,7 @@ import com.example.demo.models.valueobject.BusinessPeriod;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -16,11 +17,12 @@ public class PlantReservation {
     @ManyToOne
     PurchaseOrder purchaseOrder;
     @OneToOne
-    PlantInventoryItem plantInventoryItem;
+    PlantInventoryItem plant;
 
     @OneToOne // TODO need to check
     MaintenancePlan maintenancePlan;
 
     @Embedded
     BusinessPeriod schedule;
+
 }

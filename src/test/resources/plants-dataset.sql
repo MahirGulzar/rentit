@@ -26,3 +26,5 @@ insert into plant_inventory_entry (id, name, description, price)
     values (13, 'D-Truck', '15 Tonne Articulating Dump Truck', 250);
 insert into plant_inventory_entry (id, name, description, price)
     values (14, 'D-Truck', '30 Tonne Articulating Dump Truck', 300);
+
+

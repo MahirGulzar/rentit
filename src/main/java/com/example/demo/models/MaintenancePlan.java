@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,11 +15,11 @@ public class MaintenancePlan {
     @GeneratedValue
     Long id;
 
-    LocalDate yearOfAction;
+    int yearOfAction;
 
     @OneToMany(cascade={CascadeType.ALL})
-    List<MaintenanceTask> maintenanceTaskList;
+    List<MaintenanceTask> tasks = new ArrayList<>();
 
     @OneToOne
-    PlantInventoryItem plantInventoryItem;
+    PlantInventoryItem plant;
 }
