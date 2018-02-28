@@ -7,4 +7,4 @@ Group Members
 * Mahir Gulzar
 * Junaid Ahmed
 * Ankit Garg
-* Mian Bilal
+* Muhammad Bilal Shahid
