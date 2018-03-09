@@ -12,6 +12,7 @@ target/
 ### IntelliJ IDEA ###
 .idea/workspace.xml
 .idea/tasks.xml
+.idea
 *.iws
 *.iml
 *.ipr

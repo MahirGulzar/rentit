@@ -4,11 +4,10 @@ package com.example.demo.inventory.domain.model;
 
 import com.example.demo.common.domain.model.BusinessPeriod;
 import com.example.demo.maintenance.domain.model.MaintenancePlan;
-import com.example.demo.sales.domain.model.PurchaseOrder;
+import com.example.demo.sales.model.PurchaseOrder;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 
 @Entity
 @Data

@@ -41,10 +41,15 @@ public class InventoryRepositoryTests {
     PlantReservationRepository plantReservationRepository;
 
     private PlantInventoryItem createPIItemFor(PlantInventoryEntry entry, EquipmentCondition condition) {
-        PlantInventoryItem item = new PlantInventoryItem();
-        item.setEquipmentCondition(condition);
-        item.setPlantInfo(entry);
-        return plantInventoryItemRepository.save(item);
+
+      //  my commented because of cucumber noArgs constructor
+
+
+//        PlantInventoryItem item = new PlantInventoryItem();
+//        item.setEquipmentCondition(condition);
+//        item.setPlantInfo(entry);
+//        return plantInventoryItemRepository.save(item);
+        return null;
     }
 
     private void createReservationFor(PlantInventoryItem plantInventoryItem, LocalDate from, LocalDate to) {
