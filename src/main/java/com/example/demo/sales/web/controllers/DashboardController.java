@@ -1,5 +1,7 @@
 package com.example.demo.sales.web.controllers;
 
+import com.example.demo.common.application.dto.BusinessPeriodDTO;
+import com.example.demo.inventory.application.PlantInventoryEntryDTO;
 import com.example.demo.sales.application.dto.CatalogQueryDTO;
 import com.example.demo.sales.application.services.SalesService;
 import com.example.demo.sales.domain.model.PurchaseOrder;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.math.BigDecimal;
 
 
 @Controller
@@ -31,12 +34,21 @@ public class    DashboardController	{
 //        return	"hello";
 //    }
 
-    @PostMapping("/catalog/query")
+   /* @PostMapping("/catalog/query")
     public String executeQuery(CatalogQueryDTO query,Model model)
     {
 
         model.addAttribute("plants",salesService.queryPlantCatalog(null,null));
         model.addAttribute("po",new PurchaseOrder());
         return "dashboard/catalog/query-result";
+    }*/
+
+    @PostMapping("/catalog/create")
+    public String executeQuery(CatalogQueryDTO query,Model model)
+    {
+
+        model.addAttribute("plants",salesService.queryPlantCatalog(null,null));
+        //model.addAttribute("po",salesService.createPO(PlantInventoryEntryDTO.of(Long.parseLong("123"),null,null, null),null));
+        return "dashboard/catalog/create";
     }
 }
