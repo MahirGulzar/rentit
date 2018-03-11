@@ -2,7 +2,7 @@ package com.example.demo.sales.web.controllers;
 
 import com.example.demo.sales.application.dto.CatalogQueryDTO;
 import com.example.demo.sales.application.services.SalesService;
-import com.example.demo.sales.model.PurchaseOrder;
+import com.example.demo.sales.domain.model.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

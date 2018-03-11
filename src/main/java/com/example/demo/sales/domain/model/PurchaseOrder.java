@@ -1,4 +1,4 @@
-package com.example.demo.sales.model;
+package com.example.demo.sales.domain.model;
 
 
 import com.example.demo.common.domain.model.BusinessPeriod;

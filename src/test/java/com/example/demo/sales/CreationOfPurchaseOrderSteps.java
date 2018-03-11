@@ -6,7 +6,7 @@ import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import com.example.demo.inventory.domain.model.PlantInventoryItem;
 import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepository;
 import com.example.demo.inventory.domain.repository.PlantInventoryItemRepository;
-import com.example.demo.sales.repository.PurchaseOrderRepository;
+import com.example.demo.sales.domain.repository.PurchaseOrderRepository;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlDateInput;
