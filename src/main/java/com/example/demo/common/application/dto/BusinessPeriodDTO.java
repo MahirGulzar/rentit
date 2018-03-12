@@ -22,11 +22,11 @@ public class BusinessPeriodDTO {
 
     //----------------------------------------------------------------------
 
-//    @Autowired
-//    public BusinessPeriod asBusinessPeriod()        // TODO Remove public
-//    {
-//        return BusinessPeriod.of(this.startDate,this.endDate);
-//    }
+    @Autowired
+    public BusinessPeriod asBusinessPeriod()        // TODO Remove public
+    {
+        return BusinessPeriod.of(this.startDate,this.endDate);
+    }
 
     //----------------------------------------------------------------------
 }

@@ -50,4 +50,18 @@ public interface PlantInventoryEntryRepository extends JpaRepository<PlantInvent
 
 
 
+//----------------------------------------------------------------------------------------------------------------------------------------
+
+// Query for cucumber
+
+    /*@Query("SELECT entr FROM PlantInventoryEntry entr, PlantInventoryItem item WHERE item.plantInfo.name LIKE %?1%" +
+            "AND item.equipmentCondition= com.example.demo.inventory.domain.model.EquipmentCondition.SERVICEABLE " +
+            "AND item NOT IN (SELECT pr.plant FROM PlantReservation pr WHERE pr.schedule.startDate BETWEEN ?2 AND ?3 " +
+            "AND pr.schedule.endDate BETWEEN ?2 AND ?3) GROUP BY item.plantInfo.id")
+    List<PlantInventoryEntry> findAvailableEntries(String name, LocalDate startDate, LocalDate endDate);
+*/
+
+    //----------------------------------------------------------------------------------------------------------------------------------------
+
+
 }

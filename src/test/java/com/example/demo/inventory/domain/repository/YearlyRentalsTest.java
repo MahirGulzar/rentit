@@ -34,7 +34,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class YearlyRentalsTest {
 
 
-    // TODO The Test phase is broken as we are splitting it into separate modules
+    /**
+     * The Test phase is deliberately broken as we are splitting it into separate modules
+     */
 
    /* @Autowired
     PlantInventoryEntryRepository plantInventoryEntryRepository;

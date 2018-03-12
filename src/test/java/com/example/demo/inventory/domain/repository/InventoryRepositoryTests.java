@@ -33,7 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode=DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class InventoryRepositoryTests {
 
-    // TODO The Test phase is broken as we are splitting it into separate modules
+    /**
+     * The Test phase is deliberately broken as we are splitting it into separate modules
+     */
 
    /* @Autowired
     PlantInventoryEntryRepository plantInventoryEntryRepository;

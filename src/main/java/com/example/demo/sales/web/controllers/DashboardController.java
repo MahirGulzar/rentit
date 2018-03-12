@@ -2,6 +2,7 @@ package com.example.demo.sales.web.controllers;
 
 import com.example.demo.common.application.dto.BusinessPeriodDTO;
 import com.example.demo.inventory.application.PlantInventoryEntryDTO;
+import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import com.example.demo.sales.application.dto.CatalogQueryDTO;
 import com.example.demo.sales.application.services.SalesService;
 import com.example.demo.sales.domain.model.PurchaseOrder;
@@ -38,17 +39,11 @@ public class    DashboardController	{
     }
     @PostMapping("/catalog/query")
     public String executeQuery(CatalogQueryDTO query, Model model) {
-        model.addAttribute("plants", salesService.queryPlantCatalog(null, null));
-        model.addAttribute("po", null);
+
+        //TODO need to change the query in SalesService to incorporate PlantInventoryEntry instead of PlantsWithCount
+        model.addAttribute("plants", salesService.queryPlantCatalog(query.getName(), query.getRentalPeriod()));
+        model.addAttribute("po",new PurchaseOrder());
         return "dashboard/catalog/query-result";
     }
-    @PostMapping("/catalog/create")
-    public String executeQuery(PlantInventoryEntryDTO entryDTO,BusinessPeriodDTO rentalPeriodDTO,Model model)
-    {
 
-        //model.addAttribute("plants",salesService.queryPlantCatalog(null,null));
-        salesService.createPO(entryDTO,rentalPeriodDTO);
-        model.addAttribute("po",null);
-        return "dashboard/catalog/create";
-    }
 }

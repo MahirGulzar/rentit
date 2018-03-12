@@ -35,11 +35,11 @@ public class SalesService {
 
     public List<PlantInventoryEntry> queryPlantCatalog(String name , BusinessPeriodDTO rentalPeriod)
     {
-        return plantRepo.findAll();
+        return plantRepo.findByNameContaining(name);
     }
 
-    public void createPO(PlantInventoryEntryDTO plantDTO , BusinessPeriodDTO periodDTO)
-    {
+//    public void createPO(PlantInventoryEntryDTO plantDTO , BusinessPeriodDTO periodDTO)
+//    {
 //        PurchaseOrder po = PurchaseOrder.of(
 //                identifierFactory.nextPurchaseOrderID(),
 //                PlantInventoryEntryID.of(plantDTO.get_id()),
@@ -54,7 +54,9 @@ public class SalesService {
 //        if (!binder.getBindingResult().hasErrors())
 //            orderRepo.save(po);
 //
+//
+//
+//    }
 
 
-    }
 }
