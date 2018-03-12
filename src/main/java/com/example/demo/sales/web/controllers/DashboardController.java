@@ -1,6 +1,7 @@
 package com.example.demo.sales.web.controllers;
 
 import com.example.demo.sales.application.dto.CatalogQueryDTO;
+import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.application.services.SalesService;
 import com.example.demo.sales.domain.model.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,11 @@ public class    DashboardController	{
 
         //TODO need to change the query in SalesService to incorporate PlantInventoryEntry instead of PlantsWithCount
         model.addAttribute("plants", salesService.queryPlantCatalog(query.getName(), query.getRentalPeriod()));
-        model.addAttribute("po",new PurchaseOrder());
+
+        PurchaseOrderDTO po = new PurchaseOrderDTO();
+        po.setRentalPeriod(query.getRentalPeriod());
+        model.addAttribute("po", po);
+//        model.addAttribute("po",new PurchaseOrder());
         return "dashboard/catalog/query-result";
     }
 

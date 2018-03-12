@@ -13,6 +13,8 @@ import java.util.List;
 
 @Service
 public class SalesService {
+
+
     @Autowired
     PlantInventoryEntryRepository plantRepo;
 
@@ -26,8 +28,11 @@ public class SalesService {
 
     public List<PlantInventoryEntry> queryPlantCatalog(String name , BusinessPeriodDTO rentalPeriod)
     {
-        return plantRepo.findByNameContaining(name);
+//        return plantRepo.findByNameContaining(name);
+
+        return plantRepo.findByComplicatedQuery(name.toLowerCase(),rentalPeriod.getStartDate(),rentalPeriod.getEndDate());
     }
+
 
 //    public void createPO(PlantInventoryEntryDTO plantDTO , BusinessPeriodDTO periodDTO)
 //    {
