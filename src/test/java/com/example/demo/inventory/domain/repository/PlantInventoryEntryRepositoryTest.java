@@ -19,18 +19,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PlantInventoryEntryRepositoryTest {
 
-    @Autowired
+    /**
+     * The Test phase is deliberately broken as we are splitting it into separate modules
+     */
+
+   /* @Autowired
     PlantInventoryEntryRepository repo;
 
-/*    @Test
+*//*    @Test
     public void Test1()
     {
 //        System.out.println(repo.findAll());
         assertThat(repo.count()).isEqualTo(14);
 //        assertThat(repo.findMethod("xca")).hasSize((14));
-    }*/
+    }*//*
 
-
+*/
 
 
 
