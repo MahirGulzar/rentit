@@ -21,8 +21,8 @@ public class PlantReservation {
     @OneToOne
     PlantInventoryItem plant;
 
-    @OneToOne // TODO need to check
-            MaintenancePlan maintenancePlan;
+    @OneToOne
+    MaintenancePlan maintenancePlan;
 
     @Embedded
     BusinessPeriod schedule;

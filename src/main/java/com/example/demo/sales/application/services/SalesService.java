@@ -28,30 +28,32 @@ public class SalesService {
     @Autowired
     PurchaseOrderRepository orderRepo;
 
-//    @Autowired // Todo make it autowire , have to verifyy
+
+    // Todo make it autowire , have to verifyy
+    @Autowired
     SalesIdentifierFactory identifierFactory;
 
-//    public List<PlantInventoryEntry> queryPlantCatalog(String name , BusinessPeriodDTO rentalPeriod)
-//    {
-//        return plantRepo.findAll();
-//    }
+    public List<PlantInventoryEntry> queryPlantCatalog(String name , BusinessPeriodDTO rentalPeriod)
+    {
+        return plantRepo.findAll();
+    }
 
     public void createPO(PlantInventoryEntryDTO plantDTO , BusinessPeriodDTO periodDTO)
     {
-        PurchaseOrder po = PurchaseOrder.of(
-                new PurchaseOrderID(),
-                PlantInventoryEntryID.of(plantDTO.get_id()),
-                new CustomerID(),
-                Address.of("dummy@dummy.com"),
-                POStatus.OPEN,
-                periodDTO.asBusinessPeriod());
-
-        DataBinder binder = new DataBinder(po);
-        binder.addValidators(new PurchaseOrderValidator());
-        binder.validate();
-        if (!binder.getBindingResult().hasErrors())
-            orderRepo.save(po);
-
+//        PurchaseOrder po = PurchaseOrder.of(
+//                identifierFactory.nextPurchaseOrderID(),
+//                PlantInventoryEntryID.of(plantDTO.get_id()),
+//                new CustomerID(),
+//                Address.of("dummy@dummy.com"),
+//                POStatus.OPEN,
+//                periodDTO.asBusinessPeriod());
+//
+//        DataBinder binder = new DataBinder(po);
+//        binder.addValidators(new PurchaseOrderValidator());
+//        binder.validate();
+//        if (!binder.getBindingResult().hasErrors())
+//            orderRepo.save(po);
+//
 
 
     }

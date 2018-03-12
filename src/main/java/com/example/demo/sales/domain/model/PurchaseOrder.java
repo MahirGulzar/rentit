@@ -4,6 +4,7 @@ package com.example.demo.sales.domain.model;
 import com.example.demo.common.domain.model.Address;
 import com.example.demo.common.domain.model.BusinessPeriod;
 import com.example.demo.common.identifiers.PurchaseOrderID;
+import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import com.example.demo.inventory.domain.model.PlantReservation;
 import com.example.demo.common.identifiers.CustomerID;
 import com.example.demo.common.identifiers.PlantInventoryEntryID;
@@ -19,40 +20,40 @@ import java.util.List;
 //@Data
 //@NoArgsConstructor(force = true,access = AccessLevel.PRIVATE)
 //@AllArgsConstructor(staticName = "of")
-@RequiredArgsConstructor(staticName = "of")
+//@RequiredArgsConstructor(staticName = "of")
 public class PurchaseOrder {
-    @NonNull
-    @Id
-    PurchaseOrderID id;        // Changed to PurchaseOrderID
-
-
-    @OneToMany
-    List<PlantReservation> reservations;    // TODO Change to ReservationsID
-
-    @NonNull
-    @OneToOne
-    PlantInventoryEntryID plantID;          // Changed from plant to plantID
-
-    @NonNull
-    @ManyToOne
-    CustomerID customerID;
-
-    @NonNull
-    @OneToOne
-    Address address;
-
-    LocalDate issueDate;
-    LocalDate paymentSchedule;
-    @Column(precision=8,scale=2)
-    BigDecimal total;
-
-    @NonNull
-    @Enumerated(EnumType.STRING)
-    POStatus status;
-
-    @NonNull
-    @Embedded
-    BusinessPeriod rentalPeriod;
+//    @NonNull
+//    @Id
+//    PurchaseOrderID id;        // Changed to PurchaseOrderID
+//
+//
+//    @OneToMany
+//    List<PlantReservation> reservations;    // TODO Change to ReservationsID
+//
+//    @NonNull
+//    @OneToOne
+//    PlantInventoryEntryID plantID;          // Changed from plant to plantID
+//
+//    @NonNull
+//    @ManyToOne
+//    CustomerID customerID;
+//
+//    @NonNull
+//    @OneToOne
+//    Address address;
+//
+//    LocalDate issueDate;
+//    LocalDate paymentSchedule;
+//    @Column(precision=8,scale=2)
+//    BigDecimal total;
+//
+//    @NonNull
+//    @Enumerated(EnumType.STRING)
+//    POStatus status;
+//
+//    @NonNull
+//    @Embedded
+//    BusinessPeriod rentalPeriod;
 
 
 //    public static PurchaseOrder of(Long id, PlantInventoryEntryID plantId, CustomerID customerID , Address address, BusinessPeriod rentalPeriod) {
@@ -88,27 +89,27 @@ public class PurchaseOrder {
 
 
 
-//    @Id
-//    @GeneratedValue
-//    Long id;
-//
-//    @OneToMany
-//    List<PlantReservation> reservations;
-//
-//    @OneToOne
-//    PlantInventoryEntry plant;
-//
-//    LocalDate issueDate;
-//    LocalDate paymentSchedule;
-//    @Column(precision=8,scale=2)
-//    BigDecimal total;
-//
-//    @Enumerated(EnumType.STRING)
-//    POStatus status;
-//
-//    @Embedded
-//    BusinessPeriod rentalPeriod;
-//
+    @Id
+    @GeneratedValue
+    Long id;
+
+    @OneToMany
+    List<PlantReservation> reservations;
+
+    @OneToOne
+    PlantInventoryEntry plant;
+
+    LocalDate issueDate;
+    LocalDate paymentSchedule;
+    @Column(precision=8,scale=2)
+    BigDecimal total;
+
+    @Enumerated(EnumType.STRING)
+    POStatus status;
+
+    @Embedded
+    BusinessPeriod rentalPeriod;
+
 //
 //    public static PurchaseOrder of(PurchaseOrderID id, PlantInventoryEntryID plantId, …) {
 //        PurchaseOrder po = new PurchaseOrder();

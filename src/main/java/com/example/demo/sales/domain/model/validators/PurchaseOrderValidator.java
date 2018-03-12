@@ -20,11 +20,13 @@ public class PurchaseOrderValidator implements Validator {
 
     @Override
     public void validate(Object object, Errors errors) {
-        PurchaseOrder po = (PurchaseOrder) object;
-        if (po.getId() == null)
-            errors.rejectValue("id", "Purchase Order id cannot be null");
-        if (po.getPlantID() == null)
-            errors.rejectValue("plantId", "Plant id cannot be null");
+//        PurchaseOrder po = (PurchaseOrder) object;
+//        if (po.getId() == null)
+//            errors.rejectValue("id", "Purchase Order id cannot be null");
+//        if (po.getPlantID() == null)
+//            errors.rejectValue("plantId", "Plant id cannot be null");
+
+
 //        if (!po.getStatus().equals(POStatus.PENDING)) {
 //            if (po.getReservationId() == null)
 //                errors.rejectValue("reservationId", "Purchase order's ...");

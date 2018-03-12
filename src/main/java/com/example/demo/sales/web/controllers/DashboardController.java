@@ -22,11 +22,7 @@ public class    DashboardController	{
     @Autowired
     SalesService salesService;
 
-    @GetMapping("/catalog/form")
-    public String getQueryForm(Model model)	{
-        model.addAttribute("catalogQuery",	new CatalogQueryDTO());
-        return	"dashboard/catalog/query-form";
-    }
+
 
 //    @GetMapping("/home")
 //    public String getSomething(Model model)	{
@@ -34,21 +30,25 @@ public class    DashboardController	{
 //        return	"hello";
 //    }
 
-   /* @PostMapping("/catalog/query")
-    public String executeQuery(CatalogQueryDTO query,Model model)
-    {
 
-        model.addAttribute("plants",salesService.queryPlantCatalog(null,null));
-        model.addAttribute("po",new PurchaseOrder());
+    @GetMapping("/catalog/form")
+    public String getQueryForm(Model model)	{
+        model.addAttribute("catalogQuery",	new CatalogQueryDTO());
+        return	"dashboard/catalog/query-form";
+    }
+    @PostMapping("/catalog/query")
+    public String executeQuery(CatalogQueryDTO query, Model model) {
+        model.addAttribute("plants", salesService.queryPlantCatalog(null, null));
+        model.addAttribute("po", null);
         return "dashboard/catalog/query-result";
-    }*/
-
+    }
     @PostMapping("/catalog/create")
-    public String executeQuery(CatalogQueryDTO query,Model model)
+    public String executeQuery(PlantInventoryEntryDTO entryDTO,BusinessPeriodDTO rentalPeriodDTO,Model model)
     {
 
-        model.addAttribute("plants",salesService.queryPlantCatalog(null,null));
-        //model.addAttribute("po",salesService.createPO(PlantInventoryEntryDTO.of(Long.parseLong("123"),null,null, null),null));
+        //model.addAttribute("plants",salesService.queryPlantCatalog(null,null));
+        salesService.createPO(entryDTO,rentalPeriodDTO);
+        model.addAttribute("po",null);
         return "dashboard/catalog/create";
     }
 }
