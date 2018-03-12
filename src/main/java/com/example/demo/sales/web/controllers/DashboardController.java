@@ -1,8 +1,5 @@
 package com.example.demo.sales.web.controllers;
 
-import com.example.demo.common.application.dto.BusinessPeriodDTO;
-import com.example.demo.inventory.application.PlantInventoryEntryDTO;
-import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import com.example.demo.sales.application.dto.CatalogQueryDTO;
 import com.example.demo.sales.application.services.SalesService;
 import com.example.demo.sales.domain.model.PurchaseOrder;
@@ -12,8 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.math.BigDecimal;
 
 
 @Controller
