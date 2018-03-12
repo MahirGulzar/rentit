@@ -6,7 +6,7 @@ import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import com.example.demo.inventory.domain.model.PlantInventoryItem;
 import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepository;
 import com.example.demo.inventory.domain.repository.PlantInventoryItemRepository;
-import com.example.demo.sales.repository.PurchaseOrderRepository;
+import com.example.demo.sales.domain.repository.PurchaseOrderRepository;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlDateInput;
@@ -104,13 +104,13 @@ public class CreationOfPurchaseOrderSteps {
     @Then("^(\\d+) plants are shown$")
     public void plants_are_shown(int numberOfPlants) throws Throwable {
         List<?> rows = customerPage.getByXPath("//tr[contains(@class, 'table-row')]");
-        // Complete this step and do not forget to remove the following line
-        throw new PendingException();
+        assert(rows.size()==6);
     }
 
     @When("^the customer selects a \"([^\"]*)\"$")
     public void the_customer_selects_a(String plantDescription) throws Throwable {
         List<?> buttons = customerPage.getByXPath(String.format("//tr[./td = '%s']//button", plantDescription));
+
         throw new PendingException();
     }
 

@@ -33,7 +33,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode=DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class YearlyRentalsTest {
 
-    @Autowired
+
+    /**
+     * The Test phase is deliberately broken as we are splitting it into separate modules
+     */
+
+   /* @Autowired
     PlantInventoryEntryRepository plantInventoryEntryRepository;
     @Autowired
     PlantInventoryItemRepository plantInventoryItemRepository;
@@ -100,14 +105,14 @@ public class YearlyRentalsTest {
 
        // List<YearlyRentalData> extensiveUsedPlant = plantInventoryEntryRepository.getExtensivelyUsedPlant(from, to);
 
-/*
+*//*
         for (PlantsWithCount item: availableExcavators) {
             System.out.println(item.getEntry().getName()+ " +++ " + item.getCount());
         }
-*/
+*//*
 
 
 
 
-    }
+    }*/
 }

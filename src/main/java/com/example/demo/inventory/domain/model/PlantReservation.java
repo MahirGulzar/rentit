@@ -4,7 +4,7 @@ package com.example.demo.inventory.domain.model;
 
 import com.example.demo.common.domain.model.BusinessPeriod;
 import com.example.demo.maintenance.domain.model.MaintenancePlan;
-import com.example.demo.sales.model.PurchaseOrder;
+import com.example.demo.sales.domain.model.PurchaseOrder;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -21,8 +21,8 @@ public class PlantReservation {
     @OneToOne
     PlantInventoryItem plant;
 
-    @OneToOne // TODO need to check
-            MaintenancePlan maintenancePlan;
+    @OneToOne
+    MaintenancePlan maintenancePlan;
 
     @Embedded
     BusinessPeriod schedule;
