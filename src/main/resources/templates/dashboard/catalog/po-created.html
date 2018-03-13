@@ -13,35 +13,32 @@
         <div class="panel-body">
             <table class="table table-bordered table-striped">
                 <tbody>
-                    <tr>
-                        <td>ID</td>
-                        <td id="id" th:text="${po.id}"></td>
-                    </tr>
-                    <tr>
-                        <td>Plant Name</td>
-                        <td id="name" th:text="${po.plant.name}"></td>
-                    </tr>
-                    <tr>
-                        <td>Total</td>
-                        <td id="total"  th:text="${po.total}"></td>
-                    </tr>
-                    <tr>
-                        <td>PO Status</td>
-                        <td id="po-status" th:text="${po.status}"></td>
-                    </tr>
-                    <tr>
-                        <td>Start Date</td>
-                        <td id="start-date" th:text="${po.rentalPeriod.startDate}"></td>
-                    </tr>
-                    <tr>
-                        <td>End Date</td>
-                        <td id="end-date" th:text="${po.rentalPeriod.endDate}"></td>
-                    </tr>
+                <tr>
+                    <td>Plant Name</td>
+                    <td id="name" th:text="${po.plant.name}"></td>
+                </tr>
+                <tr>
+                    <td>Total</td>
+                    <td id="total"  th:text="${po.total}"></td>
+                </tr>
+                <tr>
+                    <td>PO Status</td>
+                    <td id="po-status" th:text="${po.status}"></td>
+                </tr>
+                <tr>
+                    <td>Start Date</td>
+                    <td id="start-date" th:text="${po.rentalPeriod.startDate}"></td>
+                </tr>
+                <tr>
+                    <td>End Date</td>
+                    <td id="end-date" th:text="${po.rentalPeriod.endDate}"></td>
+                </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>

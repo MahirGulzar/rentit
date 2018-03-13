@@ -51,11 +51,17 @@ public class    DashboardController	{
     @PostMapping("/orders")
     public String createPurchaseOrder(PurchaseOrderDTO purchaseOrderDTO, Model model) {
 
-        salesService.createPO(purchaseOrderDTO);
+        System.out.println(purchaseOrderDTO.getPlant().getName());
+        System.out.println(purchaseOrderDTO.getPlant().get_id());
 
-//        model.addAttribute("po", po);
-//        model.addAttribute("po",new PurchaseOrder());
-        return "dashboard/catalog/orders";
+//        System.out.println(purchaseOrderDTO.());
+
+
+        PurchaseOrderDTO po = salesService.createPO(purchaseOrderDTO);
+
+        model.addAttribute("po", po);
+
+        return "dashboard/catalog/po-created";
     }
 
 }

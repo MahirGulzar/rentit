@@ -29,6 +29,9 @@ public class SalesService {
     @Autowired
     SalesIdentifierFactory identifierFactory;
 
+    @Autowired
+    PurchaseOrderAssembler purchaseOrderAssembler;
+
     public List<PlantInventoryEntry> queryPlantCatalog(String name , BusinessPeriodDTO rentalPeriod)
     {
 //        return plantRepo.findByNameContaining(name);
@@ -37,7 +40,7 @@ public class SalesService {
     }
 
 
-    public void createPO(PurchaseOrderDTO purchaseOrderDTO)
+    public PurchaseOrderDTO createPO(PurchaseOrderDTO purchaseOrderDTO)
     {
         PurchaseOrder po = PurchaseOrder.of(
                 plantRepo.findOne(purchaseOrderDTO.getPlant().get_id()),
@@ -45,7 +48,11 @@ public class SalesService {
                         purchaseOrderDTO.getRentalPeriod().getStartDate(),
                         purchaseOrderDTO.getRentalPeriod().getEndDate()
                         ));
+
+
         orderRepo.save(po);
+
+        return purchaseOrderAssembler.toResource(po);
 
 
 //        DataBinder binder = new DataBinder(po);

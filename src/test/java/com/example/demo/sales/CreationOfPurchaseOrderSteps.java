@@ -111,9 +111,19 @@ public class CreationOfPurchaseOrderSteps {
 
     @When("^the customer selects a \"([^\"]*)\"$")
     public void the_customer_selects_a(String plantDescription) throws Throwable {
+
+//        List<?> buttons = customerPage.getByXPath("//tr[contains(@class, 'table-row')]");
         List<?> buttons = customerPage.getByXPath(String.format("//tr[./td = '%s']//button", plantDescription));
 
-        throw new PendingException();
+        assertThat(buttons.size()).isEqualTo(1);
+//        System.out.print(bu);
+
+//        HtmlButton submit = (HtmlButton)customerPage.getByXPath(String.format("//tr[./td = '%s']//button", plantDescription)).get(0);
+        HtmlButton submit = (HtmlButton)buttons.get(0);
+//
+        customerPage = submit.click();
+
+//        throw new PendingException();
     }
 
     @Then("^a purchase order should be created with a total price of (\\d+\\.\\d+)$")

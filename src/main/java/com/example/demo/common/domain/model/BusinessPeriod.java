@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 @Embeddable
 @Value
-//@NoArgsConstructor(force=true,access= AccessLevel.PROTECTED)       // Changed from PRIVATE TO PROTECTED
+@NoArgsConstructor(force=true,access= AccessLevel.PROTECTED)       // Changed from PRIVATE TO PROTECTED
 @AllArgsConstructor(staticName="of")
 public class BusinessPeriod {
     LocalDate startDate;
