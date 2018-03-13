@@ -11,9 +11,9 @@ import javax.persistence.Column;
 import java.math.BigDecimal;
 
 @Data
-@NoArgsConstructor(force=true)
-public class PurchaseOrderDTO {
-    Long id;
+//@NoArgsConstructor(force=true)
+public class PurchaseOrderDTO extends ResourceSupport{
+    Long _id;
     PlantInventoryEntryDTO plant;
     @Column(precision = 8, scale = 2)
     BigDecimal total;

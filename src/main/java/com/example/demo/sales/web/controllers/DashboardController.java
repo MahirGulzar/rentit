@@ -46,4 +46,16 @@ public class    DashboardController	{
         return "dashboard/catalog/query-result";
     }
 
+
+
+    @PostMapping("/orders")
+    public String createPurchaseOrder(PurchaseOrderDTO purchaseOrderDTO, Model model) {
+
+        salesService.createPO(purchaseOrderDTO);
+
+//        model.addAttribute("po", po);
+//        model.addAttribute("po",new PurchaseOrder());
+        return "dashboard/catalog/orders";
+    }
+
 }

@@ -29,6 +29,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @ContextConfiguration(classes = DemoApplication.class)
 @WebAppConfiguration
 public class CreationOfPurchaseOrderSteps {
@@ -104,7 +106,7 @@ public class CreationOfPurchaseOrderSteps {
     @Then("^(\\d+) plants are shown$")
     public void plants_are_shown(int numberOfPlants) throws Throwable {
         List<?> rows = customerPage.getByXPath("//tr[contains(@class, 'table-row')]");
-        assert(rows.size()==6);
+        assertThat(rows.size()).isEqualTo(numberOfPlants);
     }
 
     @When("^the customer selects a \"([^\"]*)\"$")

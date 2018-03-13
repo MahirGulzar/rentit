@@ -2,8 +2,11 @@ package com.example.demo.sales.application.services;
 
 
 import com.example.demo.common.application.dto.BusinessPeriodDTO;
+import com.example.demo.common.domain.model.BusinessPeriod;
 import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepository;
+import com.example.demo.sales.application.dto.PurchaseOrderDTO;
+import com.example.demo.sales.domain.model.PurchaseOrder;
 import com.example.demo.sales.domain.model.factory.SalesIdentifierFactory;
 import com.example.demo.sales.domain.repository.PurchaseOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,25 +37,26 @@ public class SalesService {
     }
 
 
-//    public void createPO(PlantInventoryEntryDTO plantDTO , BusinessPeriodDTO periodDTO)
-//    {
-//        PurchaseOrder po = PurchaseOrder.of(
-//                identifierFactory.nextPurchaseOrderID(),
-//                PlantInventoryEntryID.of(plantDTO.get_id()),
-//                new CustomerID(),
-//                Address.of("dummy@dummy.com"),
-//                POStatus.OPEN,
-//                periodDTO.asBusinessPeriod());
-//
+    public void createPO(PurchaseOrderDTO purchaseOrderDTO)
+    {
+        PurchaseOrder po = PurchaseOrder.of(
+                plantRepo.findOne(purchaseOrderDTO.getPlant().get_id()),
+                BusinessPeriod.of(
+                        purchaseOrderDTO.getRentalPeriod().getStartDate(),
+                        purchaseOrderDTO.getRentalPeriod().getEndDate()
+                        ));
+        orderRepo.save(po);
+
+
 //        DataBinder binder = new DataBinder(po);
 //        binder.addValidators(new PurchaseOrderValidator());
 //        binder.validate();
 //        if (!binder.getBindingResult().hasErrors())
 //            orderRepo.save(po);
-//
-//
-//
-//    }
+
+
+
+    }
 
 
 }

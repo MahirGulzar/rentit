@@ -16,11 +16,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-//@Getter
-@Data
-@NoArgsConstructor(force = true,access = AccessLevel.PUBLIC)        // Changed from PRIVATE TO PUBLIC
-@AllArgsConstructor(staticName = "of")
-//@RequiredArgsConstructor(staticName = "of")
+@Getter
+//@Data
+@NoArgsConstructor(force = true,access = AccessLevel.PROTECTED)        // Changed from PRIVATE TO PROTECTED
 public class PurchaseOrder {
 
 
@@ -28,6 +26,15 @@ public class PurchaseOrder {
     @Id
     @GeneratedValue
     Long id;
+
+
+    public static PurchaseOrder of(PlantInventoryEntry plant, BusinessPeriod rentalPeriod) {
+        PurchaseOrder po = new PurchaseOrder();
+        po.plant = plant;
+        po.rentalPeriod = rentalPeriod;
+        po.status = POStatus.OPEN;
+        return po;
+    }
 
     @OneToMany
     List<PlantReservation> reservations;
