@@ -27,4 +27,12 @@ insert into plant_inventory_entry (id, name, description, price)
 insert into plant_inventory_entry (id, name, description, price)
     values (14, 'D-Truck', '30 Tonne Articulating Dump Truck', 300);
 
+insert into plant_inventory_item (id, plant_info_id, serial_number)
+    values (1, 1, 'A01');
+insert into plant_inventory_item (id, plant_info_id, serial_number)
+    values (2, 2, 'A02');
+insert into plant_inventory_item (id, plant_info_id, serial_number)
+    values (3, 3, 'A03');
 
+insert into plant_reservation (id, plant_id, start_date, end_date)
+    values (1, 1, '2017-03-22', '2017-03-24');
