@@ -84,8 +84,14 @@ public class SalesRestController {
         return salesService.findPurchaseOrder(id);
     }
 
+    @ExceptionHandler(PlantNotFoundException.class)
     @PostMapping("/orders")
+//    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws URISyntaxException, PlantNotFoundException {
+
+        // to Test Rest POST Kindly remove below line ...
+//        partialPODTO.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(),LocalDate.now().plusDays(2)));
+
         PurchaseOrderDTO newlyCreatePODTO = salesService.createPO(partialPODTO);
 
         HttpHeaders headers = new HttpHeaders();
