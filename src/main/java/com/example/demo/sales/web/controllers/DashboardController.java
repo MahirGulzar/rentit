@@ -53,6 +53,7 @@ public class    DashboardController	{
 
         System.out.println(purchaseOrderDTO.getPlant().getName());
         System.out.println(purchaseOrderDTO.getPlant().get_id());
+        System.out.println(purchaseOrderDTO.getPlant().getPrice());
 
 //        System.out.println(purchaseOrderDTO.());
 

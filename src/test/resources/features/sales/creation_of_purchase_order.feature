@@ -27,13 +27,14 @@ Feature: Creation of Purchase Order
     And a customer is in the "Plant Catalog" web page
     And no purchase order exists in the system
 
+#  Scenario: Querying the plant catalog for an excavator
+#    When the customer queries the plant catalog for an "Excavator" available from "2016-09-22" to "2016-09-24"
+#    Then 6 plants are shown
 
   Scenario: Creating a Purchase Order
     When the customer queries the plant catalog for an "Excavator" available from "2016-09-22" to "2016-09-24"
     And the customer selects a "3 Tonne Mini excavator"
     Then a purchase order should be created with a total price of 600.00
 
-#  Scenario: Querying the plant catalog for an excavator
-#    When the customer queries the plant catalog for an "Excavator" available from "2016-09-22" to "2016-09-24"
-#    Then 6 plants are shown
+
 
