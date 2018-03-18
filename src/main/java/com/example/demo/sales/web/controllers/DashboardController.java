@@ -20,14 +20,6 @@ public class    DashboardController	{
     SalesService salesService;
 
 
-
-//    @GetMapping("/home")
-//    public String getSomething(Model model)	{
-////        model.addAttribute("catalogQuery",	new CatalogQueryDTO());
-//        return	"hello";
-//    }
-
-
     @GetMapping("/catalog/form")
     public String getQueryForm(Model model)	{
         model.addAttribute("catalogQuery",	new CatalogQueryDTO());
@@ -42,7 +34,6 @@ public class    DashboardController	{
         PurchaseOrderDTO po = new PurchaseOrderDTO();
         po.setRentalPeriod(query.getRentalPeriod());
         model.addAttribute("po", po);
-//        model.addAttribute("po",new PurchaseOrder());
         return "dashboard/catalog/query-result";
     }
 

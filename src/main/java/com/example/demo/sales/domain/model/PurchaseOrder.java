@@ -33,11 +33,7 @@ public class PurchaseOrder {
         PurchaseOrder po = new PurchaseOrder();
         po.plant = plant;
         po.rentalPeriod = rentalPeriod;
-        po.status = POStatus.OPEN;
-
-        // PO Total price
-
-
+        po.status = POStatus.PENDING;
         po.total = BigDecimal.valueOf(ChronoUnit.DAYS.between(rentalPeriod.getStartDate(), rentalPeriod.getEndDate()) + 1).multiply(plant.getPrice().getPrice());
 
         return po;

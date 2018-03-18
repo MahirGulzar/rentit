@@ -34,8 +34,10 @@ public interface PlantInventoryItemRepository extends JpaRepository<PlantInvento
     //-----------------------------------------------------------------------------------------
 
 
-//    @Query("select pr.plant from PlantReservation pr where pr.schedule.startDate not between ?1 and ?2")
-//    List<PlantInventoryItem> findPlantsNotHiredForPeriod(LocalDate startData,LocalDate endDate);
+
+    @Query("select i from PlantInventoryItem i where lower(i.plantInfo.name) like concat('%', ?1, '%') and i not in (" +
+            "select r.plant from PlantReservation r where ?2 < r.schedule.endDate and ?3 > r.schedule.startDate)")
+    List<PlantInventoryItem> findPlantsByEntriesAndSchedule(String name,LocalDate startDate,LocalDate endDate);
 
 
 

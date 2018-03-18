@@ -23,45 +23,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/sales")
 public class SalesRestController {
-    //    @Autowired
-//    InventoryService inventoryService;
-//    @Autowired
-//    SalesService salesService;
-//
-//    @Autowired
-//    PlantInventoryEntryAssembler assembler;
-//
-//    @GetMapping("/plants")
-//    public List<PlantInventoryEntryDTO> findAvailablePlants(
-//            @RequestParam(name = "name", required = false) String plantName,
-//            @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate
-//                    startDate,
-//            @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
-//    )
-//    {
-//        // TODO: Complete this part
-//        return assembler.toResources(salesService.queryPlantCatalog(plantName, BusinessPeriodDTO.of(startDate,endDate)));
-//    }
-//
-//    @GetMapping("/orders/{id}")
-//    @ResponseStatus(HttpStatus.OK)
-//    public PurchaseOrderDTO fetchPurchaseOrder(@PathVariable("id") Long id) {
-//        // TODO: Complete this part
-//
-//        return null;
-//    }
 
-//    @PostMapping("/orders")
-//    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) {
-//        PurchaseOrderDTO newlyCreatePODTO =
-//        // TODO: Complete this part
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setLocation(new URI(newlyCreatePODTO.getId().getHref()));
-//        // The above line won't working until you update PurchaseOrderDTO to extend ResourceSupport
-//
-//        return new ResponseEntity<PurchaseOrderDTO>(newlyCreatePODTO, headers, HttpStatus.CREATED);
-//    }
 
 
     @Autowired
@@ -84,6 +46,23 @@ public class SalesRestController {
         return salesService.findPurchaseOrder(id);
     }
 
+    //-------------------------------------------------------------------------------------------
+
+    /**
+     * Get PO by Status [Mahir]
+     * @param status Status of Purchase Order
+     * @return List of PurchaseOrderDTO's by Status
+     */
+    @GetMapping("/orders")
+    @ResponseStatus(HttpStatus.OK)
+    public List<PurchaseOrderDTO> findPurchaseOrderbyStatus(@RequestParam(name = "status") String status) {
+        return salesService.findPurchaseOrderByStatus(status);
+    }
+
+
+
+    //-------------------------------------------------------------------------------------------
+
     @ExceptionHandler(PlantNotFoundException.class)
     @PostMapping("/orders")
 //    @ResponseStatus(HttpStatus.CREATED)
@@ -91,6 +70,7 @@ public class SalesRestController {
 
         // to Test Rest POST Kindly remove below line ...
 //        partialPODTO.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(),LocalDate.now().plusDays(2)));
+
 
         PurchaseOrderDTO newlyCreatePODTO = salesService.createPO(partialPODTO);
 
