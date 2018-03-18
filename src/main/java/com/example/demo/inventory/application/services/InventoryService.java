@@ -34,8 +34,8 @@ public class InventoryService {
     }
 
 
-    public List<PlantInventoryItemDTO> findAvailableItems(String plantName, LocalDate startDate, LocalDate endDate) {
-        List<PlantInventoryItem> res = itemRepo.findAll();
+    public List<PlantInventoryItemDTO> findAvailablePOItems(Long plantID, LocalDate startDate, LocalDate endDate) {
+        List<PlantInventoryItem> res = itemRepo.findPlantsByEntriesAndSchedule(plantID,startDate,endDate);
         return plantInventoryItemAssembler.toResources(res);
     }
 

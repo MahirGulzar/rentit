@@ -21,11 +21,11 @@ public class PlantInventoryRestController {
     @Autowired
     InventoryService inventoryService;
 
-    @GetMapping("/items")
-    public List<PlantInventoryItemDTO> findAvailableItems(
-            @RequestParam(name = "name") String plantName,
-            @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        return inventoryService.findAvailableItems(plantName, startDate, endDate);
-    }
+//    @GetMapping("/items")
+//    public List<PlantInventoryItemDTO> findAvailableItems(
+//            @RequestParam(name = "entry_id") Long id,
+//            @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+//            @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+//        return inventoryService.findAvailableItems(id, startDate, endDate);
+//    }
 }

@@ -3,6 +3,7 @@ package com.example.demo.sales.rest.controllers;
 import com.example.demo.common.application.dto.BusinessPeriodDTO;
 import com.example.demo.common.application.exceptions.PlantNotFoundException;
 import com.example.demo.inventory.application.dto.PlantInventoryEntryDTO;
+import com.example.demo.inventory.application.dto.PlantInventoryItemDTO;
 import com.example.demo.inventory.application.services.InventoryService;
 import com.example.demo.inventory.application.services.PlantInventoryEntryAssembler;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
@@ -57,6 +58,17 @@ public class SalesRestController {
     @ResponseStatus(HttpStatus.OK)
     public List<PurchaseOrderDTO> findPurchaseOrderbyStatus(@RequestParam(name = "status") String status) {
         return salesService.findPurchaseOrderByStatus(status);
+    }
+
+
+
+    @GetMapping("/orders/{id}/plants/items")
+    @ResponseStatus(HttpStatus.OK)
+    public List<PlantInventoryItemDTO> findAvailableItems(
+            @PathVariable("id") Long id,
+            @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        return salesService.findAvailablePOItems(id, startDate, endDate);
     }
 
 

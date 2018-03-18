@@ -4,9 +4,11 @@ package com.example.demo.sales.application.services;
 import com.example.demo.common.application.dto.BusinessPeriodDTO;
 import com.example.demo.common.domain.model.BusinessPeriod;
 import com.example.demo.inventory.application.dto.PlantInventoryEntryDTO;
+import com.example.demo.inventory.application.dto.PlantInventoryItemDTO;
 import com.example.demo.inventory.application.services.InventoryService;
 import com.example.demo.inventory.application.services.PlantInventoryEntryAssembler;
 import com.example.demo.inventory.domain.model.PlantInventoryEntry;
+import com.example.demo.inventory.domain.model.PlantInventoryItem;
 import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepository;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.domain.model.POStatus;
@@ -86,6 +88,14 @@ public class SalesService {
     public List<PlantInventoryEntry> queryPlantCatalog(String name , BusinessPeriodDTO rentalPeriod)
     {
         return plantRepo.findByComplicatedQuery(name.toLowerCase(),rentalPeriod.getStartDate(),rentalPeriod.getEndDate());
+    }
+
+
+    public List<PlantInventoryItemDTO> findAvailablePOItems(Long poID, LocalDate startDate, LocalDate endDate)
+    {
+        PurchaseOrder po = orderRepo.findOne(poID);
+        List<PlantInventoryItemDTO> res = inventoryService.findAvailablePOItems(po.getPlant().getId(),startDate,endDate);
+        return res;
     }
 
 
