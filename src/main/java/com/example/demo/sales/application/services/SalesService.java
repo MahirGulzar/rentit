@@ -9,7 +9,10 @@ import com.example.demo.inventory.application.services.InventoryService;
 import com.example.demo.inventory.application.services.PlantInventoryEntryAssembler;
 import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import com.example.demo.inventory.domain.model.PlantInventoryItem;
+import com.example.demo.inventory.domain.model.PlantReservation;
 import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepository;
+import com.example.demo.inventory.domain.repository.PlantInventoryItemRepository;
+import com.example.demo.inventory.domain.repository.PlantReservationRepository;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.domain.model.POStatus;
 import com.example.demo.sales.domain.model.PurchaseOrder;
@@ -27,6 +30,14 @@ public class SalesService {
 
     @Autowired
     InventoryService inventoryService;
+
+
+    @Autowired
+    PlantReservationRepository reservationRepo;
+
+    @Autowired
+    PlantInventoryItemRepository itemRepo;
+
 
     @Autowired
     PlantInventoryEntryRepository plantRepo;
@@ -72,10 +83,30 @@ public class SalesService {
     }
 
 
-//    public PurchaseOrderDTO processPurchaseOrder(PurchaseOrderDTO partialDTO) {
-//        PurchaseOrder po = orderRepo.findOne(id);
-//        return purchaseOrderAssembler.toResource(po);
-//    }
+    public PurchaseOrderDTO allocatePlant(Long oid,Long pid) {
+        PurchaseOrder po = orderRepo.findOne(oid);
+        PlantInventoryItem item = itemRepo.findOne(pid);
+
+        PlantReservation pr = PlantReservation.of(po,item);
+        reservationRepo.save(pr);
+
+        po.createReservation(pr);
+        orderRepo.save(po);
+
+
+        return purchaseOrderAssembler.toResource(po);
+    }
+
+
+
+    public PurchaseOrderDTO rejectPurchaseOrder(Long oid) {
+        PurchaseOrder po = orderRepo.findOne(oid);
+        po.handleRejection();
+
+        orderRepo.save(po);
+
+        return purchaseOrderAssembler.toResource(po);
+    }
 
     //--------------------------------------------------------------------------------------------------------------
 

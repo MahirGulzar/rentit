@@ -61,14 +61,46 @@ public class SalesRestController {
     }
 
 
-
-    @GetMapping("/orders/{id}/plants/items")
+    /**
+     * Get List of Plants (PlantInventoryItems) within the given period [Mahir]
+     * @param id order id
+     * @param startDate start date of rental
+     * @param endDate end date of rental
+     * @return List of available plants in the given period for the PO entry
+     */
+    @GetMapping("/orders/{oid}/plants")
     @ResponseStatus(HttpStatus.OK)
     public List<PlantInventoryItemDTO> findAvailableItems(
-            @PathVariable("id") Long id,
+            @PathVariable("oid") Long id,
             @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         return salesService.findAvailablePOItems(id, startDate, endDate);
+    }
+
+
+    /**
+     * Allocate the given pid plant and get updated purchase order [Mahir]
+     * @param oid purchase order Id
+     * @param pid plantInventoryItem Id
+     * @return updated purchase order with Status=OPEN
+     */
+    @PostMapping("/orders/{oid}/plants/{pid}/accept")
+    @ResponseStatus(HttpStatus.OK)
+    public PurchaseOrderDTO allocatePlant(
+            @PathVariable("oid") Long oid,
+            @PathVariable("pid") Long pid)
+    {
+        return salesService.allocatePlant(oid, pid);
+    }
+
+
+
+    @DeleteMapping("/orders/{oid}/accept")
+    @ResponseStatus(HttpStatus.OK)
+    public PurchaseOrderDTO allocatePlant(
+            @PathVariable("oid") Long oid)
+    {
+        return salesService.rejectPurchaseOrder(oid);
     }
 
 
