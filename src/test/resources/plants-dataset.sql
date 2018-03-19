@@ -39,5 +39,5 @@ insert into plant_inventory_item (id, plant_info_id, serial_number)
 insert into plant_reservation (id, plant_id, start_date, end_date)
     values (1, 1, '2017-03-22', '2017-03-24');
 
-insert into purchase_order(id,plant_id,status,total,start_date,end_date)
-    values (1,7,'PENDING',450,'2018-03-18', '2018-03-20')
+-- insert into purchase_order(id,plant_id,status,total,start_date,end_date)
+--     values (1,7,'PENDING',450,'2018-03-18', '2018-03-20')

@@ -10,6 +10,7 @@ import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.application.services.SalesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,8 @@ import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @RestController
 @RequestMapping("/api/sales")
@@ -41,11 +44,30 @@ public class SalesRestController {
         return inventoryService.findAvailable(plantName, startDate, endDate);
     }
 
-    @GetMapping("/orders/{id}")
+    /*@GetMapping("/orders/{id}")
     @ResponseStatus(HttpStatus.OK)
     public PurchaseOrderDTO fetchPurchaseOrder(@PathVariable("id") Long id) {
         return salesService.findPurchaseOrder(id);
+    }*/
+
+    @GetMapping("/orders/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public PurchaseOrderDTO fetchPurchaseOrder(@PathVariable("id") Long id) {
+        PurchaseOrderDTO poDTO = salesService.findPurchaseOrder(id);
+        poDTO.removeLinks();
+        Link selfLink = linkTo(SalesRestController.class).slash("orders").slash(poDTO.get_id()).withSelfRel();
+        poDTO.add(selfLink);
+        return poDTO;
     }
+
+//    @GetMapping("/orders/{id}")
+//    @ResponseStatus(HttpStatus.OK)
+//    public ResponseEntity<PurchaseOrderDTO> fetchPurchaseOrder(@PathVariable("id") Long id)throws URISyntaxException {
+//        PurchaseOrderDTO poDTO=salesService.findPurchaseOrder(id);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setLocation(new URI(poDTO.getId().getHref()));
+//        return new ResponseEntity<>(poDTO, headers, HttpStatus.OK);
+//    }
 
     //-------------------------------------------------------------------------------------------
 
@@ -57,9 +79,26 @@ public class SalesRestController {
     @GetMapping("/orders")
     @ResponseStatus(HttpStatus.OK)
     public List<PurchaseOrderDTO> findPurchaseOrderbyStatus(@RequestParam(name = "status") String status) {
+
+
         return salesService.findPurchaseOrderByStatus(status);
     }
-
+//    @GetMapping("/orders")
+//    @ResponseStatus(HttpStatus.OK)
+//    public ResponseEntity<List<PurchaseOrderDTO>> findPurchaseOrderbyStatus(@RequestParam(name = "status") String status)throws URISyntaxException {
+//        List<PurchaseOrderDTO> POs = salesService.findPurchaseOrderByStatus(status);
+//        // TODO: Complete this part
+//
+//        HttpHeaders headers = new HttpHeaders();
+////        headers.setLocation(new URI(POs.get(0).getId().getHref()));
+//        for(PurchaseOrderDTO po : POs)
+//        {
+//            headers.setLocation(new URI(po.getId().getHref()));
+//        }
+//
+//
+//        return new ResponseEntity<List<PurchaseOrderDTO>>(POs, headers, HttpStatus.CREATED);
+//    }
 
     /**
      * Get List of Plants (PlantInventoryItems) within the given period [Mahir]
