@@ -6,6 +6,7 @@ import com.example.demo.inventory.application.dto.PlantInventoryEntryDTO;
 import com.example.demo.inventory.application.dto.PlantInventoryItemDTO;
 import com.example.demo.inventory.application.services.InventoryService;
 import com.example.demo.inventory.application.services.PlantInventoryEntryAssembler;
+import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.application.services.SalesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +55,9 @@ public class SalesRestController {
     @ResponseStatus(HttpStatus.OK)
     public PurchaseOrderDTO fetchPurchaseOrder(@PathVariable("id") Long id) {
         PurchaseOrderDTO poDTO = salesService.findPurchaseOrder(id);
-        poDTO.removeLinks();
-        Link selfLink = linkTo(SalesRestController.class).slash("orders").slash(poDTO.get_id()).withSelfRel();
-        poDTO.add(selfLink);
+//        poDTO.removeLinks();
+//        Link selfLink = linkTo(SalesRestController.class).slash("orders").slash(poDTO.get_id()).withSelfRel();
+//        poDTO.add(selfLink);
         return poDTO;
     }
 
@@ -113,7 +114,14 @@ public class SalesRestController {
             @PathVariable("oid") Long id,
             @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        return salesService.findAvailablePOItems(id, startDate, endDate);
+        List<PlantInventoryItemDTO> resources = salesService.findAvailablePOItems(id, startDate, endDate);
+        for(PlantInventoryItemDTO dto : resources)
+        {
+            Link acceptLink = linkTo(SalesRestController.class).slash("orders").slash(id).slash("plants").slash(dto.get_id()).slash("accept").withRel("allocateAndAccept");
+            dto.add(acceptLink);
+        }
+
+        return resources;
     }
 
 

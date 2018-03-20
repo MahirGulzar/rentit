@@ -4,9 +4,13 @@ package com.example.demo.inventory.application.services;
 import com.example.demo.inventory.application.dto.PlantInventoryItemDTO;
 import com.example.demo.inventory.domain.model.PlantInventoryItem;
 import com.example.demo.inventory.rest.controllers.PlantInventoryRestController;
+import com.example.demo.sales.rest.controllers.SalesRestController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Service;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @Service
 public class PlantInventoryItemAssembler
@@ -26,6 +30,12 @@ public class PlantInventoryItemAssembler
         dto.setEquipmentCondition(item.getEquipmentCondition());
         dto.setPlantInfo(entryAssembler.toResource(item.getPlantInfo()));
         dto.setSerialNumber(item.getSerialNumber());
+        dto.removeLinks();
+        Link selfLink = linkTo(PlantInventoryRestController.class).slash("plants").slash(dto.get_id()).withSelfRel();
+        dto.add(selfLink);
+
+
+
         return dto;
     }
 }

@@ -18,7 +18,7 @@ import java.util.List;
 public class InventoryService {
 
     @Autowired
-    PlantInventoryEntryRepository plantRepo;
+    PlantInventoryEntryRepository entryRepo;
     @Autowired
     PlantInventoryItemRepository itemRepo;
 
@@ -29,13 +29,29 @@ public class InventoryService {
     PlantInventoryEntryAssembler plantInventoryEntryAssembler;
 
     public List<PlantInventoryEntryDTO> findAvailable(String plantName, LocalDate startDate, LocalDate endDate) {
-        List<PlantInventoryEntry> res = plantRepo.findByComplicatedQuery(plantName,startDate, endDate);
+        List<PlantInventoryEntry> res = entryRepo.findByComplicatedQuery(plantName,startDate, endDate);
+        return plantInventoryEntryAssembler.toResources(res);
+    }
+
+    public List<PlantInventoryEntryDTO> findPlantInventoryEntries(Long plantID) {
+        List<PlantInventoryEntry> res = entryRepo.findPlantInventoryEntryById(plantID);
         return plantInventoryEntryAssembler.toResources(res);
     }
 
 
+
+
+
+    //------------------------------------------------------------------------------------------------------------
+
     public List<PlantInventoryItemDTO> findAvailablePOItems(Long plantID, LocalDate startDate, LocalDate endDate) {
         List<PlantInventoryItem> res = itemRepo.findPlantsByEntriesAndSchedule(plantID,startDate,endDate);
+        return plantInventoryItemAssembler.toResources(res);
+    }
+
+
+    public List<PlantInventoryItemDTO> findPlantInventoryItems(Long plantID) {
+        List<PlantInventoryItem> res = itemRepo.findPlantInventoryItemById(plantID);
         return plantInventoryItemAssembler.toResources(res);
     }
 

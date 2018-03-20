@@ -39,6 +39,10 @@ public interface PlantInventoryEntryRepository extends JpaRepository<PlantInvent
     List<PlantInventoryEntry> findByComplicatedQuery(String name,LocalDate startDate, LocalDate endDate);
 
 
+
+    List<PlantInventoryEntry> findPlantInventoryEntryById(Long id);
+
+
 /*    @Query("SELECT new com.example.demo.utils.YearlyRentalData(year(pr.schedule.startDate),pr.plant.plantinfo.name,sum(pr.id),count(pr.maintenancePlan.tasks)) FROM PlantReservation pr " +
             "WHERE (EXTRACT(YEAR pr.schedule.startDate) BETWEEN ?1 and ?2  ) OR EXTRACT(WEEK pr.schedule.endDate) BETWEEN ?1 and ?2 )) " +
             "AND EXTRACT(YEAR mp.yearOfAction) BETWEEN ?1 and ?2" +
