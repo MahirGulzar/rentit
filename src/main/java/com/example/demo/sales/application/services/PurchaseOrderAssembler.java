@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import static org.springframework.http.HttpMethod.DELETE;
 
 @Service
 public class PurchaseOrderAssembler extends ResourceAssemblerSupport<PurchaseOrder, PurchaseOrderDTO> {
@@ -48,11 +50,8 @@ public class PurchaseOrderAssembler extends ResourceAssemblerSupport<PurchaseOrd
         switch (dto.getStatus())
         {
             case PENDING:
-                Link rejectLink = linkTo(SalesRestController.class).slash("orders").slash(dto.get_id()).slash("accept").withRel("rejectPurchaseOrder");
-                Map <String, Object> hm = new HashMap<String, Object>();
-                hm.put("method","DELETE");
-                rejectLink.expand(hm);
-                dto.add(new ExtendedLink(rejectLink,"DELETE"));
+                Link rejectLink = linkTo(SalesRestController.class).slash("orders").slash(dto.get_id()).slash("accept").withRel("reject");
+                dto.add(new ExtendedLink(rejectLink,DELETE));
                 break;
             default:
                 break;

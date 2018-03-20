@@ -2,6 +2,7 @@ package com.example.demo.sales.rest.controllers;
 
 import com.example.demo.common.application.dto.BusinessPeriodDTO;
 import com.example.demo.common.application.exceptions.PlantNotFoundException;
+import com.example.demo.common.utils.ExtendedLink;
 import com.example.demo.inventory.application.dto.PlantInventoryEntryDTO;
 import com.example.demo.inventory.application.dto.PlantInventoryItemDTO;
 import com.example.demo.inventory.application.services.InventoryService;
@@ -24,6 +25,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.POST;
 
 @RestController
 @RequestMapping("/api/sales")
@@ -117,8 +120,8 @@ public class SalesRestController {
         List<PlantInventoryItemDTO> resources = salesService.findAvailablePOItems(id, startDate, endDate);
         for(PlantInventoryItemDTO dto : resources)
         {
-            Link acceptLink = linkTo(SalesRestController.class).slash("orders").slash(id).slash("plants").slash(dto.get_id()).slash("accept").withRel("allocateAndAccept");
-            dto.add(acceptLink);
+            Link acceptLink = linkTo(SalesRestController.class).slash("orders").slash(id).slash("plants").slash(dto.get_id()).slash("accept").withRel("accept");
+            dto.add(new ExtendedLink(acceptLink,POST));
         }
 
         return resources;
