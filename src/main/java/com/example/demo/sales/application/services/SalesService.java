@@ -68,6 +68,10 @@ public class SalesService {
     }
 
 
+    public List<PurchaseOrderDTO> findAllPurchaseOrders(){
+        return purchaseOrderAssembler.toResources(orderRepo.findAll());
+    }
+
 
     public PurchaseOrderDTO createPO(PurchaseOrderDTO purchaseOrderDTO)
     {

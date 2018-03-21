@@ -43,6 +43,10 @@ public class InventoryService {
         return plantInventoryEntryAssembler.toResources(res);
     }
 
+    public List<PlantInventoryEntryDTO> findAllPlantInventoryEntries()
+    {
+        return  plantInventoryEntryAssembler.toResources(entryRepo.findAll());
+    }
 
 
 
@@ -63,6 +67,11 @@ public class InventoryService {
     public PlantInventoryItem findItemById(Long pid)
     {
         return itemRepo.findOne(pid);
+    }
+
+    public List<PlantInventoryItemDTO> findAllPlantInventoryItems()
+    {
+        return  plantInventoryItemAssembler.toResources(itemRepo.findAll());
     }
 
 

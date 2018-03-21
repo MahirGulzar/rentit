@@ -10,6 +10,7 @@ import com.example.demo.inventory.application.services.PlantInventoryEntryAssemb
 import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.application.services.SalesService;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
@@ -41,14 +42,14 @@ public class SalesRestController {
     @Autowired
     SalesService salesService;
 
-    @GetMapping("/plants")
+    /*@GetMapping("/plants")
     public List<PlantInventoryEntryDTO> findAvailablePlants(
             @RequestParam(name = "name") String plantName,
             @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         return inventoryService.findAvailable(plantName, startDate, endDate);
     }
-
+*/
 
     @GetMapping("/orders/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -56,6 +57,14 @@ public class SalesRestController {
         PurchaseOrderDTO poDTO = salesService.findPurchaseOrder(id);
         return poDTO;
     }
+
+//    @GetMapping("/orders")
+//    @ResponseStatus(HttpStatus.OK)
+//    public List<PurchaseOrderDTO> findAllPurhaseOrders() {
+//
+//        List<PurchaseOrderDTO> poDTO = salesService.findAllPurchaseOrders();
+//        return poDTO;
+//    }
 
 
     //-------------------------------------------------------------------------------------------
@@ -67,10 +76,14 @@ public class SalesRestController {
      */
     @GetMapping("/orders")
     @ResponseStatus(HttpStatus.OK)
-    public List<PurchaseOrderDTO> findPurchaseOrderbyStatus(@RequestParam(name = "status") String status) {
+    public List<PurchaseOrderDTO> findPurchaseOrderbyStatus(@RequestParam(name = "status",required = false) String status) {
 
+        if(status!= null) {
+            return salesService.findPurchaseOrderByStatus(status.toString());
+        }
 
-        return salesService.findPurchaseOrderByStatus(status);
+        return salesService.findAllPurchaseOrders();
+
     }
 
     /**
