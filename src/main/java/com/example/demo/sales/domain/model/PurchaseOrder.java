@@ -13,14 +13,14 @@ import lombok.*;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-//@Getter
-@Data
-@NoArgsConstructor(force = true,access = AccessLevel.PUBLIC)        // Changed from PRIVATE TO PUBLIC
-@AllArgsConstructor(staticName = "of")
-//@RequiredArgsConstructor(staticName = "of")
+@Getter
+//@Data
+@NoArgsConstructor(force = true,access = AccessLevel.PROTECTED)        // Changed from PRIVATE TO PROTECTED
 public class PurchaseOrder {
 
 
@@ -28,6 +28,17 @@ public class PurchaseOrder {
     @Id
     @GeneratedValue
     Long id;
+
+
+    public static PurchaseOrder of(PlantInventoryEntry plant, BusinessPeriod rentalPeriod) {
+        PurchaseOrder po = new PurchaseOrder();
+        po.plant = plant;
+        po.rentalPeriod = rentalPeriod;
+        po.status = POStatus.PENDING;
+        po.total = BigDecimal.valueOf(ChronoUnit.DAYS.between(rentalPeriod.getStartDate(), rentalPeriod.getEndDate()) + 1).multiply(plant.getPrice().getPrice());
+        po.reservations = new ArrayList<>();
+        return po;
+    }
 
     @OneToMany
     List<PlantReservation> reservations;
@@ -48,6 +59,17 @@ public class PurchaseOrder {
 
 
 
+    public void createReservation(PlantReservation pr)
+    {
+        this.reservations.add(pr);
+        this.status=POStatus.OPEN;
+    }
+
+    public void handleRejection()
+    {
+        this.status=POStatus.REJECTED;
+    }
+
 
 
 
@@ -55,51 +77,5 @@ public class PurchaseOrder {
 
 
 
-
-//    @NonNull
-//    @Id
-//    PurchaseOrderID id;        // Changed to PurchaseOrderID
-//
-//
-//    @OneToMany
-//    List<PlantReservation> reservations;    // TODO Change to ReservationsID
-//
-//    @NonNull
-//    @OneToOne
-//    PlantInventoryEntryID plantID;          // Changed from plant to plantID
-//
-//    @NonNull
-//    @ManyToOne
-//    CustomerID customerID;
-//
-//    @NonNull
-//    @OneToOne
-//    Address address;
-//
-//    LocalDate issueDate;
-//    LocalDate paymentSchedule;
-//    @Column(precision=8,scale=2)
-//    BigDecimal total;
-//
-//    @NonNull
-//    @Enumerated(EnumType.STRING)
-//    POStatus status;
-//
-//    @NonNull
-//    @Embedded
-//    BusinessPeriod rentalPeriod;
-
-
-//    public static PurchaseOrder of(Long id, PlantInventoryEntryID plantId, CustomerID customerID , Address address, BusinessPeriod rentalPeriod) {
-//        PurchaseOrder po = new PurchaseOrder();
-//        po.id = id;
-//        po.plantID = plantId;
-//        po.customerID = customerID;
-//        po.address=address;
-//        po.rentalPeriod=rentalPeriod;
-//        po.status = POStatus.PENDING;
-//        return po;
-//
-//    }
 
 }
