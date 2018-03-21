@@ -61,10 +61,13 @@ public class SalesService {
     }
 
 
+
     public PurchaseOrderDTO findPurchaseOrder(Long id) {
         PurchaseOrder po = orderRepo.findOne(id);
         return purchaseOrderAssembler.toResource(po);
     }
+
+
 
     public PurchaseOrderDTO createPO(PurchaseOrderDTO purchaseOrderDTO)
     {
@@ -85,11 +88,9 @@ public class SalesService {
 
     public PurchaseOrderDTO allocatePlant(Long oid,Long pid) {
         PurchaseOrder po = orderRepo.findOne(oid);
-        PlantInventoryItem item = itemRepo.findOne(pid);
+        PlantInventoryItem item = inventoryService.findItemById(pid);
 
-        PlantReservation pr = PlantReservation.of(po,item);
-        reservationRepo.save(pr);
-
+        PlantReservation pr = inventoryService.createReservation(po,item);
         po.createReservation(pr);
         orderRepo.save(po);
 
@@ -122,10 +123,10 @@ public class SalesService {
     }
 
 
-    public List<PlantInventoryItemDTO> findAvailablePOItems(Long poID, LocalDate startDate, LocalDate endDate)
+    public List<PlantInventoryItemDTO> findAvailablePOItems(Long oid)
     {
-        PurchaseOrder po = orderRepo.findOne(poID);
-        List<PlantInventoryItemDTO> res = inventoryService.findAvailablePOItems(po.getPlant().getId(),startDate,endDate);
+        PurchaseOrder po = orderRepo.findOne(oid);
+        List<PlantInventoryItemDTO> res = inventoryService.findAvailablePOItems(po.getPlant().getId(),po.getRentalPeriod().getStartDate(),po.getRentalPeriod().getEndDate());
         return res;
     }
 
