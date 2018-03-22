@@ -41,4 +41,9 @@ public interface PlantInventoryItemRepository extends JpaRepository<PlantInvento
 
 
 
+    List<PlantInventoryItem> findPlantInventoryItemById(Long id);
+
+
+
+
 }

@@ -2,12 +2,15 @@ package com.example.demo.sales.rest.controllers;
 
 import com.example.demo.common.application.dto.BusinessPeriodDTO;
 import com.example.demo.common.application.exceptions.PlantNotFoundException;
+import com.example.demo.common.utils.ExtendedLink;
 import com.example.demo.inventory.application.dto.PlantInventoryEntryDTO;
 import com.example.demo.inventory.application.dto.PlantInventoryItemDTO;
 import com.example.demo.inventory.application.services.InventoryService;
 import com.example.demo.inventory.application.services.PlantInventoryEntryAssembler;
+import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.application.services.SalesService;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
@@ -23,6 +26,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.POST;
+
 
 @RestController
 @RequestMapping("/api/sales")
@@ -36,38 +42,22 @@ public class SalesRestController {
     @Autowired
     SalesService salesService;
 
-    @GetMapping("/plants")
+    /*@GetMapping("/plants")
     public List<PlantInventoryEntryDTO> findAvailablePlants(
             @RequestParam(name = "name") String plantName,
             @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         return inventoryService.findAvailable(plantName, startDate, endDate);
     }
-
-    /*@GetMapping("/orders/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public PurchaseOrderDTO fetchPurchaseOrder(@PathVariable("id") Long id) {
-        return salesService.findPurchaseOrder(id);
-    }*/
+*/
 
     @GetMapping("/orders/{id}")
     @ResponseStatus(HttpStatus.OK)
     public PurchaseOrderDTO fetchPurchaseOrder(@PathVariable("id") Long id) {
         PurchaseOrderDTO poDTO = salesService.findPurchaseOrder(id);
-        poDTO.removeLinks();
-        Link selfLink = linkTo(SalesRestController.class).slash("orders").slash(poDTO.get_id()).withSelfRel();
-        poDTO.add(selfLink);
         return poDTO;
     }
 
-//    @GetMapping("/orders/{id}")
-//    @ResponseStatus(HttpStatus.OK)
-//    public ResponseEntity<PurchaseOrderDTO> fetchPurchaseOrder(@PathVariable("id") Long id)throws URISyntaxException {
-//        PurchaseOrderDTO poDTO=salesService.findPurchaseOrder(id);
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setLocation(new URI(poDTO.getId().getHref()));
-//        return new ResponseEntity<>(poDTO, headers, HttpStatus.OK);
-//    }
 
     //-------------------------------------------------------------------------------------------
 
@@ -78,42 +68,33 @@ public class SalesRestController {
      */
     @GetMapping("/orders")
     @ResponseStatus(HttpStatus.OK)
-    public List<PurchaseOrderDTO> findPurchaseOrderbyStatus(@RequestParam(name = "status") String status) {
+    public List<PurchaseOrderDTO> findPurchaseOrderbyStatus(@RequestParam(name = "status",required = false) String status) {
 
+        if(status!= null) {
+            return salesService.findPurchaseOrderByStatus(status.toString());
+        }
 
-        return salesService.findPurchaseOrderByStatus(status);
+        return salesService.findAllPurchaseOrders();
+
     }
-//    @GetMapping("/orders")
-//    @ResponseStatus(HttpStatus.OK)
-//    public ResponseEntity<List<PurchaseOrderDTO>> findPurchaseOrderbyStatus(@RequestParam(name = "status") String status)throws URISyntaxException {
-//        List<PurchaseOrderDTO> POs = salesService.findPurchaseOrderByStatus(status);
-//        // TODO: Complete this part
-//
-//        HttpHeaders headers = new HttpHeaders();
-////        headers.setLocation(new URI(POs.get(0).getId().getHref()));
-//        for(PurchaseOrderDTO po : POs)
-//        {
-//            headers.setLocation(new URI(po.getId().getHref()));
-//        }
-//
-//
-//        return new ResponseEntity<List<PurchaseOrderDTO>>(POs, headers, HttpStatus.CREATED);
-//    }
 
     /**
      * Get List of Plants (PlantInventoryItems) within the given period [Mahir]
      * @param id order id
-     * @param startDate start date of rental
-     * @param endDate end date of rental
      * @return List of available plants in the given period for the PO entry
      */
     @GetMapping("/orders/{oid}/plants")
     @ResponseStatus(HttpStatus.OK)
     public List<PlantInventoryItemDTO> findAvailableItems(
-            @PathVariable("oid") Long id,
-            @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        return salesService.findAvailablePOItems(id, startDate, endDate);
+            @PathVariable("oid") Long id){
+        List<PlantInventoryItemDTO> resources = salesService.findAvailablePOItems(id);
+        for(PlantInventoryItemDTO dto : resources)
+        {
+            Link acceptLink = linkTo(SalesRestController.class).slash("orders").slash(id).slash("plants").slash(dto.get_id()).slash("accept").withRel("accept");
+            dto.add(new ExtendedLink(acceptLink,POST));
+        }
+
+        return resources;
     }
 
 
@@ -124,7 +105,7 @@ public class SalesRestController {
      * @return updated purchase order with Status=OPEN
      */
     @PostMapping("/orders/{oid}/plants/{pid}/accept")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public PurchaseOrderDTO allocatePlant(
             @PathVariable("oid") Long oid,
             @PathVariable("pid") Long pid)
@@ -150,9 +131,6 @@ public class SalesRestController {
     @PostMapping("/orders")
 //    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws URISyntaxException, PlantNotFoundException {
-
-        // to Test Rest POST Kindly remove below line ...
-//        partialPODTO.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(),LocalDate.now().plusDays(2)));
 
 
         PurchaseOrderDTO newlyCreatePODTO = salesService.createPO(partialPODTO);
