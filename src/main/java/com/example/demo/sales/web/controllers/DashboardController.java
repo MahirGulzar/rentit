@@ -49,7 +49,9 @@ public class    DashboardController	{
 //        System.out.println(purchaseOrderDTO.());
 
 
-        PurchaseOrderDTO po = salesService.createPO(purchaseOrderDTO);
+        //PurchaseOrderDTO po = salesService.createPO(purchaseOrderDTO);
+
+        PurchaseOrderDTO po = new PurchaseOrderDTO();
 
         model.addAttribute("po", po);
 

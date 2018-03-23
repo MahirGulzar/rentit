@@ -64,7 +64,7 @@ public class SalesRestControllerTests {
     @Test
     @Sql("/plants-dataset.sql")
     public void testGetAllPlants() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/sales/plants?name=Exc&startDate=2017-04-14&endDate=2017-04-25"))
+        MvcResult result = mockMvc.perform(get("/api/sales/plants?name=exc&startDate=2017-04-14&endDate=2017-04-25"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Location", isEmptyOrNullString()))
                 .andReturn();
@@ -73,12 +73,12 @@ public class SalesRestControllerTests {
 
         assertThat(plants.size()).isEqualTo(3);
 
-        PurchaseOrderDTO order = new PurchaseOrderDTO();
-        order.setPlant(plants.get(1));
-        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now()));
-
-        mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+//        PurchaseOrderDTO order = new PurchaseOrderDTO();
+//        order.setPlant(plants.get(1));
+//        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now()));
+//
+//        mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order)).contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isCreated());
     }
 
 }

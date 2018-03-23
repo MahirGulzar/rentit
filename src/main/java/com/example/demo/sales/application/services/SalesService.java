@@ -85,7 +85,7 @@ public class SalesService {
 
         PlantInventoryEntry plantInventoryEntry = plantRepo.findOne(purchaseOrderDTO.getPlant().get_id());
         if(plantInventoryEntry == null) {
-            throw new PlantNotFoundException("Plant not found", purchaseOrderDTO);
+            throw new PlantNotFoundException("Plant not found");
         }
 
         PurchaseOrder po = PurchaseOrder.of(
@@ -105,7 +105,6 @@ public class SalesService {
         binder.validate();
 
         if (binder.getBindingResult().hasErrors()) {
-            //If there was a data validation error, nothing happens. If the plant is just not available in the given date, PO is created.
             throw new BindException(binder.getBindingResult());
         }
 

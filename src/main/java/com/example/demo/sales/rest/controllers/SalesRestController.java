@@ -1,22 +1,20 @@
 package com.example.demo.sales.rest.controllers;
 
-import com.example.demo.common.application.dto.BusinessPeriodDTO;
-import com.example.demo.common.application.exceptions.PlantNotFoundException;
+
 import com.example.demo.common.utils.ExtendedLink;
 import com.example.demo.inventory.application.dto.PlantInventoryEntryDTO;
 import com.example.demo.inventory.application.dto.PlantInventoryItemDTO;
+import com.example.demo.inventory.application.exceptions.PlantNotFoundException;
 import com.example.demo.inventory.application.services.InventoryService;
-import com.example.demo.inventory.application.services.PlantInventoryEntryAssembler;
-import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.application.services.SalesService;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -42,14 +40,14 @@ public class SalesRestController {
     @Autowired
     SalesService salesService;
 
-    /*@GetMapping("/plants")
+    @GetMapping("/plants")
     public List<PlantInventoryEntryDTO> findAvailablePlants(
             @RequestParam(name = "name") String plantName,
             @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        return inventoryService.findAvailable(plantName, startDate, endDate);
+        return inventoryService.findAvailable(plantName.toLowerCase(), startDate, endDate);
     }
-*/
+
 
     @GetMapping("/orders/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -123,27 +121,27 @@ public class SalesRestController {
         return salesService.rejectPurchaseOrder(oid);
     }
 
-
-
     //-------------------------------------------------------------------------------------------
 
-    @ExceptionHandler(PlantNotFoundException.class)
+
     @PostMapping("/orders")
-//    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws URISyntaxException, PlantNotFoundException {
-
-
-        PurchaseOrderDTO newlyCreatePODTO = salesService.createPO(partialPODTO);
+    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws URISyntaxException {
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(new URI(newlyCreatePODTO.getId().getHref()));
+        try {
+            PurchaseOrderDTO newlyCreatePODTO = salesService.createPO(partialPODTO);
+            headers.setLocation(new URI(newlyCreatePODTO.getId().getHref()));
+            return new ResponseEntity<>(newlyCreatePODTO, headers, HttpStatus.CREATED);
+        }
+        catch (PlantNotFoundException e) {
+            return new ResponseEntity<PurchaseOrderDTO>(e.getPurchaseOrder(), headers, HttpStatus.NOT_FOUND);
+        } catch (URISyntaxException e) {
+            return new ResponseEntity<PurchaseOrderDTO>(headers, HttpStatus.BAD_REQUEST);
+        } catch (BindException e){
+            return new ResponseEntity<PurchaseOrderDTO>(headers, HttpStatus.BAD_REQUEST);
+        }
 
-        return new ResponseEntity<>(newlyCreatePODTO, headers, HttpStatus.CREATED);
+
     }
 
-    @ExceptionHandler(PlantNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void handPlantNotFoundException(PlantNotFoundException ex) {
-        // Code To handle Exception
-    }
 }
