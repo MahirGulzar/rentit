@@ -3,8 +3,14 @@ package com.example.demo.sales.rest;
 import com.example.demo.DemoApplication;
 import com.example.demo.common.application.dto.BusinessPeriodDTO;
 import com.example.demo.inventory.application.dto.PlantInventoryEntryDTO;
+import com.example.demo.inventory.application.services.InventoryService;
+import com.example.demo.inventory.domain.model.PlantInventoryItem;
+import com.example.demo.inventory.domain.model.PlantReservation;
 import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepository;
+import com.example.demo.inventory.domain.repository.PlantReservationRepository;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
+import com.example.demo.sales.domain.model.PurchaseOrder;
+import com.example.demo.sales.domain.repository.PurchaseOrderRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -59,6 +65,10 @@ public class SalesRestControllerTests {
     @Autowired
     PlantInventoryEntryRepository repo;
 
+
+
+
+
     @Autowired
     private WebApplicationContext wac;
     private MockMvc mockMvc;
@@ -99,6 +109,7 @@ public class SalesRestControllerTests {
                 .andExpect(status().isCreated());
     }
 
+    // A recently created PO must have a valid reference to a plant inventory entry,
     @Test
     @Sql("/plants-dataset.sql")
     public void testValidPlantEntry() throws Exception {
@@ -132,7 +143,7 @@ public class SalesRestControllerTests {
 
     }
 
-
+    //a valid rental period (e.g. start < end date, period must be in the future, and both dates must be different from null),
     @Test
     @Sql("/plants-dataset.sql")
     public void testValidBusinessPeriod() throws Exception {
@@ -169,42 +180,8 @@ public class SalesRestControllerTests {
 
     }
 
-    @Test
-    @Sql("/plants-dataset.sql")
-    public void testValidPriceOpenedPO() throws Exception {
 
-        // Move few lines of code to function so i can resue it.
-        List<PlantInventoryEntryDTO> plants =  this.findPlants("exc", LocalDate.of(2018,4,14), LocalDate.of(2018,4,25));
-
-        assertThat(plants.size()).isEqualTo(3);
-
-
-        //Creation of PO
-        PurchaseOrderDTO order = new PurchaseOrderDTO();
-        order.setPlant(plants.get(1));
-        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now()));
-
-        MvcResult result = mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated()).andReturn();
-
-        PurchaseOrderDTO po = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<PurchaseOrderDTO>() {});
-        
-
-
-        //Accepting Created PO
-        result = mockMvc.perform(post("/api/sales/orders/"+po.get_id()+"/plants/1/accept"))
-                .andExpect(status().isCreated()).andReturn();
-
-        po = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<PurchaseOrderDTO>() {});
-
-
-
-        //Asserting that the Opened PO has valid total price i.e >0
-        assertThat(po.getTotal().compareTo(BigDecimal.ZERO)>0);
-
-
-    }
-
+    //Once the PO is stored in the database, the PO must always have a valid identifier
     @Test
     @Sql("/plants-dataset.sql")
     public void testValidPOIdentifier() throws Exception {
@@ -237,6 +214,8 @@ public class SalesRestControllerTests {
 
     }
 
+
+    // An Close[Rejected] PO must have a valid total cost (e.g. positive value)
 
     @Test
     @Sql("/plants-dataset.sql")
@@ -272,4 +251,75 @@ public class SalesRestControllerTests {
 
     }
 
+
+    // An OPEN PO must have a valid total cost (e.g. positive value)
+    @Test
+    @Sql("/plants-dataset.sql")
+    public void testValidPriceOpenedPO() throws Exception {
+
+        // Move few lines of code to function so i can resue it.
+        List<PlantInventoryEntryDTO> plants =  this.findPlants("exc", LocalDate.of(2018,4,14), LocalDate.of(2018,4,25));
+
+        assertThat(plants.size()).isEqualTo(3);
+
+
+        //Creation of PO
+        PurchaseOrderDTO order = new PurchaseOrderDTO();
+        order.setPlant(plants.get(1));
+        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now()));
+
+        MvcResult result = mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()).andReturn();
+
+        PurchaseOrderDTO po = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<PurchaseOrderDTO>() {});
+
+
+
+        //Accepting Created PO
+        result = mockMvc.perform(post("/api/sales/orders/"+po.get_id()+"/plants/1/accept"))
+                .andExpect(status().isCreated()).andReturn();
+
+        po = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<PurchaseOrderDTO>() {});
+
+
+
+        //Asserting that the Opened PO has valid total price i.e >0
+        assertThat(po.getTotal().compareTo(BigDecimal.ZERO)>0);
+
+
+    }
+
+
+    // An OPEN PO must have a valid total cost (e.g. positive value)
+    @Test
+    @Sql("/plants-dataset.sql")
+    public void testValidPlantReservation() throws Exception {
+        // Move few lines of code to function so i can resue it.
+        List<PlantInventoryEntryDTO> plants =  this.findPlants("exc", LocalDate.of(2018,4,14), LocalDate.of(2018,4,25));
+        assertThat(plants.size()).isEqualTo(3);
+
+        //Creation of PO
+        PurchaseOrderDTO order = new PurchaseOrderDTO();
+        order.setPlant(plants.get(1));
+        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now()));
+
+        MvcResult result = mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()).andReturn();
+
+        PurchaseOrderDTO po = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<PurchaseOrderDTO>() {});
+
+        //Accepting Created PO
+        result = mockMvc.perform(post("/api/sales/orders/"+po.get_id()+"/plants/1/accept"))
+                .andExpect(status().isCreated()).andReturn();
+
+        po = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<PurchaseOrderDTO>() {});
+
+
+
+
+    }
+
 }
+
+
+
