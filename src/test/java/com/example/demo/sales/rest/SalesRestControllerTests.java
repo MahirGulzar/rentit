@@ -122,5 +122,46 @@ public class SalesRestControllerTests {
     }
 
 
+    @Test
+    @Sql("/plants-dataset.sql")
+    public void testValidBusinessPeriod() throws Exception {
+
+        // Move few lines of code to function so i can resue it.
+        List<PlantInventoryEntryDTO> plants =  this.findPlants("exc", LocalDate.of(2018,4,14), LocalDate.of(2018,4,25));
+
+        assertThat(plants.size()).isEqualTo(3);
+
+        // With 2 month back dates (test to check PO will have only future date)
+        PurchaseOrderDTO order = new PurchaseOrderDTO();
+        order.setPlant(plants.get(1));
+        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now().minusMonths(2), LocalDate.now()));
+
+        mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        // With Start date < End date
+        PurchaseOrderDTO order2 = new PurchaseOrderDTO();
+        order2.setPlant(plants.get(2));
+        order2.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now().plusDays(10), LocalDate.now().plusDays(5)));
+
+        mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order2)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+
+        // Both dates must not be Null
+        PurchaseOrderDTO order3 = new PurchaseOrderDTO();
+        order3.setPlant(plants.get(2));
+        order3.setRentalPeriod(null);
+
+        mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order3)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+
+
+
+    }
+
+
+
 
 }

@@ -83,7 +83,7 @@ public class SalesService {
 
 
 //    throws PlantNotFoundException, BindException
-    public PurchaseOrderDTO createPO(PurchaseOrderDTO purchaseOrderDTO)throws PlantNotFoundException, BindException
+    public PurchaseOrderDTO createPO(PurchaseOrderDTO purchaseOrderDTO)throws PlantNotFoundException, BindException, NullPointerException
     {
 
         PlantInventoryEntry plantInventoryEntry = plantRepo.findOne(purchaseOrderDTO.getPlant().get_id());

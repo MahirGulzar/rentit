@@ -142,7 +142,9 @@ public class SalesRestController {
         } catch (BindException e){
             return new ResponseEntity<PurchaseOrderDTO>(headers, HttpStatus.BAD_REQUEST);
         }
-
+        catch (NullPointerException e){
+            return new ResponseEntity<PurchaseOrderDTO>(headers, HttpStatus.BAD_REQUEST);
+        }
 
     }
 

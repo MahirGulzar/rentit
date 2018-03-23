@@ -12,9 +12,8 @@ import org.springframework.hateoas.ResourceSupport;
 import java.math.BigDecimal;
 
 
-
+@NoArgsConstructor(force = false, access = AccessLevel.PROTECTED)
 @AllArgsConstructor(staticName = "of")
-@NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 @Data
 public class PlantInventoryEntryDTO extends ResourceSupport{
 
