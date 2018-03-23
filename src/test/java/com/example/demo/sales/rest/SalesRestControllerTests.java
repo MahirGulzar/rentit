@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -166,7 +167,43 @@ public class SalesRestControllerTests {
         mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order3)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
+    }
 
+
+
+
+    @Test
+    @Sql("/plants-dataset.sql")
+    public void testValidPriceOpenedPO() throws Exception {
+
+        // Move few lines of code to function so i can resue it.
+        List<PlantInventoryEntryDTO> plants =  this.findPlants("exc", LocalDate.of(2018,4,14), LocalDate.of(2018,4,25));
+
+        assertThat(plants.size()).isEqualTo(3);
+
+
+        //Creation of PO
+        PurchaseOrderDTO order = new PurchaseOrderDTO();
+        order.setPlant(plants.get(1));
+        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now()));
+
+        MvcResult result = mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()).andReturn();
+
+        PurchaseOrderDTO po = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<PurchaseOrderDTO>() {});
+        
+
+
+        //Accepting Created PO
+        result = mockMvc.perform(post("/api/sales/orders/"+po.get_id()+"/plants/1/accept"))
+                .andExpect(status().isCreated()).andReturn();
+
+        po = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<PurchaseOrderDTO>() {});
+
+
+
+        //Asserting that the Opened PO has valid total price i.e >0
+        assertThat(po.getTotal().compareTo(BigDecimal.ZERO)>0);
 
 
     }
@@ -201,6 +238,43 @@ public class SalesRestControllerTests {
 
 
     }
+
+
+    @Test
+    @Sql("/plants-dataset.sql")
+    public void testValidPriceClosedPO() throws Exception {
+
+
+        List<PlantInventoryEntryDTO> plants =  this.findPlants("exc", LocalDate.of(2018,4,14), LocalDate.of(2018,4,25));
+
+        assertThat(plants.size()).isEqualTo(3);
+
+
+        //Creation of PO
+        PurchaseOrderDTO order = new PurchaseOrderDTO();
+        order.setPlant(plants.get(1));
+        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now()));
+
+        MvcResult result = mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()).andReturn();
+
+        PurchaseOrderDTO po = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<PurchaseOrderDTO>() {});
+
+
+
+        //Rejecting Created PO
+        result = mockMvc.perform(delete("/api/sales/orders/"+po.get_id()+"/accept"))
+                .andExpect(status().isOk()).andReturn();
+
+        po = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<PurchaseOrderDTO>() {});
+
+
+        //Asserting that the Closed PO has valid total price i.e >0
+        assertThat(po.getTotal().compareTo(BigDecimal.ZERO)>0);
+
+
+    }
+
 
 
 
