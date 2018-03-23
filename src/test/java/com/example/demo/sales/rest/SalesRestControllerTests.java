@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,6 +36,8 @@ import static org.hamcrest.text.IsEmptyString.isEmptyOrNullString;
 //import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 //import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -43,7 +46,15 @@ import static org.hamcrest.Matchers.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = DemoApplication.class) // Check if the name of this class is correct or not
 @WebAppConfiguration
-@DirtiesContext
+
+@DirtiesContext(classMode=DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Sql(scripts = "/plants-dataset.sql")
+@Sql(
+        scripts = "/delete.sql",
+        executionPhase = AFTER_TEST_METHOD,
+        config = @SqlConfig(transactionMode = ISOLATED)
+)//This ensures that each test starts with the same database entries. After each test, all info from the tables is deleted.
+
 public class SalesRestControllerTests {
     @Autowired
     PlantInventoryEntryRepository repo;
@@ -72,7 +83,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-    @Sql("/plants-dataset.sql")
     public void testGetAllPlants() throws Exception {
 
         // Move few lines of code to function so i can resue it.
@@ -89,7 +99,7 @@ public class SalesRestControllerTests {
     }
 
     @Test
-    @Sql("/plants-dataset.sql")
+
     public void testValidPlantEntry() throws Exception {
 
         // checking PlantEntry after creating of Puschase Order
@@ -123,7 +133,7 @@ public class SalesRestControllerTests {
 
 
     @Test
-    @Sql("/plants-dataset.sql")
+
     public void testValidBusinessPeriod() throws Exception {
 
         // Move few lines of code to function so i can resue it.
@@ -157,6 +167,37 @@ public class SalesRestControllerTests {
                 .andExpect(status().isBadRequest());
 
 
+
+
+    }
+
+    @Test
+    public void testValidPOIdentifier() throws Exception {
+
+        // Move few lines of code to function so i can resue it.
+        List<PlantInventoryEntryDTO> plants =  this.findPlants("exc", LocalDate.of(2018,4,14), LocalDate.of(2018,4,25));
+
+        assertThat(plants.size()).isEqualTo(3);
+
+        // Create Purchase Order to validate
+        PurchaseOrderDTO order = new PurchaseOrderDTO();
+        order.setPlant(plants.get(1));
+        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now().plusDays(10), LocalDate.now().plusDays(20)));
+
+        MvcResult result = mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andReturn();
+
+        PurchaseOrderDTO po = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<PurchaseOrderDTO>() {});
+
+        assertThat(po.get_id()).isNotNull();
+
+        // getting the same PO via rest to compare them
+        MvcResult result2 = mockMvc.perform(get("/api/sales/orders/"+po.get_id()).content(mapper.writeValueAsString(order)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andReturn();
+
+        PurchaseOrderDTO po2 = mapper.readValue(result2.getResponse().getContentAsString(), new TypeReference<PurchaseOrderDTO>() {});
+
+        assertThat(po).isEqualTo(po2);
 
 
     }
