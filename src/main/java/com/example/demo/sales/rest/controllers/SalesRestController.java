@@ -52,7 +52,7 @@ public class SalesRestController {
 
     @GetMapping("/orders/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PurchaseOrderDTO fetchPurchaseOrder(@PathVariable("id") Long id) {
+    public PurchaseOrderDTO fetchPurchaseOrder(@PathVariable("id") String id) {
         PurchaseOrderDTO poDTO = salesService.findPurchaseOrder(id);
         return poDTO;
     }
@@ -85,7 +85,7 @@ public class SalesRestController {
     @GetMapping("/orders/{oid}/plants")
     @ResponseStatus(HttpStatus.OK)
     public List<PlantInventoryItemDTO> findAvailableItems(
-            @PathVariable("oid") Long id){
+            @PathVariable("oid") String id){
         List<PlantInventoryItemDTO> resources = salesService.findAvailablePOItems(id);
         for(PlantInventoryItemDTO dto : resources)
         {
@@ -106,7 +106,7 @@ public class SalesRestController {
     @PostMapping("/orders/{oid}/plants/{pid}/accept")
     @ResponseStatus(HttpStatus.CREATED)
     public PurchaseOrderDTO allocatePlant(
-            @PathVariable("oid") Long oid,
+            @PathVariable("oid") String oid,
             @PathVariable("pid") Long pid)
     {
         return salesService.allocatePlant(oid, pid);
@@ -117,7 +117,7 @@ public class SalesRestController {
     @DeleteMapping("/orders/{oid}/accept")
     @ResponseStatus(HttpStatus.OK)
     public PurchaseOrderDTO allocatePlant(
-            @PathVariable("oid") Long oid)
+            @PathVariable("oid") String oid)
     {
         return salesService.rejectPurchaseOrder(oid);
     }
