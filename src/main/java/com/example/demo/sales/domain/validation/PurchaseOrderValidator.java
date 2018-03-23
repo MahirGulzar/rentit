@@ -27,7 +27,7 @@ public class PurchaseOrderValidator implements Validator {
     private final PlantInventoryEntryValidator plantValidator;
     private final BusinessPeriodIsInFutureValidator futureValidator;
 
-    public PurchaseOrderValidator(PlantInventoryEntryValidator plantValidator, BusinessPeriodValidator periodValidator, BusinessPeriodIsInFutureValidator futureValidator) {
+    public PurchaseOrderValidator(BusinessPeriodValidator periodValidator, BusinessPeriodIsInFutureValidator futureValidator, PlantInventoryEntryValidator plantValidator) {
 
         if(plantValidator == null) {
             throw new IllegalArgumentException("The [PlantInventoryEntryValidator] is required and must not be null.");
@@ -91,7 +91,6 @@ public class PurchaseOrderValidator implements Validator {
         finally {
             errors.popNestedPath();
         }
-
         try {
             errors.pushNestedPath("futurePeriod");
             ValidationUtils.invokeValidator(futureValidator, order.getRentalPeriod(), errors);

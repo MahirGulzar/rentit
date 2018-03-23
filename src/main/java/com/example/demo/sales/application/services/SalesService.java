@@ -57,6 +57,8 @@ public class SalesService {
     @Autowired
     PurchaseOrderAssembler purchaseOrderAssembler;
 
+    @Autowired
+    SalesIdentifierFactory identifierFactory;
     /*
     Purchase Order Service Methods
      */
@@ -69,8 +71,8 @@ public class SalesService {
 
 
 
-    public PurchaseOrderDTO findPurchaseOrder(Long id) {
-        PurchaseOrder po = orderRepo.findOne(id);
+    public PurchaseOrderDTO findPurchaseOrder(String oid) {
+        PurchaseOrder po = orderRepo.findPurchaseOrderById(oid);
         return purchaseOrderAssembler.toResource(po);
     }
 
@@ -80,16 +82,19 @@ public class SalesService {
     }
 
 
-    public PurchaseOrderDTO createPO(PurchaseOrderDTO purchaseOrderDTO) throws PlantNotFoundException, BindException
+//    throws PlantNotFoundException, BindException
+    public PurchaseOrderDTO createPO(PurchaseOrderDTO purchaseOrderDTO)throws PlantNotFoundException, BindException, NullPointerException
     {
 
         PlantInventoryEntry plantInventoryEntry = plantRepo.findOne(purchaseOrderDTO.getPlant().get_id());
-        if(plantInventoryEntry == null) {
-            throw new PlantNotFoundException("Plant not found", purchaseOrderDTO);
+        if(plantInventoryEntry==null)
+        {
+            throw new PlantNotFoundException("Plant Not Found..");
         }
 
         PurchaseOrder po = PurchaseOrder.of(
-                plantRepo.findOne(purchaseOrderDTO.getPlant().get_id()),
+                identifierFactory.nextPOID(),
+                plantInventoryEntry,
                 BusinessPeriod.of(
                         purchaseOrderDTO.getRentalPeriod().getStartDate(),
                         purchaseOrderDTO.getRentalPeriod().getEndDate()
@@ -98,14 +103,13 @@ public class SalesService {
         DataBinder binder = new DataBinder(po);
 
         binder.addValidators(new PurchaseOrderValidator(
-                new PlantInventoryEntryValidator(),
                 new BusinessPeriodValidator(),
-                new BusinessPeriodIsInFutureValidator()));
+                new BusinessPeriodIsInFutureValidator(),
+                new PlantInventoryEntryValidator()));
 
         binder.validate();
 
         if (binder.getBindingResult().hasErrors()) {
-            //If there was a data validation error, nothing happens. If the plant is just not available in the given date, PO is created.
             throw new BindException(binder.getBindingResult());
         }
 
@@ -116,8 +120,8 @@ public class SalesService {
     }
 
 
-    public PurchaseOrderDTO allocatePlant(Long oid,Long pid) {
-        PurchaseOrder po = orderRepo.findOne(oid);
+    public PurchaseOrderDTO allocatePlant(String oid,Long pid) {
+        PurchaseOrder po = orderRepo.findPurchaseOrderById(oid);
         PlantInventoryItem item = inventoryService.findItemById(pid);
 
         PlantReservation pr = inventoryService.createReservation(po,item);
@@ -130,8 +134,8 @@ public class SalesService {
 
 
 
-    public PurchaseOrderDTO rejectPurchaseOrder(Long oid) {
-        PurchaseOrder po = orderRepo.findOne(oid);
+    public PurchaseOrderDTO rejectPurchaseOrder(String oid) {
+        PurchaseOrder po = orderRepo.findPurchaseOrderById(oid);
         po.handleRejection();
 
         orderRepo.save(po);
@@ -153,9 +157,9 @@ public class SalesService {
     }
 
 
-    public List<PlantInventoryItemDTO> findAvailablePOItems(Long oid)
+    public List<PlantInventoryItemDTO> findAvailablePOItems(String oid)
     {
-        PurchaseOrder po = orderRepo.findOne(oid);
+        PurchaseOrder po = orderRepo.findPurchaseOrderById(oid);
         List<PlantInventoryItemDTO> res = inventoryService.findAvailablePOItems(po.getPlant().getId(),po.getRentalPeriod().getStartDate(),po.getRentalPeriod().getEndDate());
         return res;
     }

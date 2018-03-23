@@ -8,25 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 
 @Component
 public class SalesIdentifierFactory{
-
-    Long id=0l;
-
-
-    public PurchaseOrderID nextPurchaseOrderID()
-    {
-//        Long newID = (Long)
-//                this.session()
-//                        .createSQLQuery(
-//                                "select purchase_order_seq.nextval " +
-//                                        "as purchase_id from dual")
-//                        .addScalar("purchase_id")
-//                        .uniqueResult();
-//        return new PlantInventoryEntryID(newID);
-        id++;
-        return PurchaseOrderID.of(id);
+    public static String nextPOID() {
+        return UUID.randomUUID().toString();
     }
-
 }
