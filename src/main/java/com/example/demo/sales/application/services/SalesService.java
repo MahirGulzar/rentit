@@ -80,12 +80,14 @@ public class SalesService {
     }
 
 
-    public PurchaseOrderDTO createPO(PurchaseOrderDTO purchaseOrderDTO) throws PlantNotFoundException, BindException
+//    throws PlantNotFoundException, BindException
+    public PurchaseOrderDTO createPO(PurchaseOrderDTO purchaseOrderDTO)throws PlantNotFoundException, BindException
     {
 
         PlantInventoryEntry plantInventoryEntry = plantRepo.findOne(purchaseOrderDTO.getPlant().get_id());
-        if(plantInventoryEntry == null) {
-            throw new PlantNotFoundException("Plant not found");
+        if(plantInventoryEntry==null)
+        {
+            throw new PlantNotFoundException("Plant Not Found..");
         }
 
         PurchaseOrder po = PurchaseOrder.of(

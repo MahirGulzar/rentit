@@ -125,6 +125,7 @@ public class SalesRestController {
 
 
     @PostMapping("/orders")
+//    @ExceptionHandler(PlantNotFoundException.class)
     public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws URISyntaxException {
 
         HttpHeaders headers = new HttpHeaders();
@@ -135,11 +136,13 @@ public class SalesRestController {
         }
         catch (PlantNotFoundException e) {
             return new ResponseEntity<PurchaseOrderDTO>(e.getPurchaseOrder(), headers, HttpStatus.NOT_FOUND);
-        } catch (URISyntaxException e) {
+        }
+        catch (URISyntaxException e) {
             return new ResponseEntity<PurchaseOrderDTO>(headers, HttpStatus.BAD_REQUEST);
         } catch (BindException e){
             return new ResponseEntity<PurchaseOrderDTO>(headers, HttpStatus.BAD_REQUEST);
         }
+//        return  null;
 
 
     }
