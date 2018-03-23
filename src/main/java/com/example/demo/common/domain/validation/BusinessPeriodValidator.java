@@ -26,10 +26,11 @@ public class BusinessPeriodValidator implements Validator {
 
         if (period.getEndDate().isBefore(period.getStartDate())) {
             errors.reject("dateMismatch", "StartDate should be greater then EndData");
+
         }
 
-        if (ChronoUnit.DAYS.between(period.getStartDate(), period.getEndDate()) < 1) {
-            errors.reject("duration", "BusinessPeriod should be more then one data");
-        }
+//        if (ChronoUnit.DAYS.between(period.getStartDate(), period.getEndDate()) < 1) {
+//            errors.reject("duration", "BusinessPeriod should be more then a data");
+//        }
     }
 }

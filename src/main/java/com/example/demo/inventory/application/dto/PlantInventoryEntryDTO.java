@@ -13,7 +13,8 @@ import java.math.BigDecimal;
 
 
 
-//@AllArgsConstructor(staticName = "of")
+@AllArgsConstructor(staticName = "of")
+@NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 @Data
 public class PlantInventoryEntryDTO extends ResourceSupport{
 

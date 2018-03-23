@@ -57,6 +57,8 @@ public class SalesService {
     @Autowired
     PurchaseOrderAssembler purchaseOrderAssembler;
 
+    @Autowired
+    SalesIdentifierFactory identifierFactory;
     /*
     Purchase Order Service Methods
      */
@@ -91,7 +93,8 @@ public class SalesService {
         }
 
         PurchaseOrder po = PurchaseOrder.of(
-                plantRepo.findOne(purchaseOrderDTO.getPlant().get_id()),
+                identifierFactory.nextPOID(),
+                plantInventoryEntry,
                 BusinessPeriod.of(
                         purchaseOrderDTO.getRentalPeriod().getStartDate(),
                         purchaseOrderDTO.getRentalPeriod().getEndDate()
@@ -100,9 +103,9 @@ public class SalesService {
         DataBinder binder = new DataBinder(po);
 
         binder.addValidators(new PurchaseOrderValidator(
-                new PlantInventoryEntryValidator(),
                 new BusinessPeriodValidator(),
-                new BusinessPeriodIsInFutureValidator()));
+                new BusinessPeriodIsInFutureValidator(),
+                new PlantInventoryEntryValidator()));
 
         binder.validate();
 

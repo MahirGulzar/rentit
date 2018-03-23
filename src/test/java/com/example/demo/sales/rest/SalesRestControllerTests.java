@@ -61,15 +61,22 @@ public class SalesRestControllerTests {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
-    @Test
-    @Sql("/plants-dataset.sql")
-    public void testGetAllPlants() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/sales/plants?name=exc&startDate=2018-04-14&endDate=2018-04-25"))
+    private  List<PlantInventoryEntryDTO> findPlants(String name, LocalDate startDate, LocalDate endDate) throws Exception {
+        MvcResult result = mockMvc.perform(get("/api/sales/plants?name="+ name +"&startDate="+ startDate +"&endDate="+ endDate))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Location", isEmptyOrNullString()))
                 .andReturn();
 
         List<PlantInventoryEntryDTO> plants = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<PlantInventoryEntryDTO>>() {});
+        return plants;
+    }
+
+    @Test
+    @Sql("/plants-dataset.sql")
+    public void testGetAllPlants() throws Exception {
+
+        // Move few lines of code to function so i can resue it.
+        List<PlantInventoryEntryDTO> plants =  this.findPlants("exc", LocalDate.of(2018,4,14), LocalDate.of(2018,4,25));
 
         assertThat(plants.size()).isEqualTo(3);
 
@@ -80,5 +87,40 @@ public class SalesRestControllerTests {
         mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
     }
+
+    @Test
+    @Sql("/plants-dataset.sql")
+    public void testValidPlantEntry() throws Exception {
+
+        // checking PlantEntry after creating of Puschase Order
+        List<PlantInventoryEntryDTO> plants =  this.findPlants("exc", LocalDate.of(2018,4,14), LocalDate.of(2018,4,25));
+
+        assertThat(plants.size()).isEqualTo(3);
+
+        PurchaseOrderDTO order = new PurchaseOrderDTO();
+        order.setPlant(plants.get(1));
+        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now()));
+
+        MvcResult result  = mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()).andReturn();
+
+        PurchaseOrderDTO po = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<PurchaseOrderDTO>() {});
+
+        assertThat(po.getPlant().get_id()).isNotNull();
+
+
+        // checking with null values
+        PurchaseOrderDTO order1 = new PurchaseOrderDTO();
+        order1.setPlant(PlantInventoryEntryDTO.of(null,null, null, null));
+        order1.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now()));
+
+        mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order1)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+
+
+    }
+
+
 
 }

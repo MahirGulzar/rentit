@@ -26,12 +26,13 @@ public class PurchaseOrder {
 
 
     @Id
-    @GeneratedValue
-    Long id;
+    //@GeneratedValue
+    String id;
 
 
-    public static PurchaseOrder of(PlantInventoryEntry plant, BusinessPeriod rentalPeriod) {
+    public static PurchaseOrder of(String id, PlantInventoryEntry plant, BusinessPeriod rentalPeriod) {
         PurchaseOrder po = new PurchaseOrder();
+        po.id = id;
         po.plant = plant;
         po.rentalPeriod = rentalPeriod;
         po.status = POStatus.PENDING;

@@ -29,6 +29,7 @@ import static org.springframework.http.HttpMethod.POST;
 
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/sales")
 public class SalesRestController {
 
@@ -125,8 +126,7 @@ public class SalesRestController {
 
 
     @PostMapping("/orders")
-//    @ExceptionHandler(PlantNotFoundException.class)
-    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws URISyntaxException {
+    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) {
 
         HttpHeaders headers = new HttpHeaders();
         try {
@@ -142,9 +142,14 @@ public class SalesRestController {
         } catch (BindException e){
             return new ResponseEntity<PurchaseOrderDTO>(headers, HttpStatus.BAD_REQUEST);
         }
-//        return  null;
 
 
+    }
+
+    @ExceptionHandler(PlantNotFoundException.class)
+    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
+    public String bindExceptionHandler(Exception ex) {
+        return ex.getMessage();
     }
 
 }
