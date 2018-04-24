@@ -7,11 +7,13 @@ import com.example.demo.inventory.application.dto.PlantInventoryItemDTO;
 import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import com.example.demo.inventory.domain.model.PlantInventoryItem;
 import com.example.demo.inventory.domain.model.PlantReservation;
+import com.example.demo.inventory.domain.repository.InventoryRepository;
 import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepository;
 import com.example.demo.inventory.domain.repository.PlantInventoryItemRepository;
 import com.example.demo.inventory.domain.repository.PlantReservationRepository;
 import com.example.demo.sales.domain.model.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resources;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -29,59 +31,63 @@ public class InventoryService {
 
 
     @Autowired
+    InventoryRepository inventoryRepository;
+
+    @Autowired
     PlantInventoryItemAssembler plantInventoryItemAssembler;
     @Autowired
     PlantInventoryEntryAssembler plantInventoryEntryAssembler;
 
-    public List<PlantInventoryEntryDTO> findAvailable(String plantName, LocalDate startDate, LocalDate endDate) {
-        List<PlantInventoryEntry> res = entryRepo.findByComplicatedQuery(plantName,startDate, endDate);
-        return plantInventoryEntryAssembler.toResources(res);
+    public Resources<?> findAvailable(String plantName, LocalDate startDate, LocalDate endDate) {
+        return plantInventoryEntryAssembler.toResources(inventoryRepository.findAvailablePlants(plantName,startDate, endDate));
     }
 
-    public List<PlantInventoryEntryDTO> findPlantInventoryEntries(Long plantID) {
-        List<PlantInventoryEntry> res = entryRepo.findPlantInventoryEntryById(plantID);
-        return plantInventoryEntryAssembler.toResources(res);
+    public Resources<?> findPlantInventoryEntries(Long plantID) {
+//        return plantInventoryEntryAssembler.toResources(inventoryRepository.findById())
+//        List<PlantInventoryEntry> res = entryRepo.findPlantInventoryEntryById(plantID);
+//        return plantInventoryEntryAssembler.toResources(res);
+        return null;
     }
 
-    public List<PlantInventoryEntryDTO> findAllPlantInventoryEntries()
+    public Resources<?> findAllPlantInventoryEntries()
     {
         return  plantInventoryEntryAssembler.toResources(entryRepo.findAll());
     }
 
 
-
-
-    //------------------------------------------------------------------------------------------------------------
-
-    public List<PlantInventoryItemDTO> findAvailablePOItems(Long plantID, LocalDate startDate, LocalDate endDate) {
-        List<PlantInventoryItem> res = itemRepo.findPlantsByEntriesAndSchedule(plantID,startDate,endDate);
-        return plantInventoryItemAssembler.toResources(res);
-    }
-
-
-    public List<PlantInventoryItemDTO> findPlantInventoryItems(Long plantID) {
-        List<PlantInventoryItem> res = itemRepo.findPlantInventoryItemById(plantID);
-        return plantInventoryItemAssembler.toResources(res);
-    }
-
-    public PlantInventoryItem findItemById(Long pid)
-    {
-        return itemRepo.findOne(pid);
-    }
-
-    public List<PlantInventoryItemDTO> findAllPlantInventoryItems()
-    {
-        return  plantInventoryItemAssembler.toResources(itemRepo.findAll());
-    }
-
+//    public Resources<?> findItemById(Long pid)
+//    {
+//        return plantInventoryItemAssembler.toResource(itemRepo.findOne(pid));
+//    }
+//
+//    public Resources<?> findAllPlantInventoryItems()
+//    {
+//        return  plantInventoryItemAssembler.toResources(itemRepo.findAll());
+//    }
 
     //------------------------------------------------------------------------------------------------------------
+//
+//    public Resources<?> findAvailablePOItems(Long plantID, LocalDate startDate, LocalDate endDate) {
+//        List<PlantInventoryItem> res = itemRepo.findPlantsByEntriesAndSchedule(plantID,startDate,endDate);
+//        return plantInventoryItemAssembler.toResources(res);
+//    }
+//
+//
+//    public Resources<?> findPlantInventoryItems(Long plantID) {
+//        List<PlantInventoryItem> res = itemRepo.findPlantInventoryItemById(plantID);
+//        return plantInventoryItemAssembler.toResources(res);
+//    }
+//
 
-    public PlantReservation createReservation(PurchaseOrder po,PlantInventoryItem item)
-    {
-        PlantReservation pr = PlantReservation.of(po,item);
-        reservationRepo.save(pr);
-        return pr;
-    }
+//
+//
+//    //------------------------------------------------------------------------------------------------------------
+//
+//    public PlantReservation createReservation(PurchaseOrder po,PlantInventoryItem item)
+//    {
+//        PlantReservation pr = PlantReservation.of(po,item);
+//        reservationRepo.save(pr);
+//        return pr;
+//    }
 
 }

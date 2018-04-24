@@ -9,17 +9,14 @@ import javax.xml.bind.annotation.XmlType;
 @SuppressWarnings("ALL")
 @XmlType(name = "_xlink", namespace = Link.ATOM_NAMESPACE)
 public class ExtendedLink extends Link {
-    private HttpMethod method;
-
-    protected ExtendedLink(){}
-
-    public ExtendedLink(Link link, HttpMethod method){
-        super(link.getHref(),link.getRel());
+    private org.eclipse.jetty.http.HttpMethod method;
+    public ExtendedLink(String href, String rel, org.eclipse.jetty.http.HttpMethod method){
+        super(href, rel);
         this.method = method;
+
     }
 
-    public HttpMethod getMethod(){
+    public org.eclipse.jetty.http.HttpMethod getMethod() {
         return method;
     }
-
 }

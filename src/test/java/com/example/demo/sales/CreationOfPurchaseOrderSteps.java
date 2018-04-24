@@ -36,125 +36,125 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = DemoApplication.class)
 @WebAppConfiguration
 public class CreationOfPurchaseOrderSteps {
-
-    @Autowired
-    private WebApplicationContext wac;
-
-    private WebClient customerBrowser;
-    HtmlPage customerPage;
-
-    @Autowired
-    PlantInventoryEntryRepository plantInventoryEntryRepository;
-    @Autowired
-    PlantInventoryItemRepository plantInventoryItemRepository;
-
-    @Autowired
-    PurchaseOrderRepository purchaseOrderRepository;
-
-    @Before  // Use `Before` from Cucumber library
-    public void setUp() {
-        customerBrowser = MockMvcWebClientBuilder.webAppContextSetup(wac).build();
-    }
-
-    @After  // Use `After` from Cucumber library
-    public void tearOff() {
-        purchaseOrderRepository.deleteAll();
-        plantInventoryItemRepository.deleteAll();
-        plantInventoryEntryRepository.deleteAll();
-    }
-
+//
+//    @Autowired
+//    private WebApplicationContext wac;
+//
+//    private WebClient customerBrowser;
+//    HtmlPage customerPage;
+//
+//    @Autowired
+//    PlantInventoryEntryRepository plantInventoryEntryRepository;
+//    @Autowired
+//    PlantInventoryItemRepository plantInventoryItemRepository;
+//
+//    @Autowired
+//    PurchaseOrderRepository purchaseOrderRepository;
+//
+//    @Before  // Use `Before` from Cucumber library
+//    public void setUp() {
+//        customerBrowser = MockMvcWebClientBuilder.webAppContextSetup(wac).build();
+//    }
+//
+//    @After  // Use `After` from Cucumber library
+//    public void tearOff() {
+//        purchaseOrderRepository.deleteAll();
+//        plantInventoryItemRepository.deleteAll();
+//        plantInventoryEntryRepository.deleteAll();
+//    }
+//
+////    @Given("^the following plant catalog$")
+////    public void the_following_plant_catalog(List<PlantInventoryEntry> entries) throws Throwable {
+////        plantInventoryEntryRepository.save(entries);
+////
+////
+////    }
+//
 //    @Given("^the following plant catalog$")
-//    public void the_following_plant_catalog(List<PlantInventoryEntry> entries) throws Throwable {
-//        plantInventoryEntryRepository.save(entries);
+//    public void the_following_plant_catalog(DataTable table) throws Throwable {
+//        for (Map<String, String> row: table.asMaps(String.class, String.class)) {
+////            System.out.println(row.get("price"));
+//            plantInventoryEntryRepository.save(
+//                    PlantInventoryEntry.of(
+//                            Long.parseLong(row.get("id")),
+//                            row.get("name"),
+//                            row.get("description "),
+//                            Money.of(new BigDecimal(row.get("price")))
+//                    )
+//            );
+//        }
 //
 //
 //    }
-
-    @Given("^the following plant catalog$")
-    public void the_following_plant_catalog(DataTable table) throws Throwable {
-        for (Map<String, String> row: table.asMaps(String.class, String.class)) {
-//            System.out.println(row.get("price"));
-            plantInventoryEntryRepository.save(
-                    PlantInventoryEntry.of(
-                            Long.parseLong(row.get("id")),
-                            row.get("name"),
-                            row.get("description "),
-                            Money.of(new BigDecimal(row.get("price")))
-                    )
-            );
-        }
-
-
-    }
-
-
-    @Given("^the following inventory$")
-    public void the_following_inventory(DataTable table) throws Throwable {
-        for (Map<String, String> row: table.asMaps(String.class, String.class))
-            plantInventoryItemRepository.save(
-                    PlantInventoryItem.of(
-                            Long.parseLong(row.get("id")),
-                            row.get("serialNumber"),
-                            EquipmentCondition.valueOf(row.get("equipmentCondition")),
-                            plantInventoryEntryRepository.findOne(Long.parseLong(row.get("plantInfo")))
-                    )
-            );
-    }
-
-    @Given("^a customer is in the \"([^\"]*)\" web page$")
-    public void a_customer_is_in_the_web_page(String pageTitle) throws Throwable {
-        customerPage = customerBrowser.getPage("http://localhost/dashboard/catalog/form");
-    }
-
-    @Given("^no purchase order exists in the system$")
-    public void no_purchase_order_exists_in_the_system() throws Throwable {
-    }
-
-    @When("^the customer queries the plant catalog for an \"([^\"]*)\" available from \"([^\"]*)\" to \"([^\"]*)\"$")
-    public void the_customer_queries_the_plant_catalog_for_an_available_from_to(String plantName, String startDate, String endDate) throws Throwable {
-        // The following elements are selected by their identifier
-        HtmlTextInput nameInput = (HtmlTextInput)customerPage.getElementById("name");
-        HtmlDateInput startDateInput = (HtmlDateInput)customerPage.getElementById("rental-start-date");
-        HtmlDateInput endDateInput = (HtmlDateInput)customerPage.getElementById("rental-end-date");
-        HtmlButton submit = (HtmlButton)customerPage.getElementById("submit-button");
-
-        nameInput.setValueAttribute(plantName);
-        startDateInput.setValueAttribute(startDate);
-        endDateInput.setValueAttribute(endDate);
-
-        customerPage = submit.click();
-    }
-
-    @Then("^(\\d+) plants are shown$")
-    public void plants_are_shown(int numberOfPlants) throws Throwable {
-        List<?> rows = customerPage.getByXPath("//tr[contains(@class, 'table-row')]");
-        assertThat(rows.size()).isEqualTo(numberOfPlants);
-    }
-
-    @And("^the customer selects a \"([^\"]*)\"$")
-    public void the_customer_selects_a(String plantDescription) throws Throwable {
-
-        List<?> rows = customerPage.getByXPath("//tr[contains(@class, 'table-row')]");
-        assert(rows.size()>1);
-
-
-//          List<?> buttons = customerPage.getByXPath(String.format("//tr[/td = '%s']", plantDescription));
 //
-//        assert(buttons.size()==1);
-//        System.out.print(bu);
-
-//        HtmlButton submit = (HtmlButton)customerPage.getByXPath(String.format("//tr[./td = '%s']//button", plantDescription)).get(0);
-        //HtmlButton submit = (HtmlButton)(buttons.get(0));
-
 //
-        //customerPage = submit.click();
-
-//        throw new PendingException();
-    }
-
-    @Then("^a purchase order should be created with a total price of (\\d+\\.\\d+)$")
-    public void a_purchase_order_should_be_created_with_a_total_price_of(BigDecimal total) throws Throwable {
-        // Complete this step and do not forget to remove the following line
-//        throw new PendingException();
-    }
+//    @Given("^the following inventory$")
+//    public void the_following_inventory(DataTable table) throws Throwable {
+//        for (Map<String, String> row: table.asMaps(String.class, String.class))
+//            plantInventoryItemRepository.save(
+//                    PlantInventoryItem.of(
+//                            Long.parseLong(row.get("id")),
+//                            row.get("serialNumber"),
+//                            EquipmentCondition.valueOf(row.get("equipmentCondition")),
+//                            plantInventoryEntryRepository.findOne(Long.parseLong(row.get("plantInfo")))
+//                    )
+//            );
+//    }
+//
+//    @Given("^a customer is in the \"([^\"]*)\" web page$")
+//    public void a_customer_is_in_the_web_page(String pageTitle) throws Throwable {
+//        customerPage = customerBrowser.getPage("http://localhost/dashboard/catalog/form");
+//    }
+//
+//    @Given("^no purchase order exists in the system$")
+//    public void no_purchase_order_exists_in_the_system() throws Throwable {
+//    }
+//
+//    @When("^the customer queries the plant catalog for an \"([^\"]*)\" available from \"([^\"]*)\" to \"([^\"]*)\"$")
+//    public void the_customer_queries_the_plant_catalog_for_an_available_from_to(String plantName, String startDate, String endDate) throws Throwable {
+//        // The following elements are selected by their identifier
+//        HtmlTextInput nameInput = (HtmlTextInput)customerPage.getElementById("name");
+//        HtmlDateInput startDateInput = (HtmlDateInput)customerPage.getElementById("rental-start-date");
+//        HtmlDateInput endDateInput = (HtmlDateInput)customerPage.getElementById("rental-end-date");
+//        HtmlButton submit = (HtmlButton)customerPage.getElementById("submit-button");
+//
+//        nameInput.setValueAttribute(plantName);
+//        startDateInput.setValueAttribute(startDate);
+//        endDateInput.setValueAttribute(endDate);
+//
+//        customerPage = submit.click();
+//    }
+//
+//    @Then("^(\\d+) plants are shown$")
+//    public void plants_are_shown(int numberOfPlants) throws Throwable {
+//        List<?> rows = customerPage.getByXPath("//tr[contains(@class, 'table-row')]");
+//        assertThat(rows.size()).isEqualTo(numberOfPlants);
+//    }
+//
+//    @And("^the customer selects a \"([^\"]*)\"$")
+//    public void the_customer_selects_a(String plantDescription) throws Throwable {
+//
+//        List<?> rows = customerPage.getByXPath("//tr[contains(@class, 'table-row')]");
+//        assert(rows.size()>1);
+//
+//
+////          List<?> buttons = customerPage.getByXPath(String.format("//tr[/td = '%s']", plantDescription));
+////
+////        assert(buttons.size()==1);
+////        System.out.print(bu);
+//
+////        HtmlButton submit = (HtmlButton)customerPage.getByXPath(String.format("//tr[./td = '%s']//button", plantDescription)).get(0);
+//        //HtmlButton submit = (HtmlButton)(buttons.get(0));
+//
+////
+//        //customerPage = submit.click();
+//
+////        throw new PendingException();
+//    }
+//
+//    @Then("^a purchase order should be created with a total price of (\\d+\\.\\d+)$")
+//    public void a_purchase_order_should_be_created_with_a_total_price_of(BigDecimal total) throws Throwable {
+//        // Complete this step and do not forget to remove the following line
+////        throw new PendingException();
+//    }
 }

@@ -19,57 +19,61 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import java.math.BigDecimal;
 
 @SpringBootApplication
-@EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
+//@EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 public class DemoApplication {
-
-	@Configuration
-	static class ObjectMapperCustomizer {
-		@Autowired @Qualifier("_halObjectMapper")
-		private ObjectMapper springHateoasObjectMapper;
-
-		@Bean(name = "objectMapper")
-		ObjectMapper objectMapper() {
-			return springHateoasObjectMapper
-					.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-					.configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, false)
-					.configure(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS, false)
-					.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-					.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-					.registerModules(new JavaTimeModule());
-		}
-	}
+//
+//	@Configuration
+//	static class ObjectMapperCustomizer {
+//		@Autowired @Qualifier("_halObjectMapper")
+//		private ObjectMapper springHateoasObjectMapper;
+//
+//		@Bean(name = "objectMapper")
+//		ObjectMapper objectMapper() {
+//			return springHateoasObjectMapper
+//					.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+//					.configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, false)
+//					.configure(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS, false)
+//					.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+//					.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+//					.registerModules(new JavaTimeModule());
+//		}
+//	}
+//
+//	public static void main(String[] args) {
+//		ConfigurableApplicationContext context =SpringApplication.run(DemoApplication.class, args);
+//
+////		PlantInventoryEntry entry = new PlantInventoryEntry();
+////		entry.setName("Bike");
+////		entry.setDescription("Nice and shiny");
+////		entry.setPrice(Money.of(new BigDecimal(100)));
+////
+////
+////		PlantInventoryEntryRepository repo = context.getBean(PlantInventoryEntryRepository.class);
+////		repo.save(entry);
+////
+////
+////		entry = new PlantInventoryEntry();
+////		entry.setName("Truck");
+////		entry.setDescription("A bit rusty");
+////		entry.setPrice(Money.of(new BigDecimal(100)));
+////
+////		repo.save(entry);
+//
+//		// % sign is because SQl wild card
+////		System.out.println(repo.findByNameLike("B%"));
+////
+////		System.out.println(repo.findByNameContaining("ik"));
+//
+//
+//
+//
+//
+//
+//
+//	}
 
 	public static void main(String[] args) {
-		ConfigurableApplicationContext context =SpringApplication.run(DemoApplication.class, args);
-
-//		PlantInventoryEntry entry = new PlantInventoryEntry();
-//		entry.setName("Bike");
-//		entry.setDescription("Nice and shiny");
-//		entry.setPrice(Money.of(new BigDecimal(100)));
-//
-//
-//		PlantInventoryEntryRepository repo = context.getBean(PlantInventoryEntryRepository.class);
-//		repo.save(entry);
-//
-//
-//		entry = new PlantInventoryEntry();
-//		entry.setName("Truck");
-//		entry.setDescription("A bit rusty");
-//		entry.setPrice(Money.of(new BigDecimal(100)));
-//
-//		repo.save(entry);
-
-		// % sign is because SQl wild card
-//		System.out.println(repo.findByNameLike("B%"));
-//
-//		System.out.println(repo.findByNameContaining("ik"));
-
-
-
-
-
-
-
+		SpringApplication.run(DemoApplication.class, args);
 	}
 
 

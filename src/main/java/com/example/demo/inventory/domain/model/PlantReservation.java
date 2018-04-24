@@ -13,32 +13,28 @@ import javax.persistence.*;
 
 @Entity
 @Data
-@NoArgsConstructor(force = true,access = AccessLevel.PROTECTED)
 public class PlantReservation {
     @Id
     @GeneratedValue
     Long id;
 
 
-
-    public static PlantReservation of(PurchaseOrder po,PlantInventoryItem plant)
-    {
-        PlantReservation pr=new PlantReservation();
-        pr.purchaseOrder=po;
-        pr.plant=plant;
-        pr.maintenancePlan=null;
-        pr.schedule = po.getRentalPeriod();
-        return pr;
-    }
-
+//
+//    public static PlantReservation of(PurchaseOrder po,PlantInventoryItem plant)
+//    {
+//        PlantReservation pr=new PlantReservation();
+//        pr.purchaseOrder=po;
+//        pr.plant=plant;
+//        pr.maintenancePlan=null;
+//        pr.schedule = po.getRentalPeriod();
+//        return pr;
+//    }
 
     @ManyToOne
-    PurchaseOrder purchaseOrder;
-    @OneToOne
     PlantInventoryItem plant;
 
-    @OneToOne
-    MaintenancePlan maintenancePlan;
+//    @OneToOne
+//    MaintenancePlan maintenancePlan;
 
     @Embedded
     BusinessPeriod schedule;
