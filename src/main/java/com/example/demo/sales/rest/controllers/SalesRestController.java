@@ -199,6 +199,10 @@ public class SalesRestController {
         // todo salesserver.acceptpoextention
         return null;
     }
+    @DeleteMapping("/orders/{id}/extensions")
+    public Resource<?> rejectPurchaseOrderExtension(@PathVariable("id") Long id) {
+        return salesService.rejectPurchaseExtension(id);
+    }
 
 
     @ExceptionHandler(PlantNotFoundException.class)

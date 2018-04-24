@@ -253,7 +253,37 @@ public class SalesService {
         PlantInventoryItem item = itemRepo.getOne(plantInventoryItemDTO.get_id());
         PlantReservation plantReservation = new PlantReservation();
         plantReservation.setPlant(item);
+
+        LocalDate startDate = order.getRentalPeriod().getStartDate();
+        LocalDate endDate = order.getRentalPeriod().getEndDate();
+        List<PlantInventoryItem> items = inventoryRepository.findAvailableItems(order.getPlant(), startDate, endDate);
+
+        if(!items.isEmpty()){
+            PlantReservation reservation = new PlantReservation();
+            reservation.setPlant(items.get(0));
+            reservation.setSchedule(BusinessPeriod.of(startDate, endDate));
+            reservationRepo.save(reservation);
+
+            order.registerFirstAllocation(reservation);
+
+        }
+        else{
+            order.handleRejection();
+        }
+        orderRepo.save(order);
         // todo accept purchase order extension
+        return purchaseOrderAssembler.toResource(order);
+    }
+
+
+    public Resource<PurchaseOrderDTO> rejectPurchaseExtension(Long id) {
+
+        PurchaseOrder order = orderRepo.getOne(id);
+        if(!order.rejectCurrentExtension())
+        {
+            // No Extension found
+        }
+        orderRepo.save(order);
         return purchaseOrderAssembler.toResource(order);
     }
 
@@ -270,6 +300,7 @@ public class SalesService {
         PurchaseOrder po = orderRepo.findPurchaseOrderById(oid);
         return poExtensionAssembler.toResources(po.getExtensions(), po);
     }
+
 
 
 }

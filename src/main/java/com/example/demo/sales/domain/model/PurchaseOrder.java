@@ -91,13 +91,24 @@ public class PurchaseOrder {
         return null;
     }
 
-    public void acceptExtension(PlantReservation reservation){
+    public boolean rejectCurrentExtension(){
+        if(extensions.size() > 0){
+            extensions.set(extensions.size() - 1, POExtension.of(pendingExtensionEndDate(), POExtension.Status.REJECTED));
+            return true;
+        }
+        return false;
+    }
+
+    public void acceptExtension(PlantReservation reservation) {
         //todo set status of latest extension accept
-//        extensions.get(extensions.size()-1).
-        reservations.add(reservation);
-        status = POStatus.OPEN;
-        rentalPeriod = BusinessPeriod.of(rentalPeriod.getStartDate(), reservation.getSchedule().getEndDate());
-        total = total.add(plant.getPrice().multiply(new BigDecimal((ChronoUnit.DAYS.between(reservation.getSchedule().getStartDate(), reservation.getSchedule().getEndDate()))+ 1)));
+        if (extensions.size() > 0) {
+            extensions.set(extensions.size() - 1, POExtension.of(pendingExtensionEndDate(), POExtension.Status.ACCEPTED));
+            reservations.add(reservation);
+            status = POStatus.OPEN;
+            rentalPeriod = BusinessPeriod.of(rentalPeriod.getStartDate(), reservation.getSchedule().getEndDate());
+            total = total.add(plant.getPrice().multiply(new BigDecimal((ChronoUnit.DAYS.between(reservation.getSchedule().getStartDate(), reservation.getSchedule().getEndDate())) + 1)));
+
+        }
     }
 
 
@@ -111,7 +122,6 @@ public class PurchaseOrder {
     public void handleClose() {
         status = POStatus.CLOSED;
     }
-    // TODO will apply below changes when splitting project into micro-services
 
 
 
