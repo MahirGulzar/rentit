@@ -52,5 +52,7 @@ import java.util.List;
 @Repository
 public interface PlantInventoryItemRepository extends JpaRepository<PlantInventoryItem, Long> {
     PlantInventoryItem findOneByPlantInfo(PlantInventoryEntry entry);
+
+    PlantInventoryItem findPlantInventoryItemById(Long id);
 }
 

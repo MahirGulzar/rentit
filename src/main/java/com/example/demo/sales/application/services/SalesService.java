@@ -91,7 +91,8 @@ public class SalesService {
     public Resource<PurchaseOrderDTO> deletePurchaseOrder(Long oid) {
         PurchaseOrder order = orderRepo.getOne(oid);
         if(order.getStatus() == POStatus.PENDING){
-            order.handleRejection();
+//            order.handleRejection(); todo verifyy
+            order.handleClose();
         }
         else if(order.getStatus() == POStatus.OPEN){
             order.handleClose();
@@ -296,7 +297,7 @@ public class SalesService {
         return purchaseOrderAssembler.toResource(po);
     }
 
-    public Resources<Resource<POExtensionDTO>> fetchPurchaseOrderExtensions(Long oid) {
+    public Resources<?> fetchPurchaseOrderExtensions(Long oid) {
         PurchaseOrder po = orderRepo.findPurchaseOrderById(oid);
         return poExtensionAssembler.toResources(po.getExtensions(), po);
     }

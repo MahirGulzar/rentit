@@ -94,6 +94,7 @@ public class PurchaseOrder {
     public boolean rejectCurrentExtension(){
         if(extensions.size() > 0){
             extensions.set(extensions.size() - 1, POExtension.of(pendingExtensionEndDate(), POExtension.Status.REJECTED));
+            status =POStatus.OPEN;
             return true;
         }
         return false;

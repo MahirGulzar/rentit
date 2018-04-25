@@ -9,12 +9,12 @@ import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.domain.model.POStatus;
 import com.example.demo.sales.domain.model.PurchaseOrder;
 import com.example.demo.sales.rest.controllers.SalesRestController;
-import org.eclipse.jetty.http.HttpMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -69,13 +69,18 @@ public class PurchaseOrderAssembler {
                 return  Arrays.asList(
                         linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
                         new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE),
-                        linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).withRel("extensions")
-                                .andAffordance(afford(methodOn(SalesRestController.class).requestPurchaseOrderExtension(null, po.getId())))
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).toString(), "extensions", HttpMethod.GET),
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).requestPurchaseOrderExtension(null,po.getId())).toString(), "request extension", HttpMethod.POST)
+
+//                        linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).withRel("extensions")
+//                                .andAffordance(afford(methodOn(SalesRestController.class).requestPurchaseOrderExtension(null, po.getId())))
                 );
             case PENDING_EXTENSION:
                 return Arrays.asList(
                         linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
-                        linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).withRel("extensions")
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE),
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).acceptPurchaseOrderExtension(po.getId(), null)).toString(), "accept extension", HttpMethod.PATCH),
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).rejectPurchaseOrderExtension(po.getId())).toString(), "reject extension", HttpMethod.DELETE)
                 );
             case REJECTED:
                 return Arrays.asList(

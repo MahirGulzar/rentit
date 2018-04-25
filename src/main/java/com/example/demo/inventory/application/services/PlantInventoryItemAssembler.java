@@ -21,18 +21,24 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @Service
 public class PlantInventoryItemAssembler {
 
-//    public Resource<PlantInventoryItemDTO> toResource(PlantInventoryItem plant) {
-//        PlantInventoryItemDTO dto = new PlantInventoryItemDTO();
-//        dto.set_id(plant.getId());
-//        return new Resource<>(
-//                dto,
-//                linkTo(methodOn(PlantInventoryRestController.class).findPlantInventoryItem(plant.getId())).withSelfRel()
-//        );
-//    }
-//
-//    public Resources<Resource<PlantInventoryItemDTO>> toResources(List<PlantInventoryItem> items) {
-//        return new Resources<>(
-//                items.stream().map(i -> toResource(i)).collect(Collectors.toList())
-//        );
-//    }
+    @Autowired
+    PlantInventoryEntryAssembler plantInventoryEntryAssembler;
+
+    public Resource<PlantInventoryItemDTO> toResource(PlantInventoryItem plant) {
+        PlantInventoryItemDTO dto = new PlantInventoryItemDTO();
+        dto.set_id(plant.getId());
+        dto.setPlantInfo(plantInventoryEntryAssembler.toResource(plant.getPlantInfo()));
+        dto.setEquipmentCondition(plant.getEquipmentCondition());
+        dto.setSerialNumber(plant.getSerialNumber());
+        return new Resource<>(
+                dto,
+                linkTo(methodOn(PlantInventoryRestController.class).findPlantInventoryItem(plant.getId())).withSelfRel()
+        );
+    }
+
+    public Resources<Resource<PlantInventoryItemDTO>> toResources(List<PlantInventoryItem> items) {
+        return new Resources<>(
+                items.stream().map(i -> toResource(i)).collect(Collectors.toList())
+        );
+    }
 }

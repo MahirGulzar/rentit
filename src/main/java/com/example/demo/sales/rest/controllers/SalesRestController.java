@@ -131,6 +131,7 @@ public class SalesRestController {
 
     @PostMapping("/orders")
     public ResponseEntity<?> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) {
+//        System.out.println(partialPODTO.toString());
         Resource<PurchaseOrderDTO> resource = salesService.createPO(partialPODTO);
 
         HttpHeaders headers = new HttpHeaders();
@@ -161,6 +162,7 @@ public class SalesRestController {
 
     @DeleteMapping("/orders/{id}/allocation")
     public Resource<?> rejectPurchaseOrder(@PathVariable Long id){
+
         return salesService.rejectPurchaseOrder(id);
     }
 
@@ -171,13 +173,14 @@ public class SalesRestController {
     }
 
     @GetMapping("/orders/{id}/extensions")
-    public Resources<Resource<POExtensionDTO>> retrievePurchaseOrderExtensions(@PathVariable("id") Long id) {
+    public Resources<?> retrievePurchaseOrderExtensions(@PathVariable("id") Long id) {
         return salesService.fetchPurchaseOrderExtensions(id);
     }
 
     @PostMapping("/orders/{id}/extensions")
-    public Resource<?> requestPurchaseOrderExtension(@RequestBody LocalDate extension, @PathVariable("id") Long id) {
-        return salesService.requestPurchaseExtension(id,extension);
+    public Resource<?> requestPurchaseOrderExtension(@RequestBody POExtensionDTO extensionDTO , @PathVariable("id") Long id) {
+//        System.out.println(extensionDTO);
+        return salesService.requestPurchaseExtension(id,extensionDTO.getEndDate());
     }
 
     @PutMapping("/orders/{id}")

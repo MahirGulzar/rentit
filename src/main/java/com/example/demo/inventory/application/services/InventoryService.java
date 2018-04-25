@@ -13,6 +13,7 @@ import com.example.demo.inventory.domain.repository.PlantInventoryItemRepository
 import com.example.demo.inventory.domain.repository.PlantReservationRepository;
 import com.example.demo.sales.domain.model.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.stereotype.Service;
 
@@ -42,28 +43,26 @@ public class InventoryService {
         return plantInventoryEntryAssembler.toResources(inventoryRepository.findAvailablePlants(plantName,startDate, endDate));
     }
 
-    public Resources<?> findPlantInventoryEntries(Long plantID) {
-//        return plantInventoryEntryAssembler.toResources(inventoryRepository.findById())
-//        List<PlantInventoryEntry> res = entryRepo.findPlantInventoryEntryById(plantID);
-//        return plantInventoryEntryAssembler.toResources(res);
-        return null;
+    public Resource<?> findPlantInventoryEntries(Long plantID) {
+        return plantInventoryEntryAssembler.toResource(entryRepo.getOne(plantID));
     }
 
-    public Resources<?> findAllPlantInventoryEntries()
-    {
+    public Resources<?> findAllPlantInventoryEntries() {
         return  plantInventoryEntryAssembler.toResources(entryRepo.findAll());
     }
 
 
-//    public Resources<?> findItemById(Long pid)
-//    {
-//        return plantInventoryItemAssembler.toResource(itemRepo.findOne(pid));
-//    }
-//
-//    public Resources<?> findAllPlantInventoryItems()
-//    {
-//        return  plantInventoryItemAssembler.toResources(itemRepo.findAll());
-//    }
+    public Resource<?> findItemById(Long pid)
+    {
+        PlantInventoryItem item=itemRepo.findPlantInventoryItemById(pid);
+//        System.out.println(item.toString());
+        return plantInventoryItemAssembler.toResource(itemRepo.findPlantInventoryItemById(pid));
+    }
+
+    public Resources<?> findAllPlantInventoryItems()
+    {
+        return  plantInventoryItemAssembler.toResources(itemRepo.findAll());
+    }
 
     //------------------------------------------------------------------------------------------------------------
 //
