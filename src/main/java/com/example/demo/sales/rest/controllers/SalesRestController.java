@@ -179,7 +179,8 @@ public class SalesRestController {
 
     @PostMapping("/orders/{id}/extensions")
     public Resource<?> requestPurchaseOrderExtension(@RequestBody POExtensionDTO extensionDTO , @PathVariable("id") Long id) {
-//        System.out.println(extensionDTO);
+        System.out.println(extensionDTO.getEndDate());
+
         return salesService.requestPurchaseExtension(id,extensionDTO.getEndDate());
     }
 
@@ -198,10 +199,14 @@ public class SalesRestController {
     }
 
     @PatchMapping("/orders/{id}/extensions")
-    public Resource<?> acceptPurchaseOrderExtension(@PathVariable("id") Long id, PlantInventoryItemDTO plant) {
+    public Resource<?> acceptPurchaseOrderExtension(@PathVariable("id") Long id, @RequestBody PlantInventoryItemDTO plant) {
         // todo salesserver.acceptpoextention
-        return null;
+        System.out.println(plant);
+        System.out.println(id);
+        return salesService.acceptPurchaseExtension(id,plant);
+//        return null;
     }
+
     @DeleteMapping("/orders/{id}/extensions")
     public Resource<?> rejectPurchaseOrderExtension(@PathVariable("id") Long id) {
         return salesService.rejectPurchaseExtension(id);

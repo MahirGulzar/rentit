@@ -251,28 +251,26 @@ public class SalesService {
     public Resource<PurchaseOrderDTO> acceptPurchaseExtension(Long id, PlantInventoryItemDTO plantInventoryItemDTO) {
 
         PurchaseOrder order = orderRepo.getOne(id);
-        PlantInventoryItem item = itemRepo.getOne(plantInventoryItemDTO.get_id());
-        PlantReservation plantReservation = new PlantReservation();
-        plantReservation.setPlant(item);
+        System.out.println(order);
+        PlantInventoryItem item = itemRepo.findPlantInventoryItemById(plantInventoryItemDTO.get_id());
 
-        LocalDate startDate = order.getRentalPeriod().getStartDate();
-        LocalDate endDate = order.getRentalPeriod().getEndDate();
-        List<PlantInventoryItem> items = inventoryRepository.findAvailableItems(order.getPlant(), startDate, endDate);
+        if(inventoryRepository.isAvailableFor(item,order.getRentalPeriod().getEndDate().plusDays(1),order.pendingExtensionEndDate()))
+        {
+            System.out.println("Item is available in these dates....");
+            PlantReservation plantReservation = new PlantReservation();
+            plantReservation.setPlant(item);
+            System.out.println(order.pendingExtensionEndDate());
+            plantReservation.setSchedule(BusinessPeriod.of(order.getRentalPeriod().getEndDate().plusDays(1), order.pendingExtensionEndDate()));
+            reservationRepo.save(plantReservation);
 
-        if(!items.isEmpty()){
-            PlantReservation reservation = new PlantReservation();
-            reservation.setPlant(items.get(0));
-            reservation.setSchedule(BusinessPeriod.of(startDate, endDate));
-            reservationRepo.save(reservation);
-
-            order.registerFirstAllocation(reservation);
-
+//            order.setRentalPeriod(BusinessPeriod.of(order.getRentalPeriod().getStartDate(),order.pendingExtensionEndDate()));
+            order.acceptExtension(plantReservation);
+            orderRepo.save(order);
         }
-        else{
-            order.handleRejection();
+        else {
+            System.out.println("Item is NOT available in these dates....");
         }
-        orderRepo.save(order);
-        // todo accept purchase order extension
+
         return purchaseOrderAssembler.toResource(order);
     }
 
