@@ -41,6 +41,8 @@ public class PurchaseOrderAssembler {
         dto.setRentalPeriod(BusinessPeriodDTO.of(po.getRentalPeriod().getStartDate(), po.getRentalPeriod().getEndDate()));
         dto.setStatus(po.getStatus());
         dto.setTotal(po.getTotal());
+        dto.setAcceptHref(po.getAcceptHref());
+        dto.setRejectHref(po.getRejectHref());
 
         return new Resource<>(
                 dto,

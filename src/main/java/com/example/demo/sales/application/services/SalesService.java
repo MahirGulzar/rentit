@@ -28,9 +28,11 @@ import com.example.demo.sales.domain.validation.PurchaseOrderValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindException;
 import org.springframework.validation.DataBinder;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -71,6 +73,10 @@ public class SalesService {
 
     @Autowired
     SalesIdentifierFactory identifierFactory;
+
+
+    @Autowired
+    RestTemplate restTemplate;
     /*
     Purchase Order Service Methods
      */
@@ -139,7 +145,10 @@ public class SalesService {
                 BusinessPeriod.of(
                         purchaseOrderDTO.getRentalPeriod().getStartDate(),
                         purchaseOrderDTO.getRentalPeriod().getEndDate()
-                        ));
+                        ),
+                purchaseOrderDTO.getAcceptHref(),
+                purchaseOrderDTO.getRejectHref()
+                );
 
         DataBinder binder = new DataBinder(po);
 
@@ -186,7 +195,9 @@ public class SalesService {
         po.handleRejection();
 
         orderRepo.save(po);
-
+        System.out.println("Before sending request...");
+        restTemplate.delete(po.getRejectHref());
+        System.out.println("After sending request...");
         return purchaseOrderAssembler.toResource(po);
     }
 
@@ -236,6 +247,9 @@ public class SalesService {
             order.handleRejection();
         }
         orderRepo.save(order);
+        System.out.println("Before sending request...");
+        ResponseEntity<?> result = restTemplate.postForEntity(order.getAcceptHref(), null, PurchaseOrderDTO.class);
+        System.out.println("After sending request...");
         return purchaseOrderAssembler.toResource(order);
     }
 

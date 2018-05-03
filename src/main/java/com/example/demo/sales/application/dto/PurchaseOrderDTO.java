@@ -23,4 +23,8 @@ public class PurchaseOrderDTO extends ResourceSupport {
     @Column(precision = 8, scale = 2)
     BigDecimal total;
     POStatus status;
+
+    // Added for notification on BuiltIT
+    String acceptHref;
+    String rejectHref;
 }

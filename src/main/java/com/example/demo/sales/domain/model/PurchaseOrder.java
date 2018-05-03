@@ -30,7 +30,7 @@ public class PurchaseOrder {
     Long id;
 
 
-    public static PurchaseOrder of(Long id, PlantInventoryEntry plant, BusinessPeriod rentalPeriod) {
+    public static PurchaseOrder of(Long id, PlantInventoryEntry plant, BusinessPeriod rentalPeriod, String acceptHref, String rejectHref) {
         PurchaseOrder po = new PurchaseOrder();
         po.id = id;
         po.plant = plant;
@@ -38,6 +38,8 @@ public class PurchaseOrder {
         po.status = POStatus.PENDING;
         po.total = BigDecimal.valueOf(ChronoUnit.DAYS.between(rentalPeriod.getStartDate(), rentalPeriod.getEndDate()) + 1).multiply(plant.getPrice());
         po.reservations = new ArrayList<>();
+        po.acceptHref=acceptHref;
+        po.rejectHref=rejectHref;
         return po;
     }
 
@@ -61,6 +63,10 @@ public class PurchaseOrder {
 
     @ElementCollection
     List<POExtension> extensions = new ArrayList<>();
+
+    // Added for notification on BuiltIT
+    String acceptHref;
+    String rejectHref;
 
     public void createReservation(PlantReservation pr)
     {
