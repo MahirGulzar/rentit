@@ -11,52 +11,91 @@ import com.example.demo.sales.domain.model.PurchaseOrder;
 import com.example.demo.sales.rest.controllers.SalesRestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.afford;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.http.HttpMethod.DELETE;
 
 @Service
-public class PurchaseOrderAssembler extends ResourceAssemblerSupport<PurchaseOrder, PurchaseOrderDTO> {
-
+public class PurchaseOrderAssembler {
     @Autowired
     PlantInventoryEntryAssembler plantInventoryEntryAssembler;
 
-    @Autowired
-    SalesService salesService;
 
-    public PurchaseOrderAssembler() {
-        super(SalesRestController.class, PurchaseOrderDTO.class);
+    public Resource<PurchaseOrderDTO> toResource(PurchaseOrder po) {
+        PurchaseOrderDTO dto = new PurchaseOrderDTO();
+        dto.set_id(po.getId());
+        if(po.getPlant() != null) {
+            dto.setPlant(plantInventoryEntryAssembler.toResource(po.getPlant()));
+        }
+        dto.setRentalPeriod(BusinessPeriodDTO.of(po.getRentalPeriod().getStartDate(), po.getRentalPeriod().getEndDate()));
+        dto.setStatus(po.getStatus());
+        dto.setTotal(po.getTotal());
+        dto.setAcceptHref(po.getAcceptHref());
+        dto.setRejectHref(po.getRejectHref());
+
+        return new Resource<>(
+                dto,
+                linkFor(po)
+
+        );
+    }
+    public Resources<Resource<PurchaseOrderDTO>> toResources(List<PurchaseOrder> orders){
+        return new Resources<>(orders.stream().map(o -> toResource(o)).collect(Collectors.toList()),
+                linkTo(methodOn(SalesRestController.class).findPurchaseOrders()).withSelfRel()
+                        .andAffordance(afford(methodOn(SalesRestController.class).createPurchaseOrder(null)))
+
+        );
     }
 
-
-    public PurchaseOrderDTO toResource(PurchaseOrder purchaseOrder) {
-        PurchaseOrderDTO dto = createResourceWithId(purchaseOrder.getId(), purchaseOrder);
-        dto.set_id(purchaseOrder.getId());
-        dto.setPlant(plantInventoryEntryAssembler.toResource(purchaseOrder.getPlant()));
-        dto.setRentalPeriod(BusinessPeriodDTO.of(purchaseOrder.getRentalPeriod().getStartDate(),purchaseOrder.getRentalPeriod().getEndDate()));
-        dto.setTotal(purchaseOrder.getTotal());
-        dto.setStatus(purchaseOrder.getStatus());
-        dto.removeLinks();
-        Link selfLink = linkTo(SalesRestController.class).slash("orders").slash(dto.get_id()).withSelfRel();
-        dto.add(selfLink);
-
-        switch (dto.getStatus())
+    private List<Link> linkFor(PurchaseOrder po) {
+        switch (po.getStatus())
         {
             case PENDING:
-                Link rejectLink = linkTo(SalesRestController.class).slash("orders").slash(dto.get_id()).slash("accept").withRel("reject");
-                dto.add(new ExtendedLink(rejectLink,DELETE));
-                break;
-            default:
-                break;
-        }
+                return Arrays.asList(
+                        linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).allocatePlant(po.getId())).toString(), "accept", HttpMethod.PUT),
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).rejectPurchaseOrder(po.getId())).toString(), "reject", HttpMethod.DELETE)
+                );
+            case OPEN:
+                return  Arrays.asList(
+                        linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE),
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).toString(), "extensions", HttpMethod.GET),
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).requestPurchaseOrderExtension(null,po.getId())).toString(), "request extension", HttpMethod.POST)
 
-        return dto;
+//                        linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).withRel("extensions")
+//                                .andAffordance(afford(methodOn(SalesRestController.class).requestPurchaseOrderExtension(null, po.getId())))
+                );
+            case PENDING_EXTENSION:
+                return Arrays.asList(
+                        linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE),
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).acceptPurchaseOrderExtension(po.getId(), null)).toString(), "accept extension", HttpMethod.PATCH),
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).rejectPurchaseOrderExtension(po.getId())).toString(), "reject extension", HttpMethod.DELETE)
+                );
+            case REJECTED:
+                return Arrays.asList(
+                        linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel()
+                                .andAffordance(afford(methodOn(SalesRestController.class).resubmitPurchaseOrder(po.getId(), null)))
+                );
+            case CLOSED:
+                return Arrays.asList(
+                        linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel()
+                );
+        }
+        return Collections.emptyList();
     }
+
+
 }

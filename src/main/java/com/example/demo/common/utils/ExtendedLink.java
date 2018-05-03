@@ -10,16 +10,13 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "_xlink", namespace = Link.ATOM_NAMESPACE)
 public class ExtendedLink extends Link {
     private HttpMethod method;
-
-    protected ExtendedLink(){}
-
-    public ExtendedLink(Link link, HttpMethod method){
-        super(link.getHref(),link.getRel());
+    public ExtendedLink(String href, String rel, HttpMethod method){
+        super(href, rel);
         this.method = method;
+
     }
 
-    public HttpMethod getMethod(){
+    public HttpMethod getMethod() {
         return method;
     }
-
 }

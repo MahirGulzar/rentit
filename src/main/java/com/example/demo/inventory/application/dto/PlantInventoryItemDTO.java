@@ -4,6 +4,7 @@ package com.example.demo.inventory.application.dto;
 import com.example.demo.inventory.domain.model.EquipmentCondition;
 import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import lombok.Data;
+import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceSupport;
 
 import javax.persistence.EnumType;
@@ -19,5 +20,6 @@ public class PlantInventoryItemDTO extends ResourceSupport {
     EquipmentCondition equipmentCondition;
 
     @ManyToOne
-    PlantInventoryEntryDTO plantInfo;
+    Resource<PlantInventoryEntryDTO> plantInfo;
+//    PlantInventoryEntryDTO plantInfo;
 }

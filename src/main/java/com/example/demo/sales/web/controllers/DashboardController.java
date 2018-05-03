@@ -22,47 +22,47 @@ import java.net.URISyntaxException;
 @Controller
 @RequestMapping("/dashboard")
 public class    DashboardController	{
-
-    @Autowired
-    SalesService salesService;
-
-
-    @GetMapping("/catalog/form")
-    public String getQueryForm(Model model)	{
-        model.addAttribute("catalogQuery",	new CatalogQueryDTO());
-        return	"dashboard/catalog/query-form";
-    }
-    @PostMapping("/catalog/query")
-    public String executeQuery(CatalogQueryDTO query, Model model) {
-
-        //TODO need to change the query in SalesService to incorporate PlantInventoryEntry instead of PlantsWithCount
-        model.addAttribute("plants", salesService.queryPlantCatalog(query.getName(), query.getRentalPeriod()));
-
-        PurchaseOrderDTO po = new PurchaseOrderDTO();
-        po.setRentalPeriod(query.getRentalPeriod());
-        model.addAttribute("po", po);
-        return "dashboard/catalog/query-result";
-    }
-
-
-
-    @PostMapping("/orders")
-    public String createPurchaseOrder(PurchaseOrderDTO purchaseOrderDTO, Model model) {
-
-        System.out.println(purchaseOrderDTO.getPlant().getName());
-        System.out.println(purchaseOrderDTO.getPlant().get_id());
-        System.out.println(purchaseOrderDTO.getPlant().getPrice());
-
-//        System.out.println(purchaseOrderDTO.());
-
-        HttpHeaders headers = new HttpHeaders();
-        PurchaseOrderDTO po = new PurchaseOrderDTO();
-
-//        PurchaseOrderDTO po = salesService.createPO(purchaseOrderDTO);
-
-        model.addAttribute("po", po);
-
-        return "dashboard/catalog/po-created";
-    }
+//
+//    @Autowired
+//    SalesService salesService;
+//
+//
+//    @GetMapping("/catalog/form")
+//    public String getQueryForm(Model model)	{
+//        model.addAttribute("catalogQuery",	new CatalogQueryDTO());
+//        return	"dashboard/catalog/query-form";
+//    }
+//    @PostMapping("/catalog/query")
+//    public String executeQuery(CatalogQueryDTO query, Model model) {
+//
+//        //TODO need to change the query in SalesService to incorporate PlantInventoryEntry instead of PlantsWithCount
+//        model.addAttribute("plants", salesService.queryPlantCatalog(query.getName(), query.getRentalPeriod()));
+//
+//        PurchaseOrderDTO po = new PurchaseOrderDTO();
+//        po.setRentalPeriod(query.getRentalPeriod());
+//        model.addAttribute("po", po);
+//        return "dashboard/catalog/query-result";
+//    }
+//
+//
+//
+//    @PostMapping("/orders")
+//    public String createPurchaseOrder(PurchaseOrderDTO purchaseOrderDTO, Model model) {
+//
+//        System.out.println(purchaseOrderDTO.getPlant().getName());
+//        System.out.println(purchaseOrderDTO.getPlant().get_id());
+//        System.out.println(purchaseOrderDTO.getPlant().getPrice());
+//
+////        System.out.println(purchaseOrderDTO.());
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        PurchaseOrderDTO po = new PurchaseOrderDTO();
+//
+////        PurchaseOrderDTO po = salesService.createPO(purchaseOrderDTO);
+//
+//        model.addAttribute("po", po);
+//
+//        return "dashboard/catalog/po-created";
+//    }
 
 }

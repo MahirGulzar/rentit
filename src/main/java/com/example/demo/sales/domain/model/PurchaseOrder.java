@@ -19,7 +19,7 @@ import java.util.List;
 
 @Entity
 @Getter
-//@Data
+@Data
 @NoArgsConstructor(force = true,access = AccessLevel.PROTECTED)        // Changed from PRIVATE TO PROTECTED
 public class PurchaseOrder {
 
@@ -27,17 +27,19 @@ public class PurchaseOrder {
 
     @Id
     //@GeneratedValue
-    String id;
+    Long id;
 
 
-    public static PurchaseOrder of(String id, PlantInventoryEntry plant, BusinessPeriod rentalPeriod) {
+    public static PurchaseOrder of(Long id, PlantInventoryEntry plant, BusinessPeriod rentalPeriod, String acceptHref, String rejectHref) {
         PurchaseOrder po = new PurchaseOrder();
         po.id = id;
         po.plant = plant;
         po.rentalPeriod = rentalPeriod;
         po.status = POStatus.PENDING;
-        po.total = BigDecimal.valueOf(ChronoUnit.DAYS.between(rentalPeriod.getStartDate(), rentalPeriod.getEndDate()) + 1).multiply(plant.getPrice().getPrice());
+        po.total = BigDecimal.valueOf(ChronoUnit.DAYS.between(rentalPeriod.getStartDate(), rentalPeriod.getEndDate()) + 1).multiply(plant.getPrice());
         po.reservations = new ArrayList<>();
+        po.acceptHref=acceptHref;
+        po.rejectHref=rejectHref;
         return po;
     }
 
@@ -59,6 +61,12 @@ public class PurchaseOrder {
     BusinessPeriod rentalPeriod;
 
 
+    @ElementCollection
+    List<POExtension> extensions = new ArrayList<>();
+
+    // Added for notification on BuiltIT
+    String acceptHref;
+    String rejectHref;
 
     public void createReservation(PlantReservation pr)
     {
@@ -72,9 +80,55 @@ public class PurchaseOrder {
     }
 
 
+    // New Additions
+    //--------------------------------------------------------------------------------------------------
+    public POExtension requestExtension(LocalDate endDate){
+        POExtension extension = POExtension.of(endDate, POExtension.Status.PENDING);
+        extensions.add(extension);
+        status =POStatus.PENDING_EXTENSION;
+        return extension;
+    }
+
+    public LocalDate pendingExtensionEndDate(){
+        if(extensions.size() > 0){
+            POExtension openExtension = extensions.get(extensions.size() -1);
+            return openExtension.getEndDate();
+        }
+        return null;
+    }
+
+    public boolean rejectCurrentExtension(){
+        if(extensions.size() > 0){
+            extensions.set(extensions.size() - 1, POExtension.of(pendingExtensionEndDate(), POExtension.Status.REJECTED));
+            status =POStatus.OPEN;
+            return true;
+        }
+        return false;
+    }
+
+    public void acceptExtension(PlantReservation reservation) {
+        //todo set status of latest extension accept
+        if (extensions.size() > 0) {
+            extensions.set(extensions.size() - 1, POExtension.of(pendingExtensionEndDate(), POExtension.Status.ACCEPTED));
+            reservations.add(reservation);
+            status = POStatus.OPEN;
+            rentalPeriod = BusinessPeriod.of(rentalPeriod.getStartDate(), reservation.getSchedule().getEndDate());
+            total = total.add(plant.getPrice().multiply(new BigDecimal((ChronoUnit.DAYS.between(reservation.getSchedule().getStartDate(), reservation.getSchedule().getEndDate())) + 1)));
+
+        }
+    }
 
 
-    // TODO will apply below changes when splitting project into micro-services
+    public void registerFirstAllocation(PlantReservation reservation) {
+        reservations.add(reservation);
+        status = POStatus.OPEN;
+        rentalPeriod = BusinessPeriod.of(reservation.getSchedule().getStartDate(), reservation.getSchedule().getEndDate());
+        total = plant.getPrice().multiply(new BigDecimal(ChronoUnit.DAYS.between(rentalPeriod.getStartDate(), rentalPeriod.getEndDate())+1));
+    }
+
+    public void handleClose() {
+        status = POStatus.CLOSED;
+    }
 
 
 

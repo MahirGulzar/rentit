@@ -30,7 +30,7 @@ public class PlantInventoryEntryValidator implements Validator {
         if(plantInventoryEntry.getName() == null) {
             errors.rejectValue("name", "Name cannot be null");
         }
-        if(plantInventoryEntry.getPrice().getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+        if(plantInventoryEntry.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
             errors.rejectValue("price", "Price cannot be negative or zero");
         }
 
