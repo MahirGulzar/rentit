@@ -9,7 +9,7 @@ import javax.persistence.*;
 //@Data
 @Getter
 @NoArgsConstructor(force = true,access = AccessLevel.PROTECTED)
-@AllArgsConstructor(staticName = "of")
+//@AllArgsConstructor(staticName = "of")
 public class PlantInventoryEntry {
 
     @Id @GeneratedValue
@@ -21,4 +21,12 @@ public class PlantInventoryEntry {
     @Embedded
     Money price;
 
+    public static PlantInventoryEntry of(Long id, String name, String description, Money price) {
+        PlantInventoryEntry plant = new PlantInventoryEntry();
+        plant.id = id ;
+        plant.name = name;
+        plant.description = description;
+        plant.price = price;
+        return plant;
+    }
 }
