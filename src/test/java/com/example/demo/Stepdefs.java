@@ -16,6 +16,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,7 +46,7 @@ public class Stepdefs {
     public void the_following_plant_catalog(DataTable table) throws Exception {
         List<PlantInventoryEntry> entries = table.asMaps(String.class, String.class)
                 .stream()
-                .map(row -> PlantInventoryEntry.of(row.get("id"), row.get("name"), row.get("description"), row.get("price")))
+                .map(row -> PlantInventoryEntry.of(Long.parseLong(row.get("id")), row.get("name"), row.get("description"), new BigDecimal(row.get("price"))))
                 .collect(Collectors.toList());
 
         PlantInventoryEntry[] result = restTemplate.postForObject("http://localhost:8090/api/entries", entries, PlantInventoryEntry[].class);
