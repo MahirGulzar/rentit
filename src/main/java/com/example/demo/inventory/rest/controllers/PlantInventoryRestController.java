@@ -12,10 +12,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/inventory")
@@ -24,16 +23,14 @@ public class PlantInventoryRestController {
     @Autowired
     InventoryService inventoryService;
 
-
-
-
-
     @GetMapping("/plants/{pid}")
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_EMPLOYEE"})
     public Resource<?> findPlantInventoryEntry(
             @PathVariable(name = "pid") Long id) {
         return inventoryService.findPlantInventoryEntries(id);
     }
     @GetMapping("/plants")
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @ResponseStatus(HttpStatus.OK)
     public Resources<?> findAllPlantInventoryEntries() {
         return inventoryService.findAllPlantInventoryEntries();
@@ -44,12 +41,14 @@ public class PlantInventoryRestController {
 
 
     @GetMapping("/items/{id}")
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_EMPLOYEE"})
     public Resource<?> findPlantInventoryItem(
             @PathVariable(name = "id") Long id) {
         return inventoryService.findItemById(id);
     }
 
     @GetMapping("/items")
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_EMPLOYEE"})
     @ResponseStatus(HttpStatus.OK)
     public Resources<?> findAllPlantInventoryItems() {
         return inventoryService.findAllPlantInventoryItems();
