@@ -70,7 +70,7 @@ public class SalesRestController {
      * @return List of PurchaseOrderDTO's
      */
     @GetMapping("/orders")
-    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_EMPLOYEE"})
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     @ResponseStatus(HttpStatus.OK)
     public Resources<?> findPurchaseOrders() {
         return salesService.findAllPurchaseOrders();
@@ -146,11 +146,11 @@ public class SalesRestController {
 
     }
 
-    @ExceptionHandler(PlantNotFoundException.class)
-    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
-    public String bindExceptionHandler(Exception ex) {
-        return ex.getMessage();
-    }
+//    @ExceptionHandler(PlantNotFoundException.class)
+//    @ResponseStatus(HttpStatus.PRECONDITION_FAILED)
+//    public String bindExceptionHandler(Exception ex) {
+//        return ex.getMessage();
+//    }
 
 
 
@@ -215,11 +215,11 @@ public class SalesRestController {
     }
 
 
-    @ExceptionHandler(PlantNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void handlePlantNotFoundException(PlantNotFoundException ex){
-
-    }
+//    @ExceptionHandler(PlantNotFoundException.class)
+//    @ResponseStatus(HttpStatus.NOT_FOUND)
+//    public void handlePlantNotFoundException(PlantNotFoundException ex){
+//
+//    }
 
 
 

@@ -2,6 +2,7 @@ package com.example.demo.sales.application.services;
 
 
 import com.example.demo.common.application.dto.BusinessPeriodDTO;
+import com.example.demo.common.application.exceptions.PurchaseOrderNotFoundException;
 import com.example.demo.common.domain.model.BusinessPeriod;
 import com.example.demo.common.domain.validation.BusinessPeriodIsInFutureValidator;
 import com.example.demo.common.domain.validation.BusinessPeriodValidator;
@@ -314,6 +315,88 @@ public class SalesService {
         return poExtensionAssembler.toResources(po.getExtensions(), po);
     }
 
+
+
+    // ------------------------ Project Methods here -------------
+
+    public String cancelPO(Long id) throws PurchaseOrderNotFoundException, BindException {
+        PurchaseOrder purchaseOrder = orderRepo.getOne(id);
+        if(purchaseOrder == null) throw new PurchaseOrderNotFoundException(id);
+
+        if(purchaseOrder.getStatus() == POStatus.OPEN ||
+                purchaseOrder.getStatus() == POStatus.PENDING){
+            purchaseOrder.setStatus(POStatus.CANCELLED);
+            orderRepo.save(purchaseOrder);
+
+            return "PO cancelled.";
+        }
+        return "Given PO cannot be cancelled now.";
+    }
+
+
+
+    public Resource<PurchaseOrderDTO> distpatchPO(Long id) throws PurchaseOrderNotFoundException {
+        PurchaseOrder purchaseOrder = orderRepo.getOne(id);
+        if(purchaseOrder == null) throw new PurchaseOrderNotFoundException(id);
+
+        // Change status only if PO is in ACCEPTED state, otherwise, for now, send the PO back as it is.
+
+        if(purchaseOrder.getStatus() == POStatus.OPEN ){
+            purchaseOrder.setStatus(POStatus.DISPATCHED);
+            orderRepo.save(purchaseOrder);
+        }
+
+        return purchaseOrderAssembler.toResource(purchaseOrder);
+    }
+
+    public Resource<PurchaseOrderDTO> deliverPO(Long id) throws PurchaseOrderNotFoundException {
+        PurchaseOrder purchaseOrder = orderRepo.getOne(id);
+        if(purchaseOrder == null) throw new PurchaseOrderNotFoundException(id);
+
+        // Change status only if PO is in ACCEPTED or DISPATCHED state, otherwise, for now, send the PO back as it is.
+
+        if(purchaseOrder.getStatus() == POStatus.DISPATCHED || purchaseOrder.getStatus() == POStatus.OPEN){
+            purchaseOrder.setStatus(POStatus.DELIVERED);
+            orderRepo.save(purchaseOrder);
+        }
+
+        return purchaseOrderAssembler.toResource(purchaseOrder);
+    }
+
+    public Resource<PurchaseOrderDTO> customerRejectedPO(Long id) throws PurchaseOrderNotFoundException {
+        PurchaseOrder purchaseOrder = orderRepo.getOne(id);
+        if(purchaseOrder == null) throw new PurchaseOrderNotFoundException(id);
+
+        // Change status only if PO is in DISPATCHED state, otherwise, for now, send the PO back as it is.
+
+        if(purchaseOrder.getStatus() == POStatus.DISPATCHED ){
+            purchaseOrder.setStatus(POStatus.REJECTED_BY_CUSTOMER);
+            orderRepo.save(purchaseOrder);
+        }
+
+        return purchaseOrderAssembler.toResource(purchaseOrder);
+    }
+
+    public Resource<PurchaseOrderDTO> returnPO(Long id) throws PurchaseOrderNotFoundException {
+        PurchaseOrder purchaseOrder = orderRepo.getOne(id);
+        if(purchaseOrder == null) throw new PurchaseOrderNotFoundException(id);
+
+        // Change status only if PO is in DELIVERED state, otherwise, for now, send the PO back as it is.
+
+        if(purchaseOrder.getStatus() == POStatus.DELIVERED ){
+
+            //send invoice as plant is returned
+            //TODO Send invoice
+//            invoiceService.sendInvoice(purchaseOrderAssembler.toResource(purchaseOrder));
+
+
+            purchaseOrder.setStatus(POStatus.RETURNED);
+            orderRepo.save(purchaseOrder);
+
+        }
+
+        return purchaseOrderAssembler.toResource(purchaseOrder);
+    }
 
 
 }
