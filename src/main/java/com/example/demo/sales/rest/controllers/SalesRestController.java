@@ -19,6 +19,7 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,6 +70,7 @@ public class SalesRestController {
      * @return List of PurchaseOrderDTO's
      */
     @GetMapping("/orders")
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_EMPLOYEE"})
     @ResponseStatus(HttpStatus.OK)
     public Resources<?> findPurchaseOrders() {
         return salesService.findAllPurchaseOrders();
