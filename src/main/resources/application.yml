@@ -1,0 +1,8 @@
+gmail:
+  username: abc@gmail.com
+  password: abc
+  from: abc@gmail.com
+  to: abc@gmail.com
+
+builtItUri:
+  invoice: http://localhost:8080/api/invoicing/invoices

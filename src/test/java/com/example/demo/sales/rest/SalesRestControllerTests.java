@@ -76,10 +76,6 @@ public class SalesRestControllerTests {
     @Autowired
     PlantInventoryEntryRepository repo;
 
-
-
-
-
     @Autowired
     private WebApplicationContext wac;
     private MockMvc mockMvc;
