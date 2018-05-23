@@ -2,6 +2,7 @@ package com.example.demo.invoicing.application.services;
 
 import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepository;
 import com.example.demo.invoicing.application.dto.InvoiceDTO;
+import com.example.demo.invoicing.application.integrations.gateways.InvoicingGateway;
 import com.example.demo.invoicing.domain.model.Invoice;
 import com.example.demo.invoicing.domain.model.InvoiceStatus;
 import com.example.demo.invoicing.domain.repository.InvoiceRepository;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.hateoas.Resource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -55,7 +57,8 @@ public class InvoiceService {
     @Value("${gmail.to}")
     String emailTo;
 
-    InvoiceIdentifierFactory poFactory = new InvoiceIdentifierFactory();
+    InvoiceIdentifierFactory invoiceIdentifierFactory = new InvoiceIdentifierFactory();
+
 
     public List<InvoiceDTO> getInvoices() {
         return invoiceAssembler.toResources(invoiceRepository.findAll());
@@ -65,12 +68,13 @@ public class InvoiceService {
         return invoiceAssembler.toResource(invoiceRepository.getOne(id));
     }
 
-    public void sendInvoice(PurchaseOrderDTO purchaseOrderDTO) {
+
+    public void sendInvoice(Resource<PurchaseOrderDTO> purchaseOrderDTO) {
 
         LocalDate localDate = LocalDate.now();
         localDate.plusDays(14);
 
-        Invoice invoice = Invoice.of(poFactory.nextInvoiceID(), purchaseOrderDTO.get_id(), purchaseOrderDTO.getTotal(),
+        Invoice invoice = Invoice.of(invoiceIdentifierFactory.nextInvoiceID(), purchaseOrderDTO.getContent().get_id(), purchaseOrderDTO.getContent().getTotal(),
                 localDate, InvoiceStatus.UNPAID);
 
         invoiceRepository.save(invoice);

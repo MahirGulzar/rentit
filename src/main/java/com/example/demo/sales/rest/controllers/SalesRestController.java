@@ -48,7 +48,7 @@ public class SalesRestController {
     SalesService salesService;
 
     @GetMapping("/plants")
-    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","CUSTOMER"})
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","ROLE_CUSTOMER"})
     public Resources<?> findAvailablePlants(
             @RequestParam(name = "name") String plantName,
             @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -58,7 +58,7 @@ public class SalesRestController {
 
 
     @GetMapping("/orders/{id}")
-    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","CUSTOMER"})
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","ROLE_CUSTOMER"})
     @ResponseStatus(HttpStatus.OK)
     public Resource<PurchaseOrderDTO> fetchPurchaseOrder(@PathVariable("id") Long id){
         return salesService.findPurchaseOrder(id);
@@ -134,7 +134,7 @@ public class SalesRestController {
 
 
     @PostMapping("/orders")
-    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","CUSTOMER"})
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","ROLE_CUSTOMER"})
     public ResponseEntity<?> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) {
 //        System.out.println(partialPODTO.toString());
         Resource<PurchaseOrderDTO> resource = salesService.createPO(partialPODTO);

@@ -107,15 +107,11 @@ public class SalesRestControllerTests {
         System.out.println(entryDTOS);
         assert((entryDTOS.size()==4));
     }
-
+//
 //    @Test
-//    @Sql("/plants-dataset.sql")
 //    public void testGetAllPlants() throws Exception {
 //
-//        // Move few lines of code to function so i can resue it.
-//        List<PlantInventoryEntryDTO> plants =  this.findPlants("exc", LocalDate.of(2018,4,14), LocalDate.of(2018,4,25));
 //
-//        assertThat(plants.size()).isEqualTo(3);
 //
 //        PurchaseOrderDTO order = new PurchaseOrderDTO();
 //        order.setPlant(plants.get(1));

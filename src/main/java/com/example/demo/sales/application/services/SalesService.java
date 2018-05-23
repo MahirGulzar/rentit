@@ -20,6 +20,14 @@ import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepositor
 import com.example.demo.inventory.domain.repository.PlantInventoryItemRepository;
 import com.example.demo.inventory.domain.repository.PlantReservationRepository;
 import com.example.demo.inventory.domain.validation.PlantInventoryEntryValidator;
+import com.example.demo.invoicing.application.dto.InvoiceDTO;
+import com.example.demo.invoicing.application.integrations.gateways.InvoicingGateway;
+import com.example.demo.invoicing.application.services.InvoiceAssembler;
+import com.example.demo.invoicing.application.services.InvoiceService;
+import com.example.demo.invoicing.domain.model.Invoice;
+import com.example.demo.invoicing.domain.model.InvoiceStatus;
+import com.example.demo.invoicing.domain.repository.InvoiceRepository;
+import com.example.demo.invoicing.infrastructure.InvoiceIdentifierFactory;
 import com.example.demo.sales.application.dto.POExtensionDTO;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.domain.model.POStatus;
@@ -27,7 +35,10 @@ import com.example.demo.sales.domain.model.PurchaseOrder;
 import com.example.demo.sales.domain.model.factory.SalesIdentifierFactory;
 import com.example.demo.sales.domain.repository.PurchaseOrderRepository;
 import com.example.demo.sales.domain.validation.PurchaseOrderValidator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
@@ -83,6 +94,9 @@ public class SalesService {
 
     @Autowired
     RestTemplate restTemplate;
+
+    @Autowired
+    InvoiceService invoiceService;
     /*
     Purchase Order Service Methods
      */
@@ -443,6 +457,12 @@ public class SalesService {
         return purchaseOrderAssembler.toResource(purchaseOrder);
     }
 
+
+
+
+
+
+
     public Resource<PurchaseOrderDTO> returnPO(Long id) throws PurchaseOrderNotFoundException {
         PurchaseOrder purchaseOrder = orderRepo.getOne(id);
         if(purchaseOrder == null) throw new PurchaseOrderNotFoundException(id);
@@ -453,7 +473,7 @@ public class SalesService {
 
             //send invoice as plant is returned
             //TODO Send invoice
-//            invoiceService.sendInvoice(purchaseOrderAssembler.toResource(purchaseOrder));
+            invoiceService.sendInvoice(purchaseOrderAssembler.toResource(purchaseOrder));
 
 
             purchaseOrder.setStatus(POStatus.RETURNED);
