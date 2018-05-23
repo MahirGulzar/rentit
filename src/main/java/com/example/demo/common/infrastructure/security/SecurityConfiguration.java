@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -27,7 +28,9 @@ public class SecurityConfiguration {
 
     @Autowired
     void configureAuthenticationSystem(AuthenticationManagerBuilder builder) throws Exception {
+//        User.withDefaultPasswordEncoder();
          builder
+
                  .jdbcAuthentication()
                  .dataSource(dataSource)
                  .usersByUsernameQuery(
@@ -53,6 +56,9 @@ public class SecurityConfiguration {
                     .and().httpBasic()
                     .authenticationEntryPoint((req,res,exc) ->
                         res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "You don't have permission to see here.."));
+
+            // add this line to use H2 web console
+            http.headers().frameOptions().disable();
         }
     }
 }

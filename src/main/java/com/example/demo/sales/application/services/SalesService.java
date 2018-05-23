@@ -11,6 +11,7 @@ import com.example.demo.inventory.application.dto.PlantInventoryItemDTO;
 import com.example.demo.inventory.application.exceptions.PlantNotFoundException;
 import com.example.demo.inventory.application.services.InventoryService;
 import com.example.demo.inventory.application.services.PlantInventoryEntryAssembler;
+import com.example.demo.inventory.application.services.PlantInventoryItemAssembler;
 import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import com.example.demo.inventory.domain.model.PlantInventoryItem;
 import com.example.demo.inventory.domain.model.PlantReservation;
@@ -35,6 +36,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -51,12 +53,15 @@ public class SalesService {
 
     @Autowired
     PlantInventoryItemRepository itemRepo;
+    @Autowired
+    PlantInventoryItemAssembler plantInventoryItemAssembler;
 
 
     @Autowired
     PlantInventoryEntryRepository plantRepo;
     @Autowired
     PlantInventoryEntryAssembler plantInventoryEntryAssembler;
+
 
 
     @Autowired
@@ -249,7 +254,9 @@ public class SalesService {
         }
         orderRepo.save(order);
         System.out.println("Before sending request...");
-        ResponseEntity<?> result = restTemplate.postForEntity(order.getAcceptHref(), null, PurchaseOrderDTO.class);
+        if(order.getAcceptHref()!=null) {
+            ResponseEntity<?> result = restTemplate.postForEntity(order.getAcceptHref(), null, PurchaseOrderDTO.class);
+        }
         System.out.println("After sending request...");
         return purchaseOrderAssembler.toResource(order);
     }
@@ -283,7 +290,66 @@ public class SalesService {
             orderRepo.save(order);
         }
         else {
-            System.out.println("Item is NOT available in these dates....");
+
+            System.out.println("Item not available in these dates checking for replacement....");
+            LocalDate startDate = order.getRentalPeriod().getStartDate();
+            LocalDate endDate = order.getRentalPeriod().getEndDate();
+            List<PlantInventoryItem> items = inventoryRepository.findReplacementItems(order.getPlant().getName(), startDate, endDate);
+
+            if(!items.isEmpty()){
+
+                System.out.println("Current plant price:---> "+item.getPlantInfo().getPrice());
+                System.out.println("Replacement plant price:---> "+items.get(0).getPlantInfo().getPrice());
+                if(item.getPlantInfo().getPrice().compareTo(items.get(0).getPlantInfo().getPrice())<0) {
+
+
+                    BigDecimal reducedPrice = (items.get(0).getPlantInfo().getPrice()
+                            .subtract(item.getPlantInfo().getPrice()));
+                    System.out.println(reducedPrice);
+//                    reducedPrice = reducedPrice.divide(item.getPlantInfo().getPrice());
+//                    System.out.println(reducedPrice);
+                    float decimalval = reducedPrice.floatValue();
+                    float prevPlantValue=item.getPlantInfo().getPrice().floatValue();
+                    System.out.println("Decimal value of reduced right now = "+decimalval);
+                    System.out.println("Decimal value of previous plant  = "+item.getPlantInfo().getPrice().floatValue());
+                    decimalval = decimalval/prevPlantValue;
+                    System.out.println("Division value = "+decimalval);
+                    decimalval = decimalval*100.0f;
+//                    reducedPrice = reducedPrice.multiply(new BigDecimal(100));
+                    System.out.println(decimalval);
+                    if (decimalval<=30) {
+                        System.out.println("Replacement found for loss less than 30%....");
+
+                        PlantReservation plantReservation = new PlantReservation();
+                        plantReservation.setPlant(item);
+                        System.out.println(order.pendingExtensionEndDate());
+                        plantReservation.setSchedule(BusinessPeriod.of(order.getRentalPeriod().getEndDate().plusDays(1), order.pendingExtensionEndDate()));
+                        reservationRepo.save(plantReservation);
+
+                        order.acceptExtension(plantReservation);
+                        orderRepo.save(order);
+                    } else {
+                        System.out.println("Replacement not found for loss less than 30%....");
+                    }
+                }
+                else
+                {
+                    System.out.println("Replacement found with no loss ...");
+                    PlantReservation plantReservation = new PlantReservation();
+                    plantReservation.setPlant(item);
+                    System.out.println(order.pendingExtensionEndDate());
+                    plantReservation.setSchedule(BusinessPeriod.of(order.getRentalPeriod().getEndDate().plusDays(1), order.pendingExtensionEndDate()));
+                    reservationRepo.save(plantReservation);
+
+                    order.acceptExtension(plantReservation);
+                    orderRepo.save(order);
+                }
+
+            }
+            else{
+                System.out.println("Replacement not found at all....");
+            }
+
         }
 
         return purchaseOrderAssembler.toResource(order);
@@ -398,5 +464,9 @@ public class SalesService {
         return purchaseOrderAssembler.toResource(purchaseOrder);
     }
 
+
+    public Resources<?> findPlantsToDispatch(LocalDate givenDate){
+        return plantInventoryItemAssembler.toResources(orderRepo.findPlantsToDispatch(givenDate));
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.example.demo.inventory.application.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 
 
 @Data
+
 @Relation(value="plant", collectionRelation="plants")
 public class PlantInventoryEntryDTO extends ResourceSupport{
 
@@ -21,4 +23,7 @@ public class PlantInventoryEntryDTO extends ResourceSupport{
     String description;
     BigDecimal price;
 
+    @JsonCreator
+    public PlantInventoryEntryDTO() {
+    }
 }

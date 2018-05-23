@@ -37,6 +37,18 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
     }
 
     @Override
+    public List<PlantInventoryItem> findReplacementItems(String name, LocalDate startDate, LocalDate endDate) {
+        return em.createQuery("select i from PlantInventoryItem i where i.plantInfo.name like ?1 and i not in " +
+                        "(select r.plant from PlantReservation r where ?2 < r.schedule.endDate and ?3 > r.schedule.startDate)" +
+                        " order by i.plantInfo.price"
+                , PlantInventoryItem.class)
+                .setParameter(1, name)
+                .setParameter(2, startDate)
+                .setParameter(3, endDate)
+                .getResultList();
+    }
+
+    @Override
     public Boolean isAvailableFor(PlantInventoryItem item, LocalDate startDate, LocalDate endDate) {
         return em.createQuery("select case when (count(i) > 0)  then true else false end from PlantInventoryItem i where i = ?1 and i not in " +
                         "(select r.plant from PlantReservation r where ?2 < r.schedule.endDate and ?3 > r.schedule.startDate)"

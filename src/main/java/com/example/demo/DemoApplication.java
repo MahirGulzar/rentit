@@ -55,6 +55,9 @@ public class DemoApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
+		BigDecimal reducedPrice = (new BigDecimal(200)
+				.subtract(new BigDecimal(150)).divide(new BigDecimal(200))).multiply(new BigDecimal(100));
+		System.out.println(reducedPrice);
 	}
 
 

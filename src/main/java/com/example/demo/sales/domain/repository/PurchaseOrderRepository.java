@@ -19,7 +19,7 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder,Lon
     PurchaseOrder findPurchaseOrderById(Long ID);
 
 
-    @Query("select r.plant from PlantReservation r where r in " +
-            "(select po.reservations from PurchaseOrder po where po.status='OPEN') and r.schedule.startDate=?1")
+    // TODO might verify
+    @Query("select r.plant from PlantReservation r where r.schedule.startDate=?1")
     List<PlantInventoryItem> findPlantsToDispatch(LocalDate startDate);
 }

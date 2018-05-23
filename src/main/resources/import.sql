@@ -18,7 +18,8 @@
 
  insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (1, 1, 'A01', 'SERVICEABLE');
  insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (2, 2, 'A02', 'SERVICEABLE');
- insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (3, 3, 'A03', 'UNSERVICEABLE_REPAIRABLE');
+  insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (3, 1, 'A02', 'SERVICEABLE');
+ insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (4, 3, 'A03', 'UNSERVICEABLE_REPAIRABLE');
 
 -- insert into plant_inventory_item (id, plant_info_id, serial_number)
 --     values (1, 1, 'A01');

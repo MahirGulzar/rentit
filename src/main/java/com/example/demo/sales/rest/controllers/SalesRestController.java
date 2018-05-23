@@ -1,6 +1,7 @@
 package com.example.demo.sales.rest.controllers;
 
 
+import com.example.demo.common.application.exceptions.PurchaseOrderNotFoundException;
 import com.example.demo.common.utils.ExtendedLink;
 import com.example.demo.inventory.application.dto.PlantInventoryEntryDTO;
 import com.example.demo.inventory.application.dto.PlantInventoryItemDTO;
@@ -40,7 +41,6 @@ import static org.springframework.http.HttpMethod.POST;
 public class SalesRestController {
 
 
-
     @Autowired
     InventoryService inventoryService;
 
@@ -48,6 +48,7 @@ public class SalesRestController {
     SalesService salesService;
 
     @GetMapping("/plants")
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","CUSTOMER"})
     public Resources<?> findAvailablePlants(
             @RequestParam(name = "name") String plantName,
             @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -57,6 +58,7 @@ public class SalesRestController {
 
 
     @GetMapping("/orders/{id}")
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","CUSTOMER"})
     @ResponseStatus(HttpStatus.OK)
     public Resource<PurchaseOrderDTO> fetchPurchaseOrder(@PathVariable("id") Long id){
         return salesService.findPurchaseOrder(id);
@@ -70,7 +72,7 @@ public class SalesRestController {
      * @return List of PurchaseOrderDTO's
      */
     @GetMapping("/orders")
-    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     @ResponseStatus(HttpStatus.OK)
     public Resources<?> findPurchaseOrders() {
         return salesService.findAllPurchaseOrders();
@@ -132,6 +134,7 @@ public class SalesRestController {
 
 
     @PostMapping("/orders")
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","CUSTOMER"})
     public ResponseEntity<?> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) {
 //        System.out.println(partialPODTO.toString());
         Resource<PurchaseOrderDTO> resource = salesService.createPO(partialPODTO);
@@ -158,11 +161,13 @@ public class SalesRestController {
 
 
     @PutMapping("/orders/{id}/allocation")
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     public Resource<?> allocatePlant(@PathVariable("id") Long id) {
         return salesService.allocatePlantToPurchaseOrder(id);
     }
 
     @DeleteMapping("/orders/{id}/allocation")
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     public Resource<?> rejectPurchaseOrder(@PathVariable Long id){
 
         return salesService.rejectPurchaseOrder(id);
@@ -170,16 +175,19 @@ public class SalesRestController {
 
 
     @DeleteMapping("/orders/{id}")
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     public Resource<PurchaseOrderDTO> handleDeleteOnPurchaseOrder(@PathVariable("id") Long id) {
         return salesService.deletePurchaseOrder(id);
     }
 
     @GetMapping("/orders/{id}/extensions")
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     public Resources<?> retrievePurchaseOrderExtensions(@PathVariable("id") Long id) {
         return salesService.fetchPurchaseOrderExtensions(id);
     }
 
     @PostMapping("/orders/{id}/extensions")
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     public Resource<?> requestPurchaseOrderExtension(@RequestBody POExtensionDTO extensionDTO , @PathVariable("id") Long id) {
         System.out.println(extensionDTO.getEndDate());
 
@@ -187,6 +195,7 @@ public class SalesRestController {
     }
 
     @PutMapping("/orders/{id}")
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     public ResponseEntity<?> resubmitPurchaseOrder(@PathVariable("id") Long id, @RequestBody PurchaseOrderDTO order) {
         Resource<PurchaseOrderDTO> resource = salesService.updatePurchaseOrder(id,order);
 
@@ -201,15 +210,15 @@ public class SalesRestController {
     }
 
     @PatchMapping("/orders/{id}/extensions")
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     public Resource<?> acceptPurchaseOrderExtension(@PathVariable("id") Long id, @RequestBody PlantInventoryItemDTO plant) {
-        // todo salesserver.acceptpoextention
         System.out.println(plant);
         System.out.println(id);
         return salesService.acceptPurchaseExtension(id,plant);
-//        return null;
     }
 
     @DeleteMapping("/orders/{id}/extensions")
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     public Resource<?> rejectPurchaseOrderExtension(@PathVariable("id") Long id) {
         return salesService.rejectPurchaseExtension(id);
     }
@@ -221,6 +230,53 @@ public class SalesRestController {
 //
 //    }
 
+
+    //---------------------- Project Methods ------------------------
+
+    @RequestMapping(value = "/orders/{id}/cancel", method = RequestMethod.GET, produces = "application/json")
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
+    public String cancelPurchaseOrder(@PathVariable("id") Long id) throws PurchaseOrderNotFoundException, BindException {
+        return "{\"response\": \"" + salesService.cancelPO(id) + "\"}";
+    }
+
+    @GetMapping("/orders/{id}/dispatched")
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
+    public Resource<PurchaseOrderDTO> dispatchPurchaseOrder(@PathVariable("id") Long id) throws PurchaseOrderNotFoundException, BindException {
+        return salesService.distpatchPO(id);
+    }
+
+    @GetMapping("/orders/{id}/delivered")
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
+    public Resource<PurchaseOrderDTO> deliveredPurchaseOrder(@PathVariable("id") Long id) throws PurchaseOrderNotFoundException, BindException {
+        return salesService.deliverPO(id);
+    }
+
+    @GetMapping("/orders/{id}/rejected_by_customer")
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
+    public Resource<PurchaseOrderDTO> customerRejectedPurchaseOrder(@PathVariable("id") Long id) throws PurchaseOrderNotFoundException, BindException {
+        return salesService.customerRejectedPO(id);
+    }
+
+    @GetMapping("/orders/{id}/returned")
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
+    public Resource<PurchaseOrderDTO> returnPurchaseOrder(@PathVariable("id") Long id) throws PurchaseOrderNotFoundException, BindException {
+        return salesService.returnPO(id);
+    }
+
+
+    @GetMapping("/plants_to_dispatch")
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
+    public Resources<?> plantsToDispatch(@RequestParam(name = "dispatchDate")
+                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dispatchDate) {
+        System.out.println(dispatchDate);
+        return salesService.findPlantsToDispatch(dispatchDate);
+    }
 
 
 }
