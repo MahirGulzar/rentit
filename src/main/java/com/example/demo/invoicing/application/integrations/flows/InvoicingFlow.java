@@ -11,12 +11,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpMethod;
+import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.integration.http.dsl.Http;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
@@ -24,13 +26,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
-
+@Component
+@ConfigurationProperties
 @Configuration
 class InvoicingFlow {
 
 
-    @Value("${builtItUri.invoice}")
-    String invoiceUrl;
+//    @Value("${builtItUri.invoice}")
+    String invoiceUrl = "http://localhost:8090/api/sales/test_invoices";
 
     @Configuration
     @PropertySource("classpath:credentials.properties")
@@ -65,57 +68,16 @@ class InvoicingFlow {
         return new BasicSecureSimpleClientHttpRequestFactory();
     }
 
-//    @Bean
-//    IntegrationFlow scatterComponent() {
-//        return IntegrationFlows.from("req-channel")
-//                .publishSubscribeChannel(conf ->
-//                        conf.applySequence(true)
-//                                //TODO Will use Gather and Scatter once we implment the final project
-//                                //.subscribe(f -> f.channel("rentmt-channel"))
-//                                .subscribe(f -> f.channel("rentit-channel"))
-//                )
-//                .get();
-//    }
-//
-//    @Bean
-//    IntegrationFlow gatherComponent() {
-//        return IntegrationFlows.from("gather-channel")
-//                .aggregate(spec -> spec.outputProcessor(proc ->
-//                        new Resources<>(
-//                                proc.getMessages()
-//                                        .stream()
-//                                        .map(msg -> ((Resources) msg.getPayload()).getContent())
-//                                        .collect(Collectors.toList())))
-//                        .groupTimeout(2000)
-//                        .releaseStrategy(group -> group.size() > 1)
-//                        .sendPartialResultOnExpiry(true))
-//                .channel("rep-channel")
-//                .get();
-//    }
 
     @Bean
     IntegrationFlow BuiltItOneFlow() {
-        return IntegrationFlows.from("builtit-one-http-channel")
-                .handle(Http.outboundGateway("http://localhost:8080/api/invoicing/invoices/")
+        return IntegrationFlows.from("builtit-one-flow")
+                .bridge(null)
+                .handle(Http.outboundGateway(invoiceUrl)
                         .httpMethod(HttpMethod.POST).requestFactory(requestFactory())
-                        .expectedResponseType(String.class)
                 )
+                .handle("invoiceService", "testmethod")
                 .get();
     }
-
-//    @Bean
-//    IntegrationFlow rentItFlow() {
-//        return IntegrationFlows.from("rentit-channel")
-//                .handle(Http.outboundGateway("http://localhost:8090/api/sales/plants?name={name}&startDate={startDate}&endDate={endDate}")
-//                        .uriVariable("name", "payload")
-//                        .uriVariable("startDate", "headers.startDate")
-//                        .uriVariable("endDate", "headers.endDate")
-//                        .httpMethod(HttpMethod.GET)
-//                        .expectedResponseType(String.class)
-//                )
-//                .handle("findPlantsCustomTransformer", "fromHALForms")
-//                .channel("gather-channel")
-//                .get();
-//    }
 }
 

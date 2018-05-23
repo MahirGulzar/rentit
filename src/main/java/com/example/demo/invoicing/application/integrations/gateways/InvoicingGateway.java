@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
 import javax.mail.internet.MimeMessage;
 
 
-//@IntegrationComponentScan
+@IntegrationComponentScan
 @MessagingGateway
 @Service
 public interface InvoicingGateway {
-    @Gateway(requestChannel = "builtit-one-http-channel")
-    void sendInvoice(String invoice);
+    @Gateway(requestChannel = "builtit-one-flow")
+    public void sendInvoice(String invoice);
 
     @Gateway(requestChannel = "builtit-one-mail-channel")
-    void sendInvoice(MimeMessage msg);
+    public void sendInvoice(MimeMessage msg);
 }
 

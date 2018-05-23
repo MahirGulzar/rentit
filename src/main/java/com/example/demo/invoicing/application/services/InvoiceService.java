@@ -9,6 +9,7 @@ import com.example.demo.invoicing.domain.repository.InvoiceRepository;
 import com.example.demo.invoicing.infrastructure.InvoiceIdentifierFactory;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.util.ByteArrayDataSource;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -124,5 +126,28 @@ public class InvoiceService {
         }
 
         invoicingGateway.sendInvoice(rootMessage);
+    }
+
+
+
+// Added for testing source and destination of gateway
+    public void processInvoice(String invoiceStr) {
+        System.out.println("Yeee invoice haiiiiiiiiii !------------->"+invoiceStr);
+
+        InvoiceDTO invoiceDTO = null;
+        try {
+            invoiceDTO = mapper.readValue(invoiceStr, new TypeReference<InvoiceDTO>() {});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Yeee DTO :O !------------->"+invoiceDTO);
+
+    }
+
+
+    public void testmethod()
+    {
+        System.out.println("In test.....");
     }
 }

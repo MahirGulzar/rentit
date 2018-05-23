@@ -278,5 +278,4 @@ public class SalesRestController {
         return salesService.findPlantsToDispatch(dispatchDate);
     }
 
-
 }
