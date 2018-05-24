@@ -433,7 +433,7 @@ public class SalesService {
         PurchaseOrder purchaseOrder = orderRepo.getOne(id);
         if(purchaseOrder == null) throw new PurchaseOrderNotFoundException(id);
 
-        // Change status only if PO is in ACCEPTED or DISPATCHED state, otherwise, for now, send the PO back as it is.
+        // if PO is in ACCEPTED or DISPATCHED state, otherwise, for now, send the PO back as it is.
 
         if(purchaseOrder.getStatus() == POStatus.DISPATCHED || purchaseOrder.getStatus() == POStatus.OPEN){
             purchaseOrder.setStatus(POStatus.DELIVERED);

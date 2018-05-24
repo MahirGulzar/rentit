@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 class InvoicingFlow {
 
 
-//    @Value("${builtItUri.invoice}")
-    String invoiceUrl = "http://localhost:8090/api/sales/test_invoices";
+    @Value("${builtItUri.invoice}")
+    String invoiceUrl;
 
     @Configuration
     @PropertySource("classpath:credentials.properties")
@@ -76,6 +76,8 @@ class InvoicingFlow {
                 .handle(Http.outboundGateway(invoiceUrl)
                         .httpMethod(HttpMethod.POST).requestFactory(requestFactory())
                 )
+                // if not handled it gives weird error..
+                // TODO verify
                 .handle("invoiceService", "testmethod")
                 .get();
     }

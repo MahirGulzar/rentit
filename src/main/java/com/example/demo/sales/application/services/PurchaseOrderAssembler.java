@@ -2,6 +2,7 @@ package com.example.demo.sales.application.services;
 
 
 import com.example.demo.common.application.dto.BusinessPeriodDTO;
+import com.example.demo.common.application.exceptions.PurchaseOrderNotFoundException;
 import com.example.demo.common.utils.ExtendedLink;
 import com.example.demo.inventory.application.services.PlantInventoryEntryAssembler;
 import com.example.demo.inventory.rest.controllers.PlantInventoryRestController;
@@ -16,6 +17,7 @@ import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
@@ -68,15 +70,24 @@ public class PurchaseOrderAssembler {
                         new ExtendedLink(linkTo(methodOn(SalesRestController.class).rejectPurchaseOrder(po.getId())).toString(), "reject", HttpMethod.DELETE)
                 );
             case OPEN:
-                return  Arrays.asList(
-                        linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
-                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE),
-                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).toString(), "extensions", HttpMethod.GET),
-                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).requestPurchaseOrderExtension(null,po.getId())).toString(), "request extension", HttpMethod.POST)
+                try {
+                    return Arrays.asList(
+                            linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).toString(), "extensions", HttpMethod.GET),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).dispatchPurchaseOrder(po.getId())).toString(), "dispatched", HttpMethod.GET),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).requestPurchaseOrderExtension(null, po.getId())).toString(), "request extension", HttpMethod.POST)
 
-//                        linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).withRel("extensions")
-//                                .andAffordance(afford(methodOn(SalesRestController.class).requestPurchaseOrderExtension(null, po.getId())))
-                );
+                    );
+                }
+                catch (PurchaseOrderNotFoundException exception)
+                {
+                    // PO not found here..
+                }
+                catch (BindException bindException)
+                {
+                    // Bind exception for validator
+                }
             case PENDING_EXTENSION:
                 return Arrays.asList(
                         linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
@@ -84,6 +95,43 @@ public class PurchaseOrderAssembler {
                         new ExtendedLink(linkTo(methodOn(SalesRestController.class).acceptPurchaseOrderExtension(po.getId(), null)).toString(), "accept extension", HttpMethod.PATCH),
                         new ExtendedLink(linkTo(methodOn(SalesRestController.class).rejectPurchaseOrderExtension(po.getId())).toString(), "reject extension", HttpMethod.DELETE)
                 );
+            case DISPATCHED:
+                try {
+                    return Arrays.asList(
+                            linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).toString(), "extensions", HttpMethod.GET),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).deliveredPurchaseOrder(po.getId())).toString(), "delivered", HttpMethod.GET),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).requestPurchaseOrderExtension(null, po.getId())).toString(), "request extension", HttpMethod.POST)
+
+                    );
+                }
+                catch (PurchaseOrderNotFoundException exception)
+                {
+                    // PO not found here..
+                }
+                catch (BindException bindException)
+                {
+                    // Bind exception for validator
+                }
+            case DELIVERED:
+                try {
+                    return Arrays.asList(
+                            linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).toString(), "extensions", HttpMethod.GET),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).returnPurchaseOrder(po.getId())).toString(), "returned", HttpMethod.GET),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).requestPurchaseOrderExtension(null, po.getId())).toString(), "request extension", HttpMethod.POST)
+                    );
+                }
+                catch (PurchaseOrderNotFoundException exception)
+                {
+                    // PO not found here..
+                }
+                catch (BindException bindException)
+                {
+                    // Bind exception for validator
+                }
             case REJECTED:
                 return Arrays.asList(
                         linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel()
