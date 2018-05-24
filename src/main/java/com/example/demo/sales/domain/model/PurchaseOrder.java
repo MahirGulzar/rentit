@@ -26,7 +26,6 @@ public class PurchaseOrder {
 
 
     @Id
-    //@GeneratedValue
     Long id;
 
 

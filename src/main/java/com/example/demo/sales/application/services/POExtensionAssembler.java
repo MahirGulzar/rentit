@@ -1,6 +1,5 @@
 package com.example.demo.sales.application.services;
 
-import com.example.demo.common.utils.ExtendedLink;
 import com.example.demo.sales.application.dto.POExtensionDTO;
 import com.example.demo.sales.domain.model.POExtension;
 import com.example.demo.sales.domain.model.PurchaseOrder;
@@ -8,7 +7,6 @@ import com.example.demo.sales.rest.controllers.SalesRestController;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;

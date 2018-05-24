@@ -15,6 +15,4 @@ import java.time.LocalDate;
 public class POExtensionDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     LocalDate endDate;
-
-
 }

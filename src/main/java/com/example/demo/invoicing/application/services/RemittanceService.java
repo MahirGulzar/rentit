@@ -30,7 +30,7 @@ public class RemittanceService {
 
             Invoice invoice = invoiceRepository.findByPoID(remittanceDTO.getPoID());
 
-            if(invoice != null/* && invoice.getAmount().compareTo(remittanceDTO.getAmount()) == 0*/){
+            if(invoice != null){
 
                 invoice.setStatus(InvoiceStatus.PAID);
                 invoiceRepository.save(invoice);
@@ -41,8 +41,6 @@ public class RemittanceService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
 
     }
 

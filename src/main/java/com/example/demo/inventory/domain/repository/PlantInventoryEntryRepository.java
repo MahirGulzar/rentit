@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
+
 @Repository
 public interface PlantInventoryEntryRepository extends JpaRepository<PlantInventoryEntry,Long>{
 
@@ -18,15 +19,14 @@ public interface PlantInventoryEntryRepository extends JpaRepository<PlantInvent
 
 
 
-
-//    // To Specify by query
-//
-//
 //    List<PlantInventoryEntry> findByNameLike(String name);
 //    List<PlantInventoryEntry> findByNameContaining(String name);
-//
-//
-//
+
+
+/**
+ * We Used these queries in Homeworks
+ */
+
 //    @Query("SELECT new com.example.demo.inventory.utils.PlantsWithCount(item.plantInfo,count(item.plantInfo)) FROM PlantInventoryItem item WHERE item.plantInfo.name LIKE %?1% " +
 //            "AND item.equipmentCondition= com.example.demo.inventory.domain.model.EquipmentCondition.SERVICEABLE " +
 //            "AND item NOT IN (SELECT pr.plant FROM PlantReservation pr WHERE pr.schedule.startDate BETWEEN ?2 AND ?3 " +
@@ -57,11 +57,7 @@ public interface PlantInventoryEntryRepository extends JpaRepository<PlantInvent
     List<YearlyRentalData> getExtensivelyUsedPlant(int start, int end);*/
 
 
-
 //----------------------------------------------------------------------------------------------------------------------------------------
-
-
-    //----------------------------------------------------------------------------------------------------------------------------------------
 
 
 }

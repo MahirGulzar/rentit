@@ -1,8 +1,6 @@
 package com.example.demo;
 
-import com.example.demo.common.domain.model.Money;
-import com.example.demo.inventory.domain.model.PlantInventoryEntry;
-import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepository;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -11,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
@@ -19,7 +16,6 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,9 +51,6 @@ public class DemoApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
-		BigDecimal reducedPrice = (new BigDecimal(200)
-				.subtract(new BigDecimal(150)).divide(new BigDecimal(200))).multiply(new BigDecimal(100));
-		System.out.println(reducedPrice);
 	}
 
 

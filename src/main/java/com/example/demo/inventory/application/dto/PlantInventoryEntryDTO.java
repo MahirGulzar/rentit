@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 
 
 @Data
-
 @Relation(value="plant", collectionRelation="plants")
 public class PlantInventoryEntryDTO extends ResourceSupport{
 
@@ -23,7 +22,7 @@ public class PlantInventoryEntryDTO extends ResourceSupport{
     String description;
     BigDecimal price;
 
-    @JsonCreator
+    @JsonCreator // Added to test basic authentication
     public PlantInventoryEntryDTO() {
     }
 }

@@ -25,7 +25,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.util.ByteArrayDataSource;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -34,7 +33,7 @@ import java.util.List;
 public class InvoiceService {
 
     String MAIL_SUBJECT = "Invoice Purchase Order No.";
-    final String MAIL_TEXT = "Dear customer,\n\nPlease find attached the Invoice corresponding to your Purchase Order 123." +
+    final String MAIL_TEXT = "Dear customer,\n\nPlease find attached the Invoice corresponding to your above mentioned Purchase Order." +
             "\n\nKindly yours,\n\nRentIt Team!";
 
     @Autowired
@@ -102,13 +101,19 @@ public class InvoiceService {
 
     private void sendInvoiceMAIL(InvoiceDTO invoiceDTO) {
         JavaMailSender mailSender = new JavaMailSenderImpl();
-        String invoice1 =
-                "{\n" +
-                        "  \"order\":{\"_links\":{\"self\":{\"href\": \"http://rentit.com/api/sales/orders/1\"}}},\n" +
-                        "  \"amount\":800,\n" +
-                        "  \"dueDate\": \"2018-07-15\"\n" +
-                        "}\n";
 
+        String invoice;
+        try {
+            invoice = mapper.writeValueAsString(invoiceDTO);
+        }
+        catch (JsonProcessingException e) {
+            e.printStackTrace();
+            invoice="{\n" +
+                    "  \"order\":{\"_links\":{\"self\":{\"href\": \"http://rentit.com/api/sales/orders/1\"}}},\n" +
+                    "  \"amount\":800,\n" +
+                    "  \"dueDate\": \"2018-07-15\"\n" +
+                    "}\n";
+        }
         MimeMessage rootMessage = mailSender.createMimeMessage();
 
         try {
@@ -118,9 +123,9 @@ public class InvoiceService {
             helper.setSubject(MAIL_SUBJECT + invoiceDTO.get_id());
             helper.setText(MAIL_TEXT);
 
-            String filename = "invoice-po-123.json";
+            String filename = "invoice-po-"+invoiceDTO.getPoID()+".json";
 
-            helper.addAttachment(filename, new ByteArrayDataSource(invoice1, "application/json"));
+            helper.addAttachment(filename, new ByteArrayDataSource(invoice, "application/json"));
         } catch (MessagingException | IOException m) {
             m.printStackTrace();
         }
@@ -130,7 +135,11 @@ public class InvoiceService {
 
 
 
-// Added for testing source and destination of gateway
+    //-------------------------------------------------------------------------------------------------
+
+    // Test methods to check inbound Flows of BuiltIT..
+
+    // Added for testing source and destination of gateway
     public void processInvoice(String invoiceStr) {
         System.out.println("Yeee invoice haiiiiiiiiii !------------->"+invoiceStr);
 
@@ -144,7 +153,6 @@ public class InvoiceService {
         System.out.println("Yeee DTO :O !------------->"+invoiceDTO);
 
     }
-
 
     public void testmethod()
     {

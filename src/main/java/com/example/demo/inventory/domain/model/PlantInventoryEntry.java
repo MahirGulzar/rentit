@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 @Entity
 @Getter
 @NoArgsConstructor(force = true,access = AccessLevel.PROTECTED)
-//@AllArgsConstructor(staticName = "of")
 @Data
 public class PlantInventoryEntry {
     @Id @GeneratedValue

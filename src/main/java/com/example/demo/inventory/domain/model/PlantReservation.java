@@ -18,23 +18,9 @@ public class PlantReservation {
     @GeneratedValue
     Long id;
 
-
-//
-//    public static PlantReservation of(PurchaseOrder po,PlantInventoryItem plant)
-//    {
-//        PlantReservation pr=new PlantReservation();
-//        pr.purchaseOrder=po;
-//        pr.plant=plant;
-//        pr.maintenancePlan=null;
-//        pr.schedule = po.getRentalPeriod();
-//        return pr;
-//    }
-
     @ManyToOne
     PlantInventoryItem plant;
 
-//    @OneToOne
-//    MaintenancePlan maintenancePlan;
 
     @Embedded
     BusinessPeriod schedule;

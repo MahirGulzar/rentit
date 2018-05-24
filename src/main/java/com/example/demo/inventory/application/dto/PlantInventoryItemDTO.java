@@ -21,5 +21,4 @@ public class PlantInventoryItemDTO extends ResourceSupport {
 
     @ManyToOne
     Resource<PlantInventoryEntryDTO> plantInfo;
-//    PlantInventoryEntryDTO plantInfo;
 }

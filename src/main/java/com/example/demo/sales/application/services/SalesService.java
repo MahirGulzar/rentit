@@ -1,12 +1,10 @@
 package com.example.demo.sales.application.services;
 
 
-import com.example.demo.common.application.dto.BusinessPeriodDTO;
 import com.example.demo.common.application.exceptions.PurchaseOrderNotFoundException;
 import com.example.demo.common.domain.model.BusinessPeriod;
 import com.example.demo.common.domain.validation.BusinessPeriodIsInFutureValidator;
 import com.example.demo.common.domain.validation.BusinessPeriodValidator;
-import com.example.demo.inventory.application.dto.PlantInventoryEntryDTO;
 import com.example.demo.inventory.application.dto.PlantInventoryItemDTO;
 import com.example.demo.inventory.application.exceptions.PlantNotFoundException;
 import com.example.demo.inventory.application.services.InventoryService;
@@ -20,25 +18,14 @@ import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepositor
 import com.example.demo.inventory.domain.repository.PlantInventoryItemRepository;
 import com.example.demo.inventory.domain.repository.PlantReservationRepository;
 import com.example.demo.inventory.domain.validation.PlantInventoryEntryValidator;
-import com.example.demo.invoicing.application.dto.InvoiceDTO;
-import com.example.demo.invoicing.application.integrations.gateways.InvoicingGateway;
-import com.example.demo.invoicing.application.services.InvoiceAssembler;
 import com.example.demo.invoicing.application.services.InvoiceService;
-import com.example.demo.invoicing.domain.model.Invoice;
-import com.example.demo.invoicing.domain.model.InvoiceStatus;
-import com.example.demo.invoicing.domain.repository.InvoiceRepository;
-import com.example.demo.invoicing.infrastructure.InvoiceIdentifierFactory;
-import com.example.demo.sales.application.dto.POExtensionDTO;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.domain.model.POStatus;
 import com.example.demo.sales.domain.model.PurchaseOrder;
 import com.example.demo.sales.domain.model.factory.SalesIdentifierFactory;
 import com.example.demo.sales.domain.repository.PurchaseOrderRepository;
 import com.example.demo.sales.domain.validation.PurchaseOrderValidator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
@@ -58,32 +45,29 @@ public class SalesService {
     @Autowired
     InventoryService inventoryService;
 
-
     @Autowired
     PlantReservationRepository reservationRepo;
 
     @Autowired
     PlantInventoryItemRepository itemRepo;
+
     @Autowired
     PlantInventoryItemAssembler plantInventoryItemAssembler;
 
-
     @Autowired
     PlantInventoryEntryRepository plantRepo;
+
     @Autowired
     PlantInventoryEntryAssembler plantInventoryEntryAssembler;
 
-
-
     @Autowired
     PurchaseOrderRepository orderRepo;
+
     @Autowired
     PurchaseOrderAssembler purchaseOrderAssembler;
 
-
     @Autowired
     InventoryRepository inventoryRepository;
-
 
     @Autowired
     POExtensionAssembler poExtensionAssembler;
@@ -91,21 +75,12 @@ public class SalesService {
     @Autowired
     SalesIdentifierFactory identifierFactory;
 
-
     @Autowired
     RestTemplate restTemplate;
 
     @Autowired
     InvoiceService invoiceService;
-    /*
-    Purchase Order Service Methods
-     */
-    //--------------------------------------------------------------------------------------------------------------
 
-//    public List<PurchaseOrderDTO> findPurchaseOrderByStatus(String status)
-//    {
-//        return purchaseOrderAssembler.toResources(orderRepo.findPurchaseOrderByStatus(POStatus.valueOf(status)));
-//    }
 
 
 
@@ -117,7 +92,6 @@ public class SalesService {
     public Resource<PurchaseOrderDTO> deletePurchaseOrder(Long oid) {
         PurchaseOrder order = orderRepo.getOne(oid);
         if(order.getStatus() == POStatus.PENDING){
-//            order.handleRejection(); todo verifyy
             order.handleClose();
         }
         else if(order.getStatus() == POStatus.OPEN){
@@ -146,7 +120,6 @@ public class SalesService {
     }
 
 
-//    throws PlantNotFoundException, BindException
     public Resource<PurchaseOrderDTO> createPO(PurchaseOrderDTO purchaseOrderDTO)
     {
         PlantInventoryEntry plantInventoryEntry = plantRepo.getOne(purchaseOrderDTO.getPlant().getContent().get_id());
@@ -196,20 +169,6 @@ public class SalesService {
     }
 
 
-//    public PurchaseOrderDTO allocatePlant(Long oid,Long pid) {
-//        PurchaseOrder po = orderRepo.findPurchaseOrderById(oid);
-//        PlantInventoryItem item = inventoryService.findItemById(pid);
-//
-//        PlantReservation pr = inventoryService.createReservation(po,item);
-//        po.createReservation(pr);
-//        orderRepo.save(po);
-//
-//
-//        return purchaseOrderAssembler.toResource(po);
-//    }
-
-
-
     public Resource<PurchaseOrderDTO> rejectPurchaseOrder(Long oid) {
         PurchaseOrder po = orderRepo.findPurchaseOrderById(oid);
         po.handleRejection();
@@ -221,30 +180,6 @@ public class SalesService {
         return purchaseOrderAssembler.toResource(po);
     }
 
-    //--------------------------------------------------------------------------------------------------------------
-
-
-
-    /*
-    Inventory Service Methods
-     */
-    //--------------------------------------------------------------------------------------------------------------
-//    public List<PlantInventoryEntry> queryPlantCatalog(String name , BusinessPeriodDTO rentalPeriod)
-//    {
-//        return plantRepo.findByComplicatedQuery(name.toLowerCase(),rentalPeriod.getStartDate(),rentalPeriod.getEndDate());
-//    }
-//
-//
-//    public List<PlantInventoryItemDTO> findAvailablePOItems(String oid)
-//    {
-//        PurchaseOrder po = orderRepo.findPurchaseOrderById(oid);
-//        List<PlantInventoryItemDTO> res = inventoryService.findAvailablePOItems(po.getPlant().getId(),po.getRentalPeriod().getStartDate(),po.getRentalPeriod().getEndDate());
-//        return res;
-//    }
-
-
-
-    //NEW Methods....
 
     //---------------------------------------------------------------------------------------
 
@@ -267,11 +202,12 @@ public class SalesService {
             order.handleRejection();
         }
         orderRepo.save(order);
-        System.out.println("Before sending request...");
+
+        // Return Address method to invoke builtIT side (A way to notify)
+
         if(order.getAcceptHref()!=null) {
             ResponseEntity<?> result = restTemplate.postForEntity(order.getAcceptHref(), null, PurchaseOrderDTO.class);
         }
-        System.out.println("After sending request...");
         return purchaseOrderAssembler.toResource(order);
     }
 
@@ -299,12 +235,11 @@ public class SalesService {
             plantReservation.setSchedule(BusinessPeriod.of(order.getRentalPeriod().getEndDate().plusDays(1), order.pendingExtensionEndDate()));
             reservationRepo.save(plantReservation);
 
-//            order.setRentalPeriod(BusinessPeriod.of(order.getRentalPeriod().getStartDate(),order.pendingExtensionEndDate()));
             order.acceptExtension(plantReservation);
             orderRepo.save(order);
         }
         else {
-
+//            Item not available in these dates checking for replacement....
             System.out.println("Item not available in these dates checking for replacement....");
             LocalDate startDate = order.getRentalPeriod().getStartDate();
             LocalDate endDate = order.getRentalPeriod().getEndDate();
@@ -320,8 +255,6 @@ public class SalesService {
                     BigDecimal reducedPrice = (items.get(0).getPlantInfo().getPrice()
                             .subtract(item.getPlantInfo().getPrice()));
                     System.out.println(reducedPrice);
-//                    reducedPrice = reducedPrice.divide(item.getPlantInfo().getPrice());
-//                    System.out.println(reducedPrice);
                     float decimalval = reducedPrice.floatValue();
                     float prevPlantValue=item.getPlantInfo().getPrice().floatValue();
                     System.out.println("Decimal value of reduced right now = "+decimalval);
@@ -329,7 +262,6 @@ public class SalesService {
                     decimalval = decimalval/prevPlantValue;
                     System.out.println("Division value = "+decimalval);
                     decimalval = decimalval*100.0f;
-//                    reducedPrice = reducedPrice.multiply(new BigDecimal(100));
                     System.out.println(decimalval);
                     if (decimalval<=30) {
                         System.out.println("Replacement found for loss less than 30%....");
@@ -343,11 +275,14 @@ public class SalesService {
                         order.acceptExtension(plantReservation);
                         orderRepo.save(order);
                     } else {
+
+//                        Replacement not found for loss less than 30%....
                         System.out.println("Replacement not found for loss less than 30%....");
                     }
                 }
                 else
                 {
+//                    Replacement found with no loss ...
                     System.out.println("Replacement found with no loss ...");
                     PlantReservation plantReservation = new PlantReservation();
                     plantReservation.setPlant(item);
@@ -361,6 +296,7 @@ public class SalesService {
 
             }
             else{
+//                Replacement not found at all....
                 System.out.println("Replacement not found at all....");
             }
 
@@ -459,10 +395,6 @@ public class SalesService {
 
 
 
-
-
-
-
     public Resource<PurchaseOrderDTO> returnPO(Long id) throws PurchaseOrderNotFoundException {
         PurchaseOrder purchaseOrder = orderRepo.getOne(id);
         if(purchaseOrder == null) throw new PurchaseOrderNotFoundException(id);
@@ -471,8 +403,6 @@ public class SalesService {
 
         if(purchaseOrder.getStatus() == POStatus.DELIVERED ){
 
-            //send invoice as plant is returned
-            //TODO Send invoice
             invoiceService.sendInvoice(purchaseOrderAssembler.toResource(purchaseOrder));
 
 

@@ -14,7 +14,5 @@ import java.util.List;
 @Repository
 public interface PlantReservationRepository extends JpaRepository<PlantReservation, Long> {
 
-
-
 }
 
