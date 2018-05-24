@@ -1,8 +1,8 @@
 gmail:
-  username: abc@gmail.com
-  password: abc
-  from: abc@gmail.com
-  to: abc@gmail.com
+  username: esiteam12@gmail.com
+  password: team12345
+  from: esiteam12@gmail.com
+  to: esiteam12@gmail.com
 
 builtItUri:
   invoice: http://localhost:8080/api/invoicing/invoices

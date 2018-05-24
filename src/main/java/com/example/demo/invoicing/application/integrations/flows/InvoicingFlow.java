@@ -18,6 +18,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.integration.http.dsl.Http;
+import org.springframework.integration.mail.dsl.Mail;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -34,6 +35,11 @@ class InvoicingFlow {
 
     @Value("${builtItUri.invoice}")
     String invoiceUrl;
+
+    @Value("${gmail.username}")
+    String gmailUsername;
+    @Value("${gmail.password}")
+    String gmailPassword;
 
     @Configuration
     @PropertySource("classpath:credentials.properties")
@@ -70,8 +76,8 @@ class InvoicingFlow {
 
 
     @Bean
-    IntegrationFlow BuiltItOneFlow() {
-        return IntegrationFlows.from("builtit-one-flow")
+    IntegrationFlow BuiltItOneHttpFlow() {
+        return IntegrationFlows.from("builtit-one-http-flow")
                 .bridge(null)
                 .handle(Http.outboundGateway(invoiceUrl)
                         .httpMethod(HttpMethod.POST).requestFactory(requestFactory())
@@ -79,6 +85,17 @@ class InvoicingFlow {
                 // if not handled it gives weird error..
                 // TODO verify
                 .handle("invoiceService", "testmethod")
+                .get();
+    }
+
+    @Bean
+    IntegrationFlow sendInvoiceFlow() {
+        return IntegrationFlows.from("builtit-one-mail-flow")
+                .handle(Mail.outboundAdapter("smtp.gmail.com")
+                        .port(465)
+                        .protocol("smtps")
+                        .credentials(gmailUsername, gmailPassword)
+                        .javaMailProperties(p -> p.put("mail.debug", "false")))
                 .get();
     }
 }

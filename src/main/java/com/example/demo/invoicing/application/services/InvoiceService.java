@@ -85,8 +85,8 @@ public class InvoiceService {
     }
 
     public void sendInvoice(InvoiceDTO invoiceDTO) {
-        sendInvoiceHTTP(invoiceDTO);
-        //sendInvoiceMAIL(invoiceDTO);
+//        sendInvoiceHTTP(invoiceDTO);
+        sendInvoiceMAIL(invoiceDTO);
     }
 
     private void sendInvoiceHTTP(InvoiceDTO invoiceDTO) {
@@ -106,7 +106,7 @@ public class InvoiceService {
                 "{\n" +
                         "  \"order\":{\"_links\":{\"self\":{\"href\": \"http://rentit.com/api/sales/orders/1\"}}},\n" +
                         "  \"amount\":800,\n" +
-                        "  \"dueDate\": \"2017-05-15\"\n" +
+                        "  \"dueDate\": \"2018-07-15\"\n" +
                         "}\n";
 
         MimeMessage rootMessage = mailSender.createMimeMessage();
@@ -121,8 +121,8 @@ public class InvoiceService {
             String filename = "invoice-po-123.json";
 
             helper.addAttachment(filename, new ByteArrayDataSource(invoice1, "application/json"));
-        } catch (MessagingException | IOException e) {
-            e.printStackTrace();
+        } catch (MessagingException | IOException m) {
+            m.printStackTrace();
         }
 
         invoicingGateway.sendInvoice(rootMessage);
@@ -149,5 +149,10 @@ public class InvoiceService {
     public void testmethod()
     {
         System.out.println("In test.....");
+    }
+
+    public void testMailmethod(String invoiceStr)
+    {
+        System.out.println(invoiceStr);
     }
 }

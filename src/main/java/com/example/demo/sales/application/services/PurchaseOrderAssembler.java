@@ -75,7 +75,7 @@ public class PurchaseOrderAssembler {
                             linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
                             new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE),
                             new ExtendedLink(linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).toString(), "extensions", HttpMethod.GET),
-                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).dispatchPurchaseOrder(po.getId())).toString(), "dispatched", HttpMethod.GET),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).dispatchPurchaseOrder(po.getId())).toString(), "dispatch", HttpMethod.GET),
                             new ExtendedLink(linkTo(methodOn(SalesRestController.class).requestPurchaseOrderExtension(null, po.getId())).toString(), "request extension", HttpMethod.POST)
 
                     );
@@ -101,7 +101,7 @@ public class PurchaseOrderAssembler {
                             linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
                             new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE),
                             new ExtendedLink(linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).toString(), "extensions", HttpMethod.GET),
-                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).deliveredPurchaseOrder(po.getId())).toString(), "delivered", HttpMethod.GET),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).deliveredPurchaseOrder(po.getId())).toString(), "deliver", HttpMethod.GET),
                             new ExtendedLink(linkTo(methodOn(SalesRestController.class).requestPurchaseOrderExtension(null, po.getId())).toString(), "request extension", HttpMethod.POST)
 
                     );
@@ -120,7 +120,8 @@ public class PurchaseOrderAssembler {
                             linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
                             new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE),
                             new ExtendedLink(linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).toString(), "extensions", HttpMethod.GET),
-                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).returnPurchaseOrder(po.getId())).toString(), "returned", HttpMethod.GET),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).returnPurchaseOrder(po.getId())).toString(), "return", HttpMethod.GET),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).customerRejectedPurchaseOrder(po.getId())).toString(), "reject by customer", HttpMethod.GET),
                             new ExtendedLink(linkTo(methodOn(SalesRestController.class).requestPurchaseOrderExtension(null, po.getId())).toString(), "request extension", HttpMethod.POST)
                     );
                 }

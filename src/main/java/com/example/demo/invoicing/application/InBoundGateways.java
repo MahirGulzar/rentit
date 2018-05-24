@@ -30,12 +30,12 @@ public class InBoundGateways {
     @Bean
     IntegrationFlow inboundMail() {
         return IntegrationFlows.from(Mail.imapInboundAdapter(
-                String.format("imaps://%s:%s@imap.gmail.com:993/INBOX", gmailUsername, gmailPassword)
-                ).selectorExpression("subject matches '.*invoice.*'"),
+                String.format("imaps://%s:%s@imap.gmail.com:993/INBOX", "esiteam12", gmailPassword)
+                ).selectorExpression("subject matches 'Invoice.*'"),
                 e -> e.autoStartup(true)
-                        .poller(Pollers.fixedDelay(40000000))
+                        .poller(Pollers.fixedDelay(40000))
         ).transform("@invoiceProcessor.extractInvoice(payload)")
-                .handle("invoicingService", "processInvoice")
+                .handle("invoiceService", "testMailmethod")
                 .get();
     }
 }

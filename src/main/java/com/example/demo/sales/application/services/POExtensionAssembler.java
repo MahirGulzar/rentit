@@ -42,28 +42,6 @@ public class POExtensionAssembler {
         return Arrays.asList(
                 linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(order.getId())).withSelfRel()
         );
-//        switch (extension.getStatus())
-//        {
-//            case PENDING:
-//                return Arrays.asList(
-//                        linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(order.getId())).withSelfRel(),
-//                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).acceptPurchaseOrderExtension(order.getId(), null)).toString(), "accept", HttpMethod.PATCH),
-//                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).rejectPurchaseOrder(order.getId())).toString(), "reject", HttpMethod.DELETE)
-//                );
-//            case ACCEPTED:
-//                return Arrays.asList(
-//                        linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(order.getId())).withSelfRel()
-//                );
-//            case REJECTED:
-//                return Arrays.asList(
-//                        linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(order.getId())).withSelfRel()
-//                );
-//            default:
-//                return Arrays.asList(
-//                        linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(order.getId())).withSelfRel()
-//                );
-//        }
-//
     }
 
 }

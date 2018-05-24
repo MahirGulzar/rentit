@@ -12,10 +12,10 @@ import javax.mail.internet.MimeMessage;
 @MessagingGateway
 @Service
 public interface InvoicingGateway {
-    @Gateway(requestChannel = "builtit-one-flow")
+    @Gateway(requestChannel = "builtit-one-http-flow")
     public void sendInvoice(String invoice);
 
-    @Gateway(requestChannel = "builtit-one-mail-channel")
+    @Gateway(requestChannel = "builtit-one-mail-flow")
     public void sendInvoice(MimeMessage msg);
 }
 
