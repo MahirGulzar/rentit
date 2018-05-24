@@ -187,7 +187,7 @@ public class SalesRestController {
     }
 
     @PostMapping("/orders/{id}/extensions")
-    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","ROLE_CUSTOMER"})
     public Resource<?> requestPurchaseOrderExtension(@RequestBody POExtensionDTO extensionDTO , @PathVariable("id") Long id) {
         System.out.println(extensionDTO.getEndDate());
 

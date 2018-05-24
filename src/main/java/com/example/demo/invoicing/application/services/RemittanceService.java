@@ -28,7 +28,7 @@ public class RemittanceService {
 
             remittanceDTO = mapper.readValue(remittanceString, RemittanceDTO.class);
 
-            Invoice invoice = invoiceRepository.getOne(remittanceDTO.getPoID());
+            Invoice invoice = invoiceRepository.findByPoID(remittanceDTO.getPoID());
 
             if(invoice != null/* && invoice.getAmount().compareTo(remittanceDTO.getAmount()) == 0*/){
 

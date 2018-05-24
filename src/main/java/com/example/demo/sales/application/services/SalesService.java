@@ -215,9 +215,9 @@ public class SalesService {
         po.handleRejection();
 
         orderRepo.save(po);
-        System.out.println("Before sending request...");
-        restTemplate.delete(po.getRejectHref());
-        System.out.println("After sending request...");
+        if(po.getRejectHref()!=null) {
+            restTemplate.delete(po.getRejectHref());
+        }
         return purchaseOrderAssembler.toResource(po);
     }
 

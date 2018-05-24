@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Data
 public class RemittanceDTO {
-    String poID;
+    Long poID;
     BigDecimal amount;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     LocalDate date;
