@@ -723,9 +723,10 @@ public class SalesRestControllerTests {
                 .andExpect(header().string("Location", isEmptyOrNullString()))
                 .andReturn();
 
-        String orderCancel = result3.getResponse().getContentAsString();
-        System.out.println(orderCancel);
-        assert((orderCancel.equals("{\"response\": \"PO cancelled.\"}")));
+        Resource<PurchaseOrderDTO> orderCanceled = mapper.readValue(result3.getResponse().getContentAsString(), new TypeReference<Resource<PurchaseOrderDTO>>() {});
+        PurchaseOrderDTO orderCanceledDTO = orderCanceled.getContent();
+        System.out.println(orderCanceledDTO.getStatus());
+        assert((orderCanceledDTO.getStatus().equals(CANCELLED)));
     }
 
     @Test

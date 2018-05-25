@@ -153,11 +153,11 @@ public class SalesRestController {
 
     //---------------------- Added in project methods ------------------------
 
-    @RequestMapping(value = "/orders/{id}/cancel", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping("/orders/{id}/cancel")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
-    public String cancelPurchaseOrder(@PathVariable("id") Long id) throws PurchaseOrderNotFoundException, BindException {
-        return "{\"response\": \"" + salesService.cancelPO(id) + "\"}";
+    public Resource<PurchaseOrderDTO> cancelPurchaseOrder(@PathVariable("id") Long id) throws PurchaseOrderNotFoundException, BindException {
+        return salesService.cancelPO(id);
     }
 
     @GetMapping("/orders/{id}/dispatched")

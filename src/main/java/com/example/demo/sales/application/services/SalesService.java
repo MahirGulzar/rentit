@@ -335,7 +335,7 @@ public class SalesService {
 
     // ------------------------ Project Methods here -------------
 
-    public String cancelPO(Long id) throws PurchaseOrderNotFoundException, BindException {
+    public Resource<PurchaseOrderDTO> cancelPO(Long id) throws PurchaseOrderNotFoundException, BindException {
         PurchaseOrder purchaseOrder = orderRepo.getOne(id);
         if(purchaseOrder == null) throw new PurchaseOrderNotFoundException(id);
 
@@ -344,9 +344,9 @@ public class SalesService {
             purchaseOrder.setStatus(POStatus.CANCELLED);
             orderRepo.save(purchaseOrder);
 
-            return "PO cancelled.";
+            return purchaseOrderAssembler.toResource(purchaseOrder);
         }
-        return "Given PO cannot be cancelled now.";
+        return purchaseOrderAssembler.toResource(purchaseOrder);
     }
 
 
