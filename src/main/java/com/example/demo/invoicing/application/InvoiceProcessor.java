@@ -7,8 +7,10 @@ import javax.mail.*;
 
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 @Service
 class InvoiceProcessor {
@@ -30,7 +32,7 @@ class InvoiceProcessor {
 
         Multipart multipart = (Multipart) msg.getContent();
         for (int i = 0; i < multipart.getCount(); i++) {
-            MimeBodyPart bodyPart = (MimeBodyPart)multipart.getBodyPart(i);
+            BodyPart bodyPart = (BodyPart)multipart.getBodyPart(i);
             System.out.println("in LOOP");
             System.out.println(bodyPart.getContentType());
             System.out.println(bodyPart.getFileName());
@@ -41,8 +43,8 @@ class InvoiceProcessor {
                 System.out.println(bodyPart.getDisposition());
                 System.out.println(folder.isOpen());
 //                InputStream inputStream=bodyPart.getInputStream();
-
-                bodyPart.saveFile(bodyPart.getFileName());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(bodyPart.getInputStream()));
+//                bodyPart.saveFile(bodyPart.getFileName());
 //                bodyPart
                 String result = IOUtils.toString(bodyPart.getInputStream(), "UTF-8");
                 folder.expunge();

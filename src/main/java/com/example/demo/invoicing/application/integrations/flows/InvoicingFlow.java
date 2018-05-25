@@ -91,7 +91,7 @@ class InvoicingFlow {
                         .port(465)
                         .protocol("smtps")
                         .credentials(gmailUsername, gmailPassword)
-                        .javaMailProperties(p -> p.put("mail.debug", "false")))
+                        .javaMailProperties(p -> p.put("mail.debug", "true")))
                 .get();
     }
 }

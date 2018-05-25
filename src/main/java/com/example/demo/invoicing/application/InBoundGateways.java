@@ -27,15 +27,15 @@ public class InBoundGateways {
     @Value("${gmail.password}")
     String gmailPassword;
 
-    @Bean
-    IntegrationFlow inboundMail() {
-        return IntegrationFlows.from(Mail.imapInboundAdapter(
-                String.format("imaps://%s:%s@imap.gmail.com:993/INBOX", "esiteam12", gmailPassword)
-                ).selectorExpression("subject matches 'Invoice.*'"),
-                e -> e.autoStartup(true)
-                        .poller(Pollers.fixedDelay(40000))
-        ).transform("@invoiceProcessor.extractInvoice(payload)")
-                .handle("invoiceService", "testMailmethod")
-                .get();
-    }
+//    @Bean
+//    IntegrationFlow inboundMail() {
+//        return IntegrationFlows.from(Mail.imapInboundAdapter(
+//                String.format("imaps://%s:%s@imap.gmail.com:993/INBOX", "esiteam12", gmailPassword)
+//                ).selectorExpression("subject matches 'Invoice.*'"),
+//                e -> e.autoStartup(true)
+//                        .poller(Pollers.fixedDelay(40000))
+//        )
+//                .handle("invoiceService", "testMailmethod")
+//                .get();
+//    }
 }

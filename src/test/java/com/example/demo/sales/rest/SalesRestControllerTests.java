@@ -52,7 +52,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = DemoApplication.class) // Check if the name of this class is correct or not
+@SpringBootTest(classes = DemoApplication.class)
 @WebAppConfiguration
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 
@@ -63,6 +63,11 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 //        executionPhase = AFTER_TEST_METHOD,
 //        config = @SqlConfig(transactionMode = ISOLATED)
 //)
+
+
+/**
+ * RentIT project requirements tests.
+ */
 public class SalesRestControllerTests {
     @Autowired
     PlantInventoryEntryRepository repo;
@@ -97,7 +102,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow a customer to list the available plants and their prices.
      */
@@ -119,7 +123,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow a customer to check the price for a given plant (given the plant identifier).
      */
@@ -140,7 +143,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow a customer to check the availability of a given plant during a given time period.
      */
@@ -161,7 +163,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow a customer to submit a PO for hiring a plant. The PO may be
      accepted or rejected depending on the plant’s availability.
@@ -195,7 +196,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow a customer to submit a PO for hiring a plant. The PO may be
      accepted or rejected depending on the plant’s availability.
@@ -230,7 +230,6 @@ public class SalesRestControllerTests {
 
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow employees at Rentit to determine which plants need to be delivered on a given date.
      */
@@ -263,10 +262,6 @@ public class SalesRestControllerTests {
         assert((entry_DTOS.getStatus().equals(OPEN)));
 
 
-//        List<PlantInventoryItem> item = purchaseOrderRepository.findPlantsToDispatch(LocalDate.now());
-//        System.out.println(item);
-
-
         MvcResult result = mockMvc.perform(get("/api/sales/plants_to_dispatch?dispatchDate="+LocalDate.now()
         ).with(user("employee").password("employee").roles("EMPLOYEE")))
                 .andExpect(status().isOk())
@@ -281,7 +276,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow a customer to view the status of a PO (PO accepted, PO rejected, plant dispatched,
      plant delivered, plant rejected by customer, plant returned, invoiced).
@@ -325,7 +319,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow a customer to view the status of a PO (PO accepted, PO rejected, plant dispatched,
      plant delivered, plant rejected by customer, plant returned, invoiced).
@@ -369,7 +362,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow a customer to view the status of a PO (PO accepted, PO rejected, plant dispatched,
      plant delivered, plant rejected by customer, plant returned, invoiced).
@@ -423,7 +415,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow a customer to view the status of a PO (PO accepted, PO rejected, plant dispatched,
      plant delivered, plant rejected by customer, plant returned, invoiced).
@@ -487,7 +478,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow a customer to view the status of a PO (PO accepted, PO rejected, plant dispatched,
      plant delivered, plant rejected by customer, plant returned, invoiced).
@@ -551,7 +541,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow a customer to submit an extension request for a given PO. If the plant
      is available for the requested extension period, the system should accept the request. If the plant
@@ -594,7 +583,7 @@ public class SalesRestControllerTests {
 
         MvcResult extensions = mockMvc.perform(post("/api/sales/orders/" + id + "/extensions").with(user("customer").password("customer").roles("CUSTOMER"))
                 .content(mapper.writeValueAsString(poExtensionDTO)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
 
         Resource<PurchaseOrderDTO> orderExtensions = mapper.readValue(extensions.getResponse().getContentAsString(), new TypeReference<Resource<PurchaseOrderDTO>>() {});
@@ -605,11 +594,6 @@ public class SalesRestControllerTests {
         PurchaseOrder purchaseOrder = purchaseOrderRepository.getOne(orderExtensions.getContent().get_id());
         System.out.println(purchaseOrder);
 
-//        PurchaseOrder purchaseOrder = purchaseOrderRepository.findPurchaseOrderById(orderextensions.getContent().get_id());
-//
-//
-//        System.out.println(purchaseOrder);
-//
         Resource<PlantInventoryItemDTO> plantInventoryItemDTO = plantInventoryItemAssembler.toResource(purchaseOrder.getReservations().get(0).getPlant());
 
         System.out.println(plantInventoryItemDTO);
@@ -629,7 +613,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow a customer to view the status of a PO (PO accepted, PO rejected, plant dispatched,
      plant delivered, plant rejected by customer, plant returned, invoiced).
@@ -703,7 +686,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow a customer to submit a request to cancel a PO. A cancellation request
      is normally accepted if the request arrives prior to the plant being dispatched. If the plant has
@@ -747,7 +729,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow a customer to submit a request to cancel a PO. A cancellation request
      is normally accepted if the request arrives prior to the plant being dispatched. If the plant has
@@ -800,7 +781,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow employees at the plant depot to mark the plant as “dispatched”. This
      happens when the plant leaves the depot.
@@ -844,7 +824,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow employees at the plant depot to mark the plant as “delivered” or
      “rejected by customer”. This latter option happens if the customer did not accept the plant
@@ -899,7 +878,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow employees at the plant depot to mark the plant as “delivered” or
      “rejected by customer”. This latter option happens if the customer did not accept the plant
@@ -954,7 +932,6 @@ public class SalesRestControllerTests {
     }
 
     @Test
-//    @Sql("/plants-dataset.sql")
     /**
      * The system should allow employees at the plant depot to mark a plant as “returned”, meaning
      that the plant has been returned in due form and the rental period has expired.

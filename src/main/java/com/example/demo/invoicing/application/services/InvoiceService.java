@@ -15,18 +15,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.hateoas.Resource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
+import javax.annotation.PostConstruct;
+import javax.mail.*;
 import javax.mail.internet.MimeMessage;
 import javax.mail.util.ByteArrayDataSource;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Properties;
 
 
 @Service
@@ -51,6 +58,8 @@ public class InvoiceService {
     @Autowired
     @Qualifier("_halObjectMapper")
     ObjectMapper mapper;
+
+
 
     @Value("${gmail.from}")
     String emailFrom;
@@ -161,6 +170,16 @@ public class InvoiceService {
 
     public void testMailmethod(String invoiceStr)
     {
-        System.out.println(invoiceStr);
+
+        InvoiceDTO invoiceDTO = null;
+        try {
+            invoiceDTO = mapper.readValue(invoiceStr, new TypeReference<InvoiceDTO>() {});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(invoiceDTO);
+
     }
+
 }
