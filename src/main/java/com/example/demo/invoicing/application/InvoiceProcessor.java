@@ -33,19 +33,8 @@ class InvoiceProcessor {
         Multipart multipart = (Multipart) msg.getContent();
         for (int i = 0; i < multipart.getCount(); i++) {
             BodyPart bodyPart = (BodyPart)multipart.getBodyPart(i);
-            System.out.println("in LOOP");
-            System.out.println(bodyPart.getContentType());
-            System.out.println(bodyPart.getFileName());
 
             if (bodyPart.getFileName() != null && bodyPart.getFileName().startsWith("invoice")) {
-                System.out.println("In true case...");
-                System.out.println(bodyPart.getFileName());
-                System.out.println(bodyPart.getDisposition());
-                System.out.println(folder.isOpen());
-//                InputStream inputStream=bodyPart.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(bodyPart.getInputStream()));
-//                bodyPart.saveFile(bodyPart.getFileName());
-//                bodyPart
                 String result = IOUtils.toString(bodyPart.getInputStream(), "UTF-8");
                 folder.expunge();
                 return result;

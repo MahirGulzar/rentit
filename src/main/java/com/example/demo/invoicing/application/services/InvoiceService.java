@@ -15,33 +15,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.hateoas.Resource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.mail.*;
 import javax.mail.internet.MimeMessage;
 import javax.mail.util.ByteArrayDataSource;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Properties;
 
 
 @Service
 public class InvoiceService {
 
-    String MAIL_SUBJECT = "Invoice Purchase Order No.";
-    final String MAIL_TEXT = "Dear customer,\n\nPlease find attached the Invoice corresponding to your above mentioned Purchase Order." +
-            "\n\nKindly yours,\n\nRentIt Team!";
+
 
     @Autowired
     InvoiceRepository invoiceRepository;
@@ -109,6 +101,9 @@ public class InvoiceService {
     }
 
     private void sendInvoiceMAIL(InvoiceDTO invoiceDTO) {
+        String MAIL_SUBJECT = "Invoice Purchase Order No.";
+        final String MAIL_TEXT = "Dear customer,\n\nPlease find attached the Invoice corresponding to your above mentioned Purchase Order." +
+                "\n\nKindly yours,\n\nRentIt Team!";
         JavaMailSender mailSender = new JavaMailSenderImpl();
 
         String invoice;
@@ -140,6 +135,63 @@ public class InvoiceService {
         }
 
         invoicingGateway.sendInvoice(rootMessage);
+    }
+
+
+
+    private void sendInvoiceReminder(InvoiceDTO invoiceDTO) {
+        String MAIL_SUBJECT = "Reminder Invoice Purchase Order No.";
+        final String MAIL_TEXT = "Dear customer,\n\nThis is a reminder email for the invoice which is still unpaid for following" +
+                "\nPurchase order No: " +invoiceDTO.getPoID()+
+                "\n\nKindly yours,\n\nRentIt Team!";
+
+        JavaMailSender mailSender = new JavaMailSenderImpl();
+
+        String invoice;
+        try {
+            invoice = mapper.writeValueAsString(invoiceDTO);
+        }
+        catch (JsonProcessingException e) {
+            e.printStackTrace();
+            invoice="{\n" +
+                    "  \"order\":{\"_links\":{\"self\":{\"href\": \"http://rentit.com/api/sales/orders/1\"}}},\n" +
+                    "  \"amount\":800,\n" +
+                    "  \"dueDate\": \"2018-07-15\"\n" +
+                    "}\n";
+        }
+        MimeMessage rootMessage = mailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(rootMessage, true);
+            helper.setFrom(emailFrom);
+            helper.setTo(emailTo);
+            helper.setSubject(MAIL_SUBJECT + invoiceDTO.get_id());
+            helper.setText(MAIL_TEXT);
+
+            String filename = "invoice-po-"+invoiceDTO.getPoID()+".json";
+
+            helper.addAttachment(filename, new ByteArrayDataSource(invoice, "application/json"));
+        } catch (MessagingException | IOException m) {
+            m.printStackTrace();
+        }
+
+        invoicingGateway.sendInvoice(rootMessage);
+    }
+
+    /**
+     * Send Reminders for UNPAID Invoices every Monday at 10:00
+     */
+    @Scheduled(cron = "0 0 10 * * MON")
+    private void InvoiceReminders()
+    {
+        List<Invoice> unpaidInvoices=invoiceRepository.findInvoiceByStatus(InvoiceStatus.UNPAID);
+        List<InvoiceDTO> unpaidInvoicesDtos = invoiceAssembler.toResources(unpaidInvoices);
+
+        for(InvoiceDTO invoiceDTO : unpaidInvoicesDtos)
+        {
+            sendInvoiceReminder(invoiceDTO);
+        }
+
     }
 
 
