@@ -91,7 +91,6 @@ public class PurchaseOrderAssembler {
             case PENDING_EXTENSION:
                 return Arrays.asList(
                         linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
-                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE),
                         new ExtendedLink(linkTo(methodOn(SalesRestController.class).acceptPurchaseOrderExtension(po.getId())).toString(), "accept extension", HttpMethod.PATCH),
                         new ExtendedLink(linkTo(methodOn(SalesRestController.class).rejectPurchaseOrderExtension(po.getId())).toString(), "reject extension", HttpMethod.DELETE),
                         new ExtendedLink(linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).toString(), "show extensions", HttpMethod.GET)
@@ -100,9 +99,9 @@ public class PurchaseOrderAssembler {
                 try {
                     return Arrays.asList(
                             linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
-                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE),
                             new ExtendedLink(linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).toString(), "show extensions", HttpMethod.GET),
                             new ExtendedLink(linkTo(methodOn(SalesRestController.class).deliveredPurchaseOrder(po.getId())).toString(), "deliver", HttpMethod.GET),
+                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).customerRejectedPurchaseOrder(po.getId())).toString(), "reject by customer", HttpMethod.GET),
                             new ExtendedLink(linkTo(methodOn(SalesRestController.class).requestPurchaseOrderExtension(null, po.getId())).toString(), "request extension", HttpMethod.POST)
 
                     );
@@ -119,10 +118,8 @@ public class PurchaseOrderAssembler {
                 try {
                     return Arrays.asList(
                             linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
-                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE),
                             new ExtendedLink(linkTo(methodOn(SalesRestController.class).retrievePurchaseOrderExtensions(po.getId())).toString(), "show extensions", HttpMethod.GET),
                             new ExtendedLink(linkTo(methodOn(SalesRestController.class).returnPurchaseOrder(po.getId())).toString(), "return", HttpMethod.GET),
-                            new ExtendedLink(linkTo(methodOn(SalesRestController.class).customerRejectedPurchaseOrder(po.getId())).toString(), "reject by customer", HttpMethod.GET),
                             new ExtendedLink(linkTo(methodOn(SalesRestController.class).requestPurchaseOrderExtension(null, po.getId())).toString(), "request extension", HttpMethod.POST)
                     );
                 }
@@ -139,10 +136,18 @@ public class PurchaseOrderAssembler {
                         linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel()
                                 .andAffordance(afford(methodOn(SalesRestController.class).resubmitPurchaseOrder(po.getId(), null)))
                 );
-            case CLOSED:
+            case REJECTED_BY_CUSTOMER:
                 return Arrays.asList(
-                        linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel()
+                        linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE)
                 );
+            case INVOICED:
+                return Arrays.asList(
+                        linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).handleDeleteOnPurchaseOrder(po.getId())).toString(), "close", HttpMethod.DELETE)
+                );
+
+
         }
         return Collections.emptyList();
     }

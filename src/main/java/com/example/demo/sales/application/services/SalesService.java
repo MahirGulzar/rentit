@@ -97,6 +97,15 @@ public class SalesService {
         else if(order.getStatus() == POStatus.OPEN){
             order.handleClose();
         }
+        else if(order.getStatus() == POStatus.REJECTED){
+            order.handleClose();
+        }
+        else if(order.getStatus() == POStatus.REJECTED_BY_CUSTOMER){
+            order.handleClose();
+        }
+        else if(order.getStatus() == POStatus.INVOICED){
+            order.handleClose();
+        }
         return purchaseOrderAssembler.toResource(order);
     }
 
