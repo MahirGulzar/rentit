@@ -328,6 +328,7 @@ public class SalesService {
 
     public Resources<?> fetchPurchaseOrderExtensions(Long oid) {
         PurchaseOrder po = orderRepo.findPurchaseOrderById(oid);
+        System.out.println("Printing Extensions"+po.getExtensions());
         return poExtensionAssembler.toResources(po.getExtensions(), po);
     }
 

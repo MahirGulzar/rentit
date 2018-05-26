@@ -66,7 +66,7 @@ public class PurchaseOrderAssembler {
             case PENDING:
                 return Arrays.asList(
                         linkTo(methodOn(SalesRestController.class).fetchPurchaseOrder(po.getId())).withSelfRel(),
-                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).allocatePlant(po.getId())).toString(), "accept", HttpMethod.PUT),
+                        new ExtendedLink(linkTo(methodOn(SalesRestController.class).allocatePlant(po.getId())).toString(), "allocate", HttpMethod.PUT),
                         new ExtendedLink(linkTo(methodOn(SalesRestController.class).rejectPurchaseOrder(po.getId())).toString(), "reject", HttpMethod.DELETE)
                 );
             case OPEN:
