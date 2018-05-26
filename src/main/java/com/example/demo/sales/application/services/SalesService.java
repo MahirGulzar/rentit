@@ -224,6 +224,10 @@ public class SalesService {
 
     public Resource<PurchaseOrderDTO> requestPurchaseExtension(Long id, LocalDate endDate) {
         PurchaseOrder order = orderRepo.getOne(id);
+        if(order.getStatus()!=POStatus.PENDING_EXTENSION ||
+                order.getStatus()!=POStatus.CLOSED ||
+                order.getStatus()!=POStatus.REJECTED ||
+                order.getStatus()!=POStatus.REJECTED_BY_CUSTOMER)
         order.requestExtension(endDate);
         orderRepo.save(order);
         return purchaseOrderAssembler.toResource(order);

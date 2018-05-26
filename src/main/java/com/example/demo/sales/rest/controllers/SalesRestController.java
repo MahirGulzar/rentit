@@ -2,9 +2,7 @@ package com.example.demo.sales.rest.controllers;
 
 
 import com.example.demo.common.application.exceptions.PurchaseOrderNotFoundException;
-import com.example.demo.inventory.application.dto.PlantInventoryItemDTO;
 import com.example.demo.inventory.application.services.InventoryService;
-import com.example.demo.sales.application.dto.POExtensionDTO;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.application.services.SalesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +39,7 @@ public class SalesRestController {
             @RequestParam(name = "name") String plantName,
             @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+//        System.out.println(headers.getOrigin());
         return inventoryService.findAvailable(plantName.toLowerCase(), startDate, endDate);
     }
 
@@ -115,10 +114,9 @@ public class SalesRestController {
     @PostMapping("/orders/{id}/extensions")
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","ROLE_CUSTOMER"})
     @ResponseStatus(HttpStatus.CREATED)
-    public Resource<?> requestPurchaseOrderExtension(@RequestBody POExtensionDTO extensionDTO , @PathVariable("id") Long id) {
-//        System.out.println(extensionDTO.getEndDate());
+    public Resource<?> requestPurchaseOrderExtension(@RequestBody PurchaseOrderDTO purchaseOrderDTO , @PathVariable("id") Long id) {
 
-        return salesService.requestPurchaseExtension(id,extensionDTO.getEndDate());
+        return salesService.requestPurchaseExtension(id,purchaseOrderDTO.getRentalPeriod().getEndDate());
     }
 
     @PutMapping("/orders/{id}")
