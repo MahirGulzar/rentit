@@ -5,6 +5,7 @@ import com.example.demo.common.application.exceptions.PurchaseOrderNotFoundExcep
 import com.example.demo.common.domain.model.BusinessPeriod;
 import com.example.demo.common.domain.validation.BusinessPeriodIsInFutureValidator;
 import com.example.demo.common.domain.validation.BusinessPeriodValidator;
+import com.example.demo.common.utils.ExtendedLink;
 import com.example.demo.inventory.application.dto.PlantInventoryItemDTO;
 import com.example.demo.inventory.application.exceptions.PlantNotFoundException;
 import com.example.demo.inventory.application.services.InventoryService;
@@ -30,13 +31,16 @@ import com.example.demo.sales.domain.model.PurchaseOrder;
 import com.example.demo.sales.domain.model.factory.SalesIdentifierFactory;
 import com.example.demo.sales.domain.repository.PurchaseOrderRepository;
 import com.example.demo.sales.domain.validation.PurchaseOrderValidator;
+import com.example.demo.sales.rest.controllers.SalesRestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -52,7 +56,13 @@ import javax.mail.util.ByteArrayDataSource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.afford;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @Service
 public class SalesService {
@@ -492,10 +502,28 @@ public class SalesService {
     public void sendPONotication(Resource<PurchaseOrderDTO> purchaseOrderDTO) {
         USER.current_uri=purchaseOrderDTO.getContent().getConsumerURI();
 
-        //todo check below one is not required
-//        USER.destination_email=USER.users.get(USER.current_uri);
+        // Removing Links for consumer
 
-        sendPONotificationByMail(purchaseOrderDTO);
+        PurchaseOrderDTO tempDto= new PurchaseOrderDTO();
+        tempDto.set_id(purchaseOrderDTO.getContent().get_id());
+        tempDto.setRentalPeriod(purchaseOrderDTO.getContent().getRentalPeriod());
+        tempDto.setPlant(purchaseOrderDTO.getContent().getPlant());
+        tempDto.setStatus(purchaseOrderDTO.getContent().getStatus());
+        tempDto.setTotal(purchaseOrderDTO.getContent().getTotal());
+        tempDto.setConsumerURI(purchaseOrderDTO.getContent().getConsumerURI());
+
+        Resource<PurchaseOrderDTO> stripedDTO;
+        if(purchaseOrderDTO.hasLink("self")) {
+            stripedDTO = new Resource(tempDto, purchaseOrderDTO.getLink("self").get());
+        }
+        else
+        {
+            stripedDTO = new Resource(tempDto);
+        }
+
+        //todo check below one is not required
+
+        sendPONotificationByMail(stripedDTO);
 
     }
 

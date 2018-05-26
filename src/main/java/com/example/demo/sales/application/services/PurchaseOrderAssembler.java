@@ -51,7 +51,6 @@ public class PurchaseOrderAssembler {
         return new Resource<>(
                 dto,
                 linkFor(po)
-
         );
     }
     public Resources<Resource<PurchaseOrderDTO>> toResources(List<PurchaseOrder> orders){
