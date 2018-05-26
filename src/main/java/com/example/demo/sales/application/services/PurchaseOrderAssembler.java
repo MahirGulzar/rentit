@@ -45,6 +45,8 @@ public class PurchaseOrderAssembler {
         dto.setTotal(po.getTotal());
         dto.setAcceptHref(po.getAcceptHref());
         dto.setRejectHref(po.getRejectHref());
+        dto.setConsumerURI(po.getConsumerURI());
+
 
         return new Resource<>(
                 dto,
@@ -56,7 +58,6 @@ public class PurchaseOrderAssembler {
         return new Resources<>(orders.stream().map(o -> toResource(o)).collect(Collectors.toList()),
                 linkTo(methodOn(SalesRestController.class).findPurchaseOrders()).withSelfRel()
                         .andAffordance(afford(methodOn(SalesRestController.class).createPurchaseOrder(null)))
-
         );
     }
 

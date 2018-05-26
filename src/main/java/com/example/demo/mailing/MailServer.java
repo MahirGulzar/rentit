@@ -11,7 +11,7 @@ import javax.mail.search.FlagTerm;
 import java.util.Properties;
 
 
-public class TestEmailServer {
+public class MailServer {
 
     String host = "pop.gmail.com";// change accordingly
     String mailStoreType = "pop3";

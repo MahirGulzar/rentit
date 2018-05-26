@@ -2,12 +2,16 @@ package com.example.demo.invoicing.application.services;
 
 import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepository;
 import com.example.demo.invoicing.application.dto.InvoiceDTO;
+import com.example.demo.invoicing.application.integrations.flows.InvoicingFlow;
 import com.example.demo.invoicing.application.integrations.gateways.InvoicingGateway;
 import com.example.demo.invoicing.domain.model.Invoice;
 import com.example.demo.invoicing.domain.model.InvoiceStatus;
 import com.example.demo.invoicing.domain.repository.InvoiceRepository;
 import com.example.demo.invoicing.infrastructure.InvoiceIdentifierFactory;
+import com.example.demo.mailing.USER;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
+import com.example.demo.sales.domain.model.PurchaseOrder;
+import com.example.demo.sales.domain.repository.PurchaseOrderRepository;
 import com.example.demo.sales.rest.controllers.SalesRestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -49,6 +53,9 @@ public class InvoiceService {
     InvoicingGateway invoicingGateway;
 
     @Autowired
+    PurchaseOrderRepository purchaseOrderRepository;
+
+    @Autowired
     @Qualifier("_halObjectMapper")
     ObjectMapper mapper;
 
@@ -57,8 +64,8 @@ public class InvoiceService {
     @Value("${gmail.from}")
     String emailFrom;
 
-    @Value("${gmail.to}")
-    String emailTo;
+//    @Value("${gmail.to}")
+//    String emailTo;
 
     InvoiceIdentifierFactory invoiceIdentifierFactory = new InvoiceIdentifierFactory();
 
@@ -73,6 +80,10 @@ public class InvoiceService {
 
 
     public void sendInvoice(Resource<PurchaseOrderDTO> purchaseOrderDTO) {
+
+        USER.current_uri=purchaseOrderDTO.getContent().getConsumerURI();
+        USER.destination_email=USER.users.get(USER.current_uri);
+
 
         LocalDate localDate = LocalDate.now();
         localDate.plusDays(14);
@@ -125,7 +136,7 @@ public class InvoiceService {
         try {
             MimeMessageHelper helper = new MimeMessageHelper(rootMessage, true);
             helper.setFrom(emailFrom);
-            helper.setTo(emailTo);
+            helper.setTo(USER.destination_email);
             helper.setSubject(MAIL_SUBJECT + invoiceDTO.get_id());
             helper.setText(MAIL_TEXT);
 
@@ -149,6 +160,9 @@ public class InvoiceService {
 
         JavaMailSender mailSender = new JavaMailSenderImpl();
 
+        PurchaseOrder poByInvoice= purchaseOrderRepository.getOne(invoiceDTO.getPoID());
+        String destinationEmail = USER.users.get(poByInvoice.getConsumerURI());
+
         String invoice;
         try {
             invoice = mapper.writeValueAsString(invoiceDTO);
@@ -166,7 +180,7 @@ public class InvoiceService {
         try {
             MimeMessageHelper helper = new MimeMessageHelper(rootMessage, true);
             helper.setFrom(emailFrom);
-            helper.setTo(emailTo);
+            helper.setTo(destinationEmail);
             helper.setSubject(MAIL_SUBJECT + invoiceDTO.get_id());
             helper.setText(MAIL_TEXT);
 

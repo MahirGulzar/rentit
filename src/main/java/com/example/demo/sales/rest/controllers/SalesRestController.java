@@ -12,6 +12,7 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
@@ -69,7 +70,10 @@ public class SalesRestController {
 
     @PostMapping("/orders")
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","ROLE_CUSTOMER"})
-    public ResponseEntity<?> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) {
+    public ResponseEntity<?> createPurchaseOrder(
+                                                 @RequestBody PurchaseOrderDTO partialPODTO) {
+//        System.out.println(reqHeaders);
+//        System.out.println(location);
         Resource<PurchaseOrderDTO> resource = salesService.createPO(partialPODTO);
 
         HttpHeaders headers = new HttpHeaders();

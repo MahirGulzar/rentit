@@ -3,8 +3,11 @@ package com.example.demo.sales.application.dto;
 import com.example.demo.common.application.dto.BusinessPeriodDTO;
 import com.example.demo.inventory.application.dto.PlantInventoryEntryDTO;
 import com.example.demo.sales.domain.model.POStatus;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Value;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.core.Relation;
@@ -27,4 +30,11 @@ public class PurchaseOrderDTO extends ResourceSupport {
     // Added for notification on BuiltIT
     String acceptHref;
     String rejectHref;
+
+    String consumerURI;
+
+
+    @JsonCreator // Added to test basic authentication
+    public PurchaseOrderDTO() {
+    }
 }

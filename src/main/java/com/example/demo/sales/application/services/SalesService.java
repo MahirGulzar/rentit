@@ -18,22 +18,38 @@ import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepositor
 import com.example.demo.inventory.domain.repository.PlantInventoryItemRepository;
 import com.example.demo.inventory.domain.repository.PlantReservationRepository;
 import com.example.demo.inventory.domain.validation.PlantInventoryEntryValidator;
+import com.example.demo.invoicing.application.dto.InvoiceDTO;
 import com.example.demo.invoicing.application.services.InvoiceService;
+import com.example.demo.invoicing.domain.model.Invoice;
+import com.example.demo.invoicing.domain.model.InvoiceStatus;
+import com.example.demo.mailing.USER;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
+import com.example.demo.sales.application.integration.gateways.POGateway;
 import com.example.demo.sales.domain.model.POStatus;
 import com.example.demo.sales.domain.model.PurchaseOrder;
 import com.example.demo.sales.domain.model.factory.SalesIdentifierFactory;
 import com.example.demo.sales.domain.repository.PurchaseOrderRepository;
 import com.example.demo.sales.domain.validation.PurchaseOrderValidator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindException;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.client.RestTemplate;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import javax.mail.util.ByteArrayDataSource;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -81,6 +97,16 @@ public class SalesService {
     @Autowired
     InvoiceService invoiceService;
 
+    @Autowired
+    POGateway poGateway;
+
+    @Autowired
+    @Qualifier("_halObjectMapper")
+    ObjectMapper mapper;
+
+    @Value("${gmail.from}")
+    String emailFrom;
+
 
 
 
@@ -106,7 +132,9 @@ public class SalesService {
         else if(order.getStatus() == POStatus.INVOICED){
             order.handleClose();
         }
-        return purchaseOrderAssembler.toResource(order);
+        Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(order);
+        sendPONotication(purchaseOrderDTO);
+        return purchaseOrderDTO;
     }
 
 
@@ -149,7 +177,8 @@ public class SalesService {
                         purchaseOrderDTO.getRentalPeriod().getEndDate()
                         ),
                 purchaseOrderDTO.getAcceptHref(),
-                purchaseOrderDTO.getRejectHref()
+                purchaseOrderDTO.getRejectHref(),
+                purchaseOrderDTO.getConsumerURI()
                 );
 
         DataBinder binder = new DataBinder(po);
@@ -183,10 +212,13 @@ public class SalesService {
         po.handleRejection();
 
         orderRepo.save(po);
-        if(po.getRejectHref()!=null) {
-            restTemplate.delete(po.getRejectHref());
-        }
-        return purchaseOrderAssembler.toResource(po);
+//        if(po.getRejectHref()!=null) {
+//            restTemplate.delete(po.getRejectHref());
+//        }
+
+        Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(po);
+        sendPONotication(purchaseOrderDTO);
+        return purchaseOrderDTO;
     }
 
 
@@ -214,10 +246,12 @@ public class SalesService {
 
         // Return Address method to invoke builtIT side (A way to notify)
 
-        if(order.getAcceptHref()!=null) {
-            ResponseEntity<?> result = restTemplate.postForEntity(order.getAcceptHref(), null, PurchaseOrderDTO.class);
-        }
-        return purchaseOrderAssembler.toResource(order);
+//        if(order.getAcceptHref()!=null) {
+//            ResponseEntity<?> result = restTemplate.postForEntity(order.getAcceptHref(), null, PurchaseOrderDTO.class);
+//        }
+        Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(order);
+        sendPONotication(purchaseOrderDTO);
+        return purchaseOrderDTO;
     }
 
 
@@ -317,7 +351,9 @@ public class SalesService {
 
         }
 
-        return purchaseOrderAssembler.toResource(order);
+        Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(order);
+        sendPONotication(purchaseOrderDTO);
+        return purchaseOrderDTO;
     }
 
 
@@ -338,7 +374,9 @@ public class SalesService {
 
         orderRepo.save(po);
 
-        return purchaseOrderAssembler.toResource(po);
+        Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(po);
+        sendPONotication(purchaseOrderDTO);
+        return purchaseOrderDTO;
     }
 
     public Resources<?> fetchPurchaseOrderExtensions(Long oid) {
@@ -360,9 +398,13 @@ public class SalesService {
             purchaseOrder.setStatus(POStatus.CANCELLED);
             orderRepo.save(purchaseOrder);
 
-            return purchaseOrderAssembler.toResource(purchaseOrder);
+            Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(purchaseOrder);
+            sendPONotication(purchaseOrderDTO);
+            return purchaseOrderDTO;
         }
-        return purchaseOrderAssembler.toResource(purchaseOrder);
+        Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(purchaseOrder);
+        sendPONotication(purchaseOrderDTO);
+        return purchaseOrderDTO;
     }
 
 
@@ -378,7 +420,9 @@ public class SalesService {
             orderRepo.save(purchaseOrder);
         }
 
-        return purchaseOrderAssembler.toResource(purchaseOrder);
+        Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(purchaseOrder);
+        sendPONotication(purchaseOrderDTO);
+        return purchaseOrderDTO;
     }
 
     public Resource<PurchaseOrderDTO> deliverPO(Long id) throws PurchaseOrderNotFoundException {
@@ -392,7 +436,9 @@ public class SalesService {
             orderRepo.save(purchaseOrder);
         }
 
-        return purchaseOrderAssembler.toResource(purchaseOrder);
+        Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(purchaseOrder);
+        sendPONotication(purchaseOrderDTO);
+        return purchaseOrderDTO;
     }
 
     public Resource<PurchaseOrderDTO> customerRejectedPO(Long id) throws PurchaseOrderNotFoundException {
@@ -427,12 +473,77 @@ public class SalesService {
 
         }
 
-        return purchaseOrderAssembler.toResource(purchaseOrder);
+        Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(purchaseOrder);
+        sendPONotication(purchaseOrderDTO);
+        return purchaseOrderDTO;
     }
 
 
     public Resources<?> findPlantsToDispatch(LocalDate givenDate){
         return plantInventoryItemAssembler.toResources(orderRepo.findPlantsToDispatch(givenDate));
     }
+
+
+
+
+    //--------------- Customer Notifications ------------------------
+
+
+    public void sendPONotication(Resource<PurchaseOrderDTO> purchaseOrderDTO) {
+        USER.current_uri=purchaseOrderDTO.getContent().getConsumerURI();
+
+        //todo check below one is not required
+//        USER.destination_email=USER.users.get(USER.current_uri);
+
+        sendPONotificationByMail(purchaseOrderDTO);
+
+    }
+
+    public void sendPONotificationByMail(Resource<PurchaseOrderDTO> purchaseOrderDTO)
+    {
+
+        String MAIL_SUBJECT = "PO Status [Update] ";
+        final String MAIL_TEXT = "Dear customer,\n\nThe status following Purchase Order No:"+purchaseOrderDTO.getContent().get_id()
+                +" has been updated to : "+purchaseOrderDTO.getContent().getStatus().toString().toUpperCase()+
+                "\n\nKindly yours,\n\nRentIt Team!";
+        JavaMailSender mailSender = new JavaMailSenderImpl();
+
+        String destinationEmail = USER.users.get(purchaseOrderDTO.getContent().getConsumerURI());
+
+
+        String poDTO;
+        try {
+            poDTO = mapper.writeValueAsString(purchaseOrderDTO);
+        }
+        catch (JsonProcessingException e) {
+            e.printStackTrace();
+            poDTO="{}";
+        }
+        MimeMessage rootMessage = mailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(rootMessage, true);
+            helper.setFrom(emailFrom);
+            helper.setTo(destinationEmail);
+            helper.setSubject(MAIL_SUBJECT + purchaseOrderDTO.getContent().get_id());
+            helper.setText(MAIL_TEXT);
+
+            String filename = "po-update-"+purchaseOrderDTO.getContent().get_id()+".json";
+
+            helper.addAttachment(filename, new ByteArrayDataSource(poDTO, "application/json"));
+        } catch (MessagingException | IOException m) {
+            m.printStackTrace();
+        }
+
+        poGateway.sendNotification(rootMessage);
+    }
+
+
+    //todo to-be
+    public void sendPONotificationByHttp()
+    {
+
+    }
+
 
 }

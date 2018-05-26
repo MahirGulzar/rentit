@@ -1,4 +1,4 @@
-package com.example.demo.invoicing.application.integrations.flows;
+package com.example.demo.sales.application.integration.flows;
 
 
 import com.example.demo.mailing.USER;
@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpMethod;
-import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.integration.dsl.IntegrationFlow;
+import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.http.dsl.Http;
 import org.springframework.integration.mail.dsl.Mail;
 import org.springframework.stereotype.Component;
@@ -27,10 +27,7 @@ import java.util.Map;
 @Component
 @ConfigurationProperties
 @Configuration
-public class InvoicingFlow {
-
-    @Value("${builtItUri.invoice}")
-    String invoiceUrl;
+public class POFlow {
 
     @Value("${gmail.username}")
     String gmailUsername;
@@ -71,22 +68,22 @@ public class InvoicingFlow {
     }
 
 
-    @Bean
-    IntegrationFlow BuiltItOneHttpFlow() {
-        return IntegrationFlows.from("builtit-one-http-flow")
-                .bridge(null)
-                .handle(Http.outboundGateway(USER.current_uri)
-                        .httpMethod(HttpMethod.POST).requestFactory(requestFactory())
-                )
-                // if not handled it gives weird error..
-                // TODO verify
-                .handle("invoiceService", "testmethod")
-                .get();
-    }
+//    @Bean
+//    IntegrationFlow BuiltItOneHttpFlow() {
+//        return IntegrationFlows.from("builtit-one-http-flow")
+//                .bridge(null)
+//                .handle(Http.outboundGateway(USER.current_uri)
+//                        .httpMethod(HttpMethod.POST).requestFactory(requestFactory())
+//                )
+//                // if not handled it gives weird error..
+//                // TODO verify
+//                .handle("invoiceService", "testmethod")
+//                .get();
+//    }
 
     @Bean
-    IntegrationFlow sendInvoiceFlow() {
-        return IntegrationFlows.from("builtit-one-mail-flow")
+    IntegrationFlow sentPONotificationMailFlow() {
+        return IntegrationFlows.from("builtit-two-mail-flow")
                 .handle(Mail.outboundAdapter("smtp.gmail.com")
                         .port(465)
                         .protocol("smtps")

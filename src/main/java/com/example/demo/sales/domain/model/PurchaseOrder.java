@@ -29,7 +29,7 @@ public class PurchaseOrder {
     Long id;
 
 
-    public static PurchaseOrder of(Long id, PlantInventoryEntry plant, BusinessPeriod rentalPeriod, String acceptHref, String rejectHref) {
+    public static PurchaseOrder of(Long id, PlantInventoryEntry plant, BusinessPeriod rentalPeriod, String acceptHref, String rejectHref, String consumerURI) {
         PurchaseOrder po = new PurchaseOrder();
         po.id = id;
         po.plant = plant;
@@ -39,6 +39,8 @@ public class PurchaseOrder {
         po.reservations = new ArrayList<>();
         po.acceptHref=acceptHref;
         po.rejectHref=rejectHref;
+        po.consumerURI=consumerURI;
+
         return po;
     }
 
@@ -66,6 +68,8 @@ public class PurchaseOrder {
     // Added for notification on BuiltIT
     String acceptHref;
     String rejectHref;
+
+    String consumerURI;
 
     public void createReservation(PlantReservation pr)
     {

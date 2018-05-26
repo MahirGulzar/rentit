@@ -1,6 +1,6 @@
 package com.example.demo;
 
-import com.example.demo.mailing.TestEmailServer;
+import com.example.demo.mailing.MailServer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -60,7 +60,7 @@ public class DemoApplication {
 		SpringApplication.run(DemoApplication.class, args);
 
 		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-		TestEmailServer mailServer = new TestEmailServer();
+		MailServer mailServer = new MailServer();
 		exec.scheduleAtFixedRate(new Runnable() {
 			@Override
 			public void run() {

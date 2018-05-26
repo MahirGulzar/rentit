@@ -24,7 +24,7 @@ public class CustomerController {
     public String registerCustomer(
             @RequestParam(name = "emailAddress") String emailAddress,
             @RequestParam(name = "builtITUri") String builtITUri) {
-        USER.users.put(emailAddress,builtITUri);
+        USER.users.put(builtITUri,emailAddress);
         return "Your role as Customer is Successfully registered! " +
                 "\n\nCredentials:\n" +
                 "\tUsername: customer\n" +
