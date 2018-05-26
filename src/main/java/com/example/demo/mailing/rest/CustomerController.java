@@ -25,13 +25,14 @@ public class CustomerController {
             @RequestParam(name = "emailAddress") String emailAddress,
             @RequestParam(name = "builtITUri") String builtITUri) {
         USER.users.put(emailAddress,builtITUri);
-        return "Your role as Customer is Successfully registered!";
+        return "Your role as Customer is Successfully registered! " +
+                "\n\nCredentials:\n" +
+                "\tUsername: customer\n" +
+                "\tPassword: customer";
     }
 
     @GetMapping()
     public String getCustomers() {
         return USER.users.toString();
     }
-
-
 }

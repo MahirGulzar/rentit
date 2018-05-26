@@ -8,6 +8,7 @@ import com.example.demo.invoicing.domain.model.InvoiceStatus;
 import com.example.demo.invoicing.domain.repository.InvoiceRepository;
 import com.example.demo.invoicing.infrastructure.InvoiceIdentifierFactory;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
+import com.example.demo.sales.rest.controllers.SalesRestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,6 +76,7 @@ public class InvoiceService {
 
         LocalDate localDate = LocalDate.now();
         localDate.plusDays(14);
+
 
         Invoice invoice = Invoice.of(invoiceIdentifierFactory.nextInvoiceID(), purchaseOrderDTO.getContent().get_id(), purchaseOrderDTO.getContent().getTotal(),
                 localDate, InvoiceStatus.UNPAID);
