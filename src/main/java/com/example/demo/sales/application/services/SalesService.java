@@ -220,11 +220,13 @@ public class SalesService {
         return purchaseOrderAssembler.toResource(order);
     }
 
-    public Resource<PurchaseOrderDTO> acceptPurchaseExtension(Long id, PlantInventoryItemDTO plantInventoryItemDTO) {
+    public Resource<PurchaseOrderDTO> acceptPurchaseExtension(Long id) {
 
         PurchaseOrder order = orderRepo.getOne(id);
         System.out.println(order);
-        PlantInventoryItem item = itemRepo.findPlantInventoryItemById(plantInventoryItemDTO.get_id());
+//        PlantInventoryItem item = itemRepo.findPlantInventoryItemById(plantInventoryItemDTO.get_id());
+
+        PlantInventoryItem item = order.getReservations().get(0).getPlant();
 
         if(inventoryRepository.isAvailableFor(item,order.getRentalPeriod().getEndDate().plusDays(1),order.pendingExtensionEndDate()))
         {

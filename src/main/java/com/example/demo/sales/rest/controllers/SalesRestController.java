@@ -116,7 +116,7 @@ public class SalesRestController {
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","ROLE_CUSTOMER"})
     @ResponseStatus(HttpStatus.CREATED)
     public Resource<?> requestPurchaseOrderExtension(@RequestBody POExtensionDTO extensionDTO , @PathVariable("id") Long id) {
-        System.out.println(extensionDTO.getEndDate());
+//        System.out.println(extensionDTO.getEndDate());
 
         return salesService.requestPurchaseExtension(id,extensionDTO.getEndDate());
     }
@@ -139,8 +139,8 @@ public class SalesRestController {
     @PatchMapping("/orders/{id}/extensions")
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     @ResponseStatus(HttpStatus.OK)
-    public Resource<?> acceptPurchaseOrderExtension(@PathVariable("id") Long id, @RequestBody PlantInventoryItemDTO plant) {
-        return salesService.acceptPurchaseExtension(id,plant);
+    public Resource<?> acceptPurchaseOrderExtension(@PathVariable("id") Long id) {
+        return salesService.acceptPurchaseExtension(id);
     }
 
     @DeleteMapping("/orders/{id}/extensions")
