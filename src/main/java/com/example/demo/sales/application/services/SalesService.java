@@ -142,6 +142,9 @@ public class SalesService {
         else if(order.getStatus() == POStatus.INVOICED){
             order.handleClose();
         }
+        else if(order.getStatus() == POStatus.RETURNED){
+            order.handleClose();
+        }
         Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(order);
         sendPONotication(purchaseOrderDTO);
         return purchaseOrderDTO;
@@ -496,7 +499,7 @@ public class SalesService {
 
 
 
-    //--------------- Customer Notifications ------------------------
+    //--------------- domain Notifications ------------------------
 
 
     public void sendPONotication(Resource<PurchaseOrderDTO> purchaseOrderDTO) {
