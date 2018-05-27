@@ -543,7 +543,7 @@ public class SalesService {
                 "\n\nKindly yours,\n\nRentIt Team!";
         JavaMailSender mailSender = new JavaMailSenderImpl();
 
-        String destinationEmail = customerRepository.findByConsumerURI(purchaseOrderDTO.getContent().getConsumerURI()).get(0).getEmailAddress();
+//        String destinationEmail = customerRepository.findByConsumerURI(purchaseOrderDTO.getContent().getConsumerURI()).get(0).getEmailAddress();
 
 
 
@@ -560,7 +560,7 @@ public class SalesService {
         try {
             MimeMessageHelper helper = new MimeMessageHelper(rootMessage, true);
             helper.setFrom(emailFrom);
-            helper.setTo(destinationEmail);
+            helper.setTo("esiteam12@gmail.com");
             helper.setSubject(MAIL_SUBJECT + purchaseOrderDTO.getContent().get_id());
             helper.setText(MAIL_TEXT);
 

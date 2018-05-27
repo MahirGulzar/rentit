@@ -9,9 +9,12 @@ import com.example.demo.inventory.application.services.PlantInventoryItemAssembl
 import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepository;
 import com.example.demo.inventory.domain.repository.PlantInventoryItemRepository;
+import com.example.demo.mailing.application.services.MailingService;
+import com.example.demo.mailing.domain.repository.CustomerRepository;
 import com.example.demo.sales.application.dto.POExtensionDTO;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.application.services.POExtensionAssembler;
+import com.example.demo.sales.domain.model.POStatus;
 import com.example.demo.sales.domain.model.PurchaseOrder;
 import com.example.demo.sales.domain.repository.PurchaseOrderRepository;
 
@@ -91,6 +94,16 @@ public class SalesRestControllerTests {
     private WebApplicationContext wac;
     private MockMvc mockMvc;
 
+
+    @Autowired
+    CustomerRepository customerRepository;
+
+
+    @Autowired
+    MailingService mailingService;
+
+
+
     @Autowired
     @Qualifier("_halObjectMapper")
     ObjectMapper mapper;
@@ -99,6 +112,10 @@ public class SalesRestControllerTests {
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
                 .apply(springSecurity()).build();
+
+        mailingService.createCustomer("esiteam12@gmail.com","www.builtit.com");
+
+
     }
 
     @Test
@@ -173,6 +190,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(0)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result1 = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -206,6 +224,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(0)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result1 = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -239,6 +258,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(0)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result1 = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -286,6 +306,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(2)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult POresult = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -329,6 +350,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(0)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result1 = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -372,6 +394,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(0)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result1 = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -425,6 +448,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(0)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result1 = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -488,6 +512,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(0)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result1 = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -556,6 +581,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(0)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result1 = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -577,12 +603,12 @@ public class SalesRestControllerTests {
         System.out.println(entry_DTOS.getStatus());
         assert((entry_DTOS.getStatus().equals(OPEN)));
 
-        POExtensionDTO poExtensionDTO = new POExtensionDTO();
-        poExtensionDTO.setEndDate(LocalDate.now().plusDays(10));
+
+        orderAccepted.getContent().getRentalPeriod().setEndDate(LocalDate.now().plusDays(25));
 
 
         MvcResult extensions = mockMvc.perform(post("/api/sales/orders/" + id + "/extensions").with(user("customer").password("customer").roles("CUSTOMER"))
-                .content(mapper.writeValueAsString(poExtensionDTO)).contentType(MediaType.APPLICATION_JSON))
+                .content(mapper.writeValueAsString(orderAccepted)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andReturn();
 
@@ -623,6 +649,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(0)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result1 = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -697,6 +724,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(1)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result1 = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -741,6 +769,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(0)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result1 = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -776,9 +805,11 @@ public class SalesRestControllerTests {
                 .andExpect(header().string("Location", isEmptyOrNullString()))
                 .andReturn();
 
-        String orderCancel = cancelResult.getResponse().getContentAsString();
+
+        Resource<PurchaseOrderDTO> orderCancel = mapper.readValue(cancelResult.getResponse().getContentAsString(), new TypeReference<Resource<PurchaseOrderDTO>>() {});
         System.out.println(orderCancel);
-        assert((orderCancel.equals("{\"response\": \"Given PO cannot be cancelled now.\"}")));
+
+        assert((orderCancel.getContent().getStatus()== POStatus.DISPATCHED));
     }
 
     @Test
@@ -792,6 +823,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(1)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result1 = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -836,6 +868,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(1)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result1 = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -890,6 +923,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(0)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result1 = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -943,6 +977,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(1)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result1 = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))
@@ -1002,6 +1037,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(plants.get(0)));
+        order.setConsumerURI("www.builtit.com");
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         MvcResult result = mockMvc.perform(post("/api/sales/orders").with(user("customer").password("customer").roles("CUSTOMER"))

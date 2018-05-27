@@ -59,14 +59,14 @@ public class DemoApplication {
 
 		SpringApplication.run(DemoApplication.class, args);
 
-		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-		MailServer mailServer = new MailServer();
-		exec.scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				mailServer.check();
-			}
-		}, 0, 30, TimeUnit.SECONDS);
+//		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+//		MailServer mailServer = new MailServer();
+//		exec.scheduleAtFixedRate(new Runnable() {
+//			@Override
+//			public void run() {
+//				mailServer.check();
+//			}
+//		}, 0, 30, TimeUnit.SECONDS);
 	}
 
 
