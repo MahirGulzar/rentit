@@ -9,6 +9,7 @@ import com.example.demo.invoicing.domain.model.InvoiceStatus;
 import com.example.demo.invoicing.domain.repository.InvoiceRepository;
 import com.example.demo.invoicing.infrastructure.InvoiceIdentifierFactory;
 import com.example.demo.mailing.USER;
+import com.example.demo.mailing.domain.repository.CustomerRepository;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.domain.model.PurchaseOrder;
 import com.example.demo.sales.domain.repository.PurchaseOrderRepository;
@@ -56,6 +57,9 @@ public class InvoiceService {
     PurchaseOrderRepository purchaseOrderRepository;
 
     @Autowired
+    CustomerRepository customerRepository;
+
+    @Autowired
     @Qualifier("_halObjectMapper")
     ObjectMapper mapper;
 
@@ -83,6 +87,10 @@ public class InvoiceService {
 
         USER.current_uri=purchaseOrderDTO.getContent().getConsumerURI();
         USER.destination_email=USER.users.get(USER.current_uri);
+
+        USER.destination_email = customerRepository.findByConsumerURI(purchaseOrderDTO.getContent().getConsumerURI()).get(0).getEmailAddress();
+
+
 
 
         LocalDate localDate = LocalDate.now();

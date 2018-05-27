@@ -24,6 +24,7 @@ import com.example.demo.invoicing.application.services.InvoiceService;
 import com.example.demo.invoicing.domain.model.Invoice;
 import com.example.demo.invoicing.domain.model.InvoiceStatus;
 import com.example.demo.mailing.USER;
+import com.example.demo.mailing.domain.repository.CustomerRepository;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.application.integration.gateways.POGateway;
 import com.example.demo.sales.domain.model.POStatus;
@@ -109,6 +110,9 @@ public class SalesService {
 
     @Autowired
     POGateway poGateway;
+
+    @Autowired
+    CustomerRepository customerRepository;
 
     @Autowired
     @Qualifier("_halObjectMapper")
@@ -539,7 +543,8 @@ public class SalesService {
                 "\n\nKindly yours,\n\nRentIt Team!";
         JavaMailSender mailSender = new JavaMailSenderImpl();
 
-        String destinationEmail = USER.users.get(purchaseOrderDTO.getContent().getConsumerURI());
+        String destinationEmail = customerRepository.findByConsumerURI(purchaseOrderDTO.getContent().getConsumerURI()).get(0).getEmailAddress();
+
 
 
         String poDTO;
