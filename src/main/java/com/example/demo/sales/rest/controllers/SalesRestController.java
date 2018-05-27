@@ -118,7 +118,7 @@ public class SalesRestController {
     @PostMapping("/orders/{id}/extensions")
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","ROLE_CUSTOMER"})
     @ResponseStatus(HttpStatus.CREATED)
-    public Resource<?> requestPurchaseOrderExtension(@PathVariable("id") Long id,@RequestBody PurchaseOrderDTO purchaseOrderDTO)  {
+    public Resource<?> requestPurchaseOrderExtension(@RequestBody PurchaseOrderDTO purchaseOrderDTO , @PathVariable("id") Long id) {
 
         return salesService.requestPurchaseExtension(id,purchaseOrderDTO.getRentalPeriod().getEndDate());
     }
