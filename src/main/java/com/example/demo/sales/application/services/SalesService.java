@@ -26,6 +26,7 @@ import com.example.demo.invoicing.domain.model.InvoiceStatus;
 import com.example.demo.mailing.USER;
 import com.example.demo.mailing.domain.repository.CustomerRepository;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
+import com.example.demo.sales.application.factory.ReservationFactory;
 import com.example.demo.sales.application.integration.gateways.POGateway;
 import com.example.demo.sales.domain.model.POStatus;
 import com.example.demo.sales.domain.model.PurchaseOrder;
@@ -113,6 +114,10 @@ public class SalesService {
 
     @Autowired
     CustomerRepository customerRepository;
+
+
+    @Autowired
+    ReservationFactory reservationFactory;
 
     @Autowired
     @Qualifier("_halObjectMapper")
@@ -249,6 +254,7 @@ public class SalesService {
 
         if(!items.isEmpty()){
             PlantReservation reservation = new PlantReservation();
+            reservation.setId(ReservationFactory.nextReservation());
             reservation.setPlant(items.get(0));
             reservation.setSchedule(BusinessPeriod.of(startDate, endDate));
             reservationRepo.save(reservation);
@@ -296,6 +302,7 @@ public class SalesService {
         {
             System.out.println("Item is available in these dates....");
             PlantReservation plantReservation = new PlantReservation();
+            plantReservation.setId(ReservationFactory.nextReservation());
             plantReservation.setPlant(item);
             System.out.println(order.pendingExtensionEndDate());
             plantReservation.setSchedule(BusinessPeriod.of(order.getRentalPeriod().getEndDate().plusDays(1), order.pendingExtensionEndDate()));
@@ -333,6 +340,7 @@ public class SalesService {
                         System.out.println("Replacement found for loss less than 30%....");
 
                         PlantReservation plantReservation = new PlantReservation();
+                        plantReservation.setId(ReservationFactory.nextReservation());
                         plantReservation.setPlant(item);
                         System.out.println(order.pendingExtensionEndDate());
                         plantReservation.setSchedule(BusinessPeriod.of(order.getRentalPeriod().getEndDate().plusDays(1), order.pendingExtensionEndDate()));
@@ -351,6 +359,7 @@ public class SalesService {
 //                    Replacement found with no loss ...
                     System.out.println("Replacement found with no loss ...");
                     PlantReservation plantReservation = new PlantReservation();
+                    plantReservation.setId(ReservationFactory.nextReservation());
                     plantReservation.setPlant(item);
                     System.out.println(order.pendingExtensionEndDate());
                     plantReservation.setSchedule(BusinessPeriod.of(order.getRentalPeriod().getEndDate().plusDays(1), order.pendingExtensionEndDate()));

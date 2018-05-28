@@ -3,6 +3,7 @@ package com.example.demo.mailing.application.services;
 
 import com.example.demo.common.application.exceptions.CustomerNotFoundException;
 import com.example.demo.mailing.application.dto.CustomerDTO;
+import com.example.demo.mailing.application.factory.CustomerIdentifierFactory;
 import com.example.demo.mailing.domain.model.Customer;
 import com.example.demo.mailing.domain.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class MailingService {
     @Autowired
     CustomerAssembler customerAssembler;
 
+    @Autowired
+    CustomerIdentifierFactory customerIdentifierFactory;
+
     public List<CustomerDTO> getAllCustomers()
     {
         return customerAssembler.toResources(repository.findAll());
@@ -34,7 +38,7 @@ public class MailingService {
         Customer customer=null;
         if(email!=null && URI !=null)
         {
-            customer = Customer.of(null,email,URI);
+            customer = Customer.of(customerIdentifierFactory.nextCustomerID(),email,URI);
             repository.save(customer);
             return customerAssembler.toResource(customer);
         }

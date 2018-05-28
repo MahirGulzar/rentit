@@ -15,7 +15,6 @@ import javax.persistence.*;
 @Data
 public class PlantReservation {
     @Id
-    @GeneratedValue
     Long id;
 
     @ManyToOne

@@ -60,7 +60,8 @@ public class DemoApplication {
 		SpringApplication.run(DemoApplication.class, args);
 
 //		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-//		MailServer mailServer = new MailServer();
+		MailServer mailServer = new MailServer();
+		mailServer.initDb();
 //		exec.scheduleAtFixedRate(new Runnable() {
 //			@Override
 //			public void run() {
