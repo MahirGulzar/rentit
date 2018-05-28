@@ -40,7 +40,6 @@ public class SalesRestController {
             @RequestParam(name = "name") String plantName,
             @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-//        System.out.println(headers.getOrigin());
         return inventoryService.findAvailable(plantName.toLowerCase(), startDate, endDate);
     }
 
@@ -48,7 +47,7 @@ public class SalesRestController {
     @GetMapping("/orders/{id}")
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","ROLE_CUSTOMER"})
     @ResponseStatus(HttpStatus.OK)
-    public Resource<PurchaseOrderDTO> fetchPurchaseOrder(@PathVariable("id") Long id){
+    public ResponseEntity<?> fetchPurchaseOrder(@PathVariable("id") Long id){
         return salesService.findPurchaseOrder(id);
     }
 
@@ -72,31 +71,20 @@ public class SalesRestController {
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","ROLE_CUSTOMER"})
     public ResponseEntity<?> createPurchaseOrder(
                                                  @RequestBody PurchaseOrderDTO partialPODTO) {
-//        System.out.println(reqHeaders);
-//        System.out.println(location);
-        Resource<PurchaseOrderDTO> resource = salesService.createPO(partialPODTO);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Location", resource.getRequiredLink("self").getHref());
-
-        return new ResponseEntity<>(
-                resource,
-                headers,
-                HttpStatus.CREATED);
-
+        return salesService.createPO(partialPODTO);
     }
 
     @PutMapping("/orders/{id}/allocation")
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     @ResponseStatus(HttpStatus.OK)
-    public Resource<?> allocatePlant(@PathVariable("id") Long id) {
+    public ResponseEntity<?> allocatePlant(@PathVariable("id") Long id) {
         return salesService.allocatePlantToPurchaseOrder(id);
     }
 
     @DeleteMapping("/orders/{id}/allocation")
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     @ResponseStatus(HttpStatus.OK)
-    public Resource<?> rejectPurchaseOrder(@PathVariable Long id){
+    public ResponseEntity<?> rejectPurchaseOrder(@PathVariable Long id){
         return salesService.rejectPurchaseOrder(id);
     }
 
@@ -118,30 +106,20 @@ public class SalesRestController {
     @PostMapping("/orders/{id}/extensions")
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE","ROLE_CUSTOMER"})
     @ResponseStatus(HttpStatus.CREATED)
-    public Resource<?> requestPurchaseOrderExtension(@RequestBody PurchaseOrderDTO purchaseOrderDTO , @PathVariable("id") Long id) {
-
+    public ResponseEntity<?> requestPurchaseOrderExtension(@RequestBody PurchaseOrderDTO purchaseOrderDTO , @PathVariable("id") Long id) {
         return salesService.requestPurchaseExtension(id,purchaseOrderDTO.getRentalPeriod().getEndDate());
     }
 
     @PutMapping("/orders/{id}")
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     public ResponseEntity<?> resubmitPurchaseOrder(@PathVariable("id") Long id, @RequestBody PurchaseOrderDTO order) {
-        Resource<PurchaseOrderDTO> resource = salesService.updatePurchaseOrder(id,order);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Location", resource.getRequiredLink("self").getHref());
-
-        return new ResponseEntity<>(
-                resource,
-                headers,
-                HttpStatus.OK);
-
+        return salesService.updatePurchaseOrder(id,order);
     }
 
     @PatchMapping("/orders/{id}/extensions")
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     @ResponseStatus(HttpStatus.OK)
-    public Resource<?> acceptPurchaseOrderExtension(@PathVariable("id") Long id) {
+    public ResponseEntity<?> acceptPurchaseOrderExtension(@PathVariable("id") Long id) {
         return salesService.acceptPurchaseExtension(id);
     }
 
@@ -155,10 +133,10 @@ public class SalesRestController {
 
     //---------------------- Added in project methods ------------------------
 
-    @GetMapping("/orders/{id}/cancel")
+    @DeleteMapping("/orders/{id}/cancel")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
-    public Resource<PurchaseOrderDTO> cancelPurchaseOrder(@PathVariable("id") Long id) throws PurchaseOrderNotFoundException, BindException {
+    public ResponseEntity<?> cancelPurchaseOrder(@PathVariable("id") Long id) throws PurchaseOrderNotFoundException, BindException {
         return salesService.cancelPO(id);
     }
 

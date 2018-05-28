@@ -9,10 +9,6 @@ import java.util.UUID;
 
 @Component
 public class ReservationFactory {
-//    public static String nextPOID() {
-//        return UUID.randomUUID().toString();
-//    }
-
     /**
      * Gnereate unique ID from UUID in positive space
      * @return long value representing UUID

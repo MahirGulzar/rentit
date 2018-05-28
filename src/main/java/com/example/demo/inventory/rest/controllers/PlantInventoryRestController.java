@@ -12,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class PlantInventoryRestController {
 
     @GetMapping("/plants/{pid}")
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_EMPLOYEE"})
-    public Resource<?> findPlantInventoryEntry(
+    public ResponseEntity<?> findPlantInventoryEntry(
             @PathVariable(name = "pid") Long id) {
         return inventoryService.findPlantInventoryEntries(id);
     }
@@ -42,7 +43,7 @@ public class PlantInventoryRestController {
 
     @GetMapping("/items/{id}")
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_EMPLOYEE"})
-    public Resource<?> findPlantInventoryItem(
+    public ResponseEntity<?> findPlantInventoryItem(
             @PathVariable(name = "id") Long id) {
         return inventoryService.findItemById(id);
     }

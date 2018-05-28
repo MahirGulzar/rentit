@@ -5,8 +5,6 @@ import com.example.demo.common.application.exceptions.PurchaseOrderNotFoundExcep
 import com.example.demo.common.domain.model.BusinessPeriod;
 import com.example.demo.common.domain.validation.BusinessPeriodIsInFutureValidator;
 import com.example.demo.common.domain.validation.BusinessPeriodValidator;
-import com.example.demo.common.utils.ExtendedLink;
-import com.example.demo.inventory.application.dto.PlantInventoryItemDTO;
 import com.example.demo.inventory.application.exceptions.PlantNotFoundException;
 import com.example.demo.inventory.application.services.InventoryService;
 import com.example.demo.inventory.application.services.PlantInventoryEntryAssembler;
@@ -19,10 +17,7 @@ import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepositor
 import com.example.demo.inventory.domain.repository.PlantInventoryItemRepository;
 import com.example.demo.inventory.domain.repository.PlantReservationRepository;
 import com.example.demo.inventory.domain.validation.PlantInventoryEntryValidator;
-import com.example.demo.invoicing.application.dto.InvoiceDTO;
 import com.example.demo.invoicing.application.services.InvoiceService;
-import com.example.demo.invoicing.domain.model.Invoice;
-import com.example.demo.invoicing.domain.model.InvoiceStatus;
 import com.example.demo.mailing.USER;
 import com.example.demo.mailing.domain.repository.CustomerRepository;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
@@ -33,16 +28,15 @@ import com.example.demo.sales.domain.model.PurchaseOrder;
 import com.example.demo.sales.domain.model.factory.SalesIdentifierFactory;
 import com.example.demo.sales.domain.repository.PurchaseOrderRepository;
 import com.example.demo.sales.domain.validation.PurchaseOrderValidator;
-import com.example.demo.sales.rest.controllers.SalesRestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -58,13 +52,9 @@ import javax.mail.util.ByteArrayDataSource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.afford;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @Service
 public class SalesService {
@@ -129,9 +119,25 @@ public class SalesService {
 
 
 
-    public Resource<PurchaseOrderDTO> findPurchaseOrder(Long oid) {
+    public ResponseEntity findPurchaseOrder(Long oid) {
         PurchaseOrder po = orderRepo.getOne(oid);
-        return purchaseOrderAssembler.toResource(po);
+
+        try {
+            po = orderRepo.findPurchaseOrderById(oid);
+            System.out.println(po);
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("PO not found Bad Identifier");
+        }
+
+        Resource<PurchaseOrderDTO> returnDTO = purchaseOrderAssembler.toResource(po);
+        return new ResponseEntity<Resource<PurchaseOrderDTO>>(
+                returnDTO,
+                null,
+                HttpStatus.OK);
     }
 
     public Resource<PurchaseOrderDTO> deletePurchaseOrder(Long oid) {
@@ -160,9 +166,19 @@ public class SalesService {
     }
 
 
-    public Resource<PurchaseOrderDTO> updatePurchaseOrder(Long oid, PurchaseOrderDTO purchaseOrderDTO) {
-        PurchaseOrder order = orderRepo.getOne(oid);
-        PlantInventoryEntry plantItem = plantRepo.getOne(purchaseOrderDTO.getPlant().getContent().get_id());
+    public ResponseEntity updatePurchaseOrder(Long oid, PurchaseOrderDTO purchaseOrderDTO) {
+        PurchaseOrder order;
+        PlantInventoryEntry plantItem;
+        try {
+            order= orderRepo.getOne(oid);
+            plantItem= plantRepo.getOne(purchaseOrderDTO.getPlant().getContent().get_id());
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getLocalizedMessage());
+        }
 
 
         // TODO Validate data of PO DTO
@@ -170,8 +186,42 @@ public class SalesService {
         order.setRentalPeriod(purchaseOrderDTO.getRentalPeriod().asBusinessPeriod());
         order.setTotal(purchaseOrderDTO.getTotal());
         order.setStatus(purchaseOrderDTO.getStatus());
+
+        DataBinder binder = new DataBinder(order);
+
+        binder.addValidators(new PurchaseOrderValidator(
+                new BusinessPeriodValidator(),
+                new BusinessPeriodIsInFutureValidator(),
+                new PlantInventoryEntryValidator()));
+
+        binder.validate();
+
+        try {
+            if (binder.getBindingResult().hasErrors()) {
+                throw new BindException(binder.getBindingResult());
+            }
+        }
+        catch (BindException e)
+        {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("message",e.getMessage());
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getGlobalError());
+        }
+
         orderRepo.save(order);
-        return purchaseOrderAssembler.toResource(order);
+        Resource<PurchaseOrderDTO> returnDTO=purchaseOrderAssembler.toResource(order);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Location", returnDTO.getRequiredLink("self").getHref());
+
+
+        return new ResponseEntity<Resource<PurchaseOrderDTO>>(
+                returnDTO,
+                headers,
+                HttpStatus.OK);
     }
 
     public Resources<?> findAllPurchaseOrders(){
@@ -179,17 +229,18 @@ public class SalesService {
     }
 
 
-    public Resource<PurchaseOrderDTO> createPO(PurchaseOrderDTO purchaseOrderDTO)
+    public ResponseEntity createPO(PurchaseOrderDTO purchaseOrderDTO)
     {
-        PlantInventoryEntry plantInventoryEntry = plantRepo.getOne(purchaseOrderDTO.getPlant().getContent().get_id());
+        PlantInventoryEntry plantInventoryEntry;
         try {
-            if (plantInventoryEntry == null) {
-                throw new PlantNotFoundException("Plant Not Found..");
-            }
+            plantInventoryEntry = plantRepo.getOne(purchaseOrderDTO.getPlant().getContent().get_id());
+            System.out.println(plantInventoryEntry);
         }
-        catch (PlantNotFoundException e)
+        catch (Exception e)
         {
-            // TODO handle exception
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Plant not found bad Identifier!");
         }
         PurchaseOrder po = PurchaseOrder.of(
                 identifierFactory.nextPOID(),
@@ -212,6 +263,18 @@ public class SalesService {
 
         binder.validate();
 
+
+        try{
+            if(po.getConsumerURI()==null)
+                throw new Exception();  // throw exception if consumerURI is null
+
+        }catch (Exception e)
+        {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Bad Request: Consumer URI is required!");
+        }
+
         try {
             if (binder.getBindingResult().hasErrors()) {
                 throw new BindException(binder.getBindingResult());
@@ -219,35 +282,74 @@ public class SalesService {
         }
         catch (BindException e)
         {
-            // TODO handle exception
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("message",e.getMessage());
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getGlobalError());
         }
 
         orderRepo.save(po);
+        Resource<PurchaseOrderDTO> returnDTO=purchaseOrderAssembler.toResource(po);
 
-        return purchaseOrderAssembler.toResource(po);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Location", returnDTO.getRequiredLink("self").getHref());
+
+
+
+        return new ResponseEntity<Resource<PurchaseOrderDTO>>(
+                returnDTO,
+                headers,
+                HttpStatus.CREATED);
 
     }
 
 
-    public Resource<PurchaseOrderDTO> rejectPurchaseOrder(Long oid) {
-        PurchaseOrder po = orderRepo.findPurchaseOrderById(oid);
+    public ResponseEntity rejectPurchaseOrder(Long oid) {
+        PurchaseOrder po;
+        try {
+            po = orderRepo.findPurchaseOrderById(oid);
+            System.out.println(po);
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(e.getLocalizedMessage());
+        }
+
         po.handleRejection();
 
         orderRepo.save(po);
-//        if(po.getRejectHref()!=null) {
-//            restTemplate.delete(po.getRejectHref());
-//        }
 
         Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(po);
         sendPONotication(purchaseOrderDTO);
-        return purchaseOrderDTO;
+        return new ResponseEntity<Resource<PurchaseOrderDTO>>(
+                purchaseOrderDTO,
+                null,
+                HttpStatus.OK);
     }
 
 
     //---------------------------------------------------------------------------------------
 
-    public Resource<PurchaseOrderDTO> allocatePlantToPurchaseOrder(Long id){
-        PurchaseOrder order = orderRepo.getOne(id);
+    public ResponseEntity allocatePlantToPurchaseOrder(Long id){
+        PurchaseOrder order;
+
+
+        try {
+            order = orderRepo.getOne(id);
+            System.out.println(order);
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("PO not found bad Identifier!");
+        }
+
+
         LocalDate startDate = order.getRentalPeriod().getStartDate();
         LocalDate endDate = order.getRentalPeriod().getEndDate();
         List<PlantInventoryItem> items = inventoryRepository.findAvailableItems(order.getPlant(), startDate, endDate);
@@ -267,44 +369,74 @@ public class SalesService {
         }
         orderRepo.save(order);
 
-        // Return Address method to invoke builtIT side (A way to notify)
-
-//        if(order.getAcceptHref()!=null) {
-//            ResponseEntity<?> result = restTemplate.postForEntity(order.getAcceptHref(), null, PurchaseOrderDTO.class);
-//        }
         Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(order);
         sendPONotication(purchaseOrderDTO);
-        return purchaseOrderDTO;
+
+
+
+        return new ResponseEntity<Resource<PurchaseOrderDTO>>(
+                purchaseOrderDTO,
+                null,
+                HttpStatus.OK);
     }
 
 
 
-    public Resource<PurchaseOrderDTO> requestPurchaseExtension(Long id, LocalDate endDate) {
-        PurchaseOrder order = orderRepo.getOne(id);
+    public ResponseEntity requestPurchaseExtension(Long id, LocalDate endDate) {
+        PurchaseOrder order;
+
+        try {
+            order = orderRepo.getOne(id);
+            System.out.println(order);
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("PO not found bad Identifier!");
+        }
+
+
         if(order.getStatus()!=POStatus.PENDING_EXTENSION ||
                 order.getStatus()!=POStatus.CLOSED ||
                 order.getStatus()!=POStatus.REJECTED ||
                 order.getStatus()!=POStatus.REJECTED_BY_CUSTOMER)
         order.requestExtension(endDate);
         orderRepo.save(order);
-        return purchaseOrderAssembler.toResource(order);
+
+
+        Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(order);
+
+
+        return new ResponseEntity<Resource<PurchaseOrderDTO>>(
+                purchaseOrderDTO,
+                null,
+                HttpStatus.OK);
     }
 
-    public Resource<PurchaseOrderDTO> acceptPurchaseExtension(Long id) {
+    public ResponseEntity acceptPurchaseExtension(Long id) {
 
-        PurchaseOrder order = orderRepo.getOne(id);
-        System.out.println(order);
-//        PlantInventoryItem item = itemRepo.findPlantInventoryItemById(plantInventoryItemDTO.get_id());
+        PurchaseOrder order;
+
+        try {
+            order = orderRepo.getOne(id);
+            System.out.println(order);
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("PO not found bad Identifier!");
+        }
+
 
         PlantInventoryItem item = order.getReservations().get(0).getPlant();
 
         if(inventoryRepository.isAvailableFor(item,order.getRentalPeriod().getEndDate().plusDays(1),order.pendingExtensionEndDate()))
         {
-            System.out.println("Item is available in these dates....");
             PlantReservation plantReservation = new PlantReservation();
             plantReservation.setId(ReservationFactory.nextReservation());
             plantReservation.setPlant(item);
-            System.out.println(order.pendingExtensionEndDate());
             plantReservation.setSchedule(BusinessPeriod.of(order.getRentalPeriod().getEndDate().plusDays(1), order.pendingExtensionEndDate()));
             reservationRepo.save(plantReservation);
 
@@ -313,36 +445,26 @@ public class SalesService {
         }
         else {
 //            Item not available in these dates checking for replacement....
-            System.out.println("Item not available in these dates checking for replacement....");
             LocalDate startDate = order.getRentalPeriod().getStartDate();
             LocalDate endDate = order.getRentalPeriod().getEndDate();
             List<PlantInventoryItem> items = inventoryRepository.findReplacementItems(order.getPlant().getName(), startDate, endDate);
 
             if(!items.isEmpty()){
 
-                System.out.println("Current plant price:---> "+item.getPlantInfo().getPrice());
-                System.out.println("Replacement plant price:---> "+items.get(0).getPlantInfo().getPrice());
                 if(item.getPlantInfo().getPrice().compareTo(items.get(0).getPlantInfo().getPrice())<0) {
 
 
                     BigDecimal reducedPrice = (items.get(0).getPlantInfo().getPrice()
                             .subtract(item.getPlantInfo().getPrice()));
-                    System.out.println(reducedPrice);
                     float decimalval = reducedPrice.floatValue();
                     float prevPlantValue=item.getPlantInfo().getPrice().floatValue();
-                    System.out.println("Decimal value of reduced right now = "+decimalval);
-                    System.out.println("Decimal value of previous plant  = "+item.getPlantInfo().getPrice().floatValue());
                     decimalval = decimalval/prevPlantValue;
-                    System.out.println("Division value = "+decimalval);
                     decimalval = decimalval*100.0f;
-                    System.out.println(decimalval);
                     if (decimalval<=30) {
-                        System.out.println("Replacement found for loss less than 30%....");
 
                         PlantReservation plantReservation = new PlantReservation();
                         plantReservation.setId(ReservationFactory.nextReservation());
                         plantReservation.setPlant(item);
-                        System.out.println(order.pendingExtensionEndDate());
                         plantReservation.setSchedule(BusinessPeriod.of(order.getRentalPeriod().getEndDate().plusDays(1), order.pendingExtensionEndDate()));
                         reservationRepo.save(plantReservation);
 
@@ -351,17 +473,14 @@ public class SalesService {
                     } else {
 
 //                        Replacement not found for loss less than 30%....
-                        System.out.println("Replacement not found for loss less than 30%....");
                     }
                 }
                 else
                 {
 //                    Replacement found with no loss ...
-                    System.out.println("Replacement found with no loss ...");
                     PlantReservation plantReservation = new PlantReservation();
                     plantReservation.setId(ReservationFactory.nextReservation());
                     plantReservation.setPlant(item);
-                    System.out.println(order.pendingExtensionEndDate());
                     plantReservation.setSchedule(BusinessPeriod.of(order.getRentalPeriod().getEndDate().plusDays(1), order.pendingExtensionEndDate()));
                     reservationRepo.save(plantReservation);
 
@@ -379,7 +498,10 @@ public class SalesService {
 
         Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(order);
         sendPONotication(purchaseOrderDTO);
-        return purchaseOrderDTO;
+        return new ResponseEntity<Resource<PurchaseOrderDTO>>(
+                purchaseOrderDTO,
+                null,
+                HttpStatus.OK);
     }
 
 
@@ -415,8 +537,18 @@ public class SalesService {
 
     // ------------------------ Project Methods here -------------
 
-    public Resource<PurchaseOrderDTO> cancelPO(Long id) throws PurchaseOrderNotFoundException, BindException {
-        PurchaseOrder purchaseOrder = orderRepo.getOne(id);
+    public ResponseEntity cancelPO(Long id) throws PurchaseOrderNotFoundException, BindException {
+        PurchaseOrder purchaseOrder;
+        try{
+            purchaseOrder = orderRepo.getOne(id);
+            System.out.println(purchaseOrder);
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("PO not found bad Identifier!");
+        }
         if(purchaseOrder == null) throw new PurchaseOrderNotFoundException(id);
 
         if(purchaseOrder.getStatus() == POStatus.OPEN ||
@@ -426,11 +558,18 @@ public class SalesService {
 
             Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(purchaseOrder);
             sendPONotication(purchaseOrderDTO);
-            return purchaseOrderDTO;
+
+            return new ResponseEntity<Resource<PurchaseOrderDTO>>(
+                    purchaseOrderDTO,
+                    null,
+                    HttpStatus.OK);
         }
         Resource<PurchaseOrderDTO> purchaseOrderDTO=purchaseOrderAssembler.toResource(purchaseOrder);
         sendPONotication(purchaseOrderDTO);
-        return purchaseOrderDTO;
+        return new ResponseEntity<Resource<PurchaseOrderDTO>>(
+                purchaseOrderDTO,
+                null,
+                HttpStatus.OK);
     }
 
 

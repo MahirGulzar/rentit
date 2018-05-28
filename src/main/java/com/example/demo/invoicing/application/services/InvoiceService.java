@@ -70,8 +70,6 @@ public class InvoiceService {
     @Value("${gmail.from}")
     String emailFrom;
 
-//    @Value("${gmail.to}")
-//    String emailTo;
 
     InvoiceIdentifierFactory invoiceIdentifierFactory = new InvoiceIdentifierFactory();
 
@@ -83,8 +81,6 @@ public class InvoiceService {
     JdbcTemplate jt;
 
     public void executesDynamicQueries() {
-
-
 
         jt = new JdbcTemplate(dataSource);
         jt.execute("insert into plant_inventory_entry (id, name, description, price) values (1, 'Mini excavator', '1.5 Tonne Mini excavator', 150);" +
@@ -115,12 +111,6 @@ public class InvoiceService {
                 "insert into authorities (username, authority) values ('customer', 'ROLE_CUSTOMER');");
 
     }
-
-
-
-
-
-
 
 
     public List<InvoiceDTO> getInvoices() {
