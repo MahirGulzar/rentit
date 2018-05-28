@@ -1,6 +1,7 @@
 package com.example.demo.mailing.domain.model;
 
 
+import com.example.demo.sales.domain.model.PurchaseOrder;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

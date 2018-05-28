@@ -609,7 +609,7 @@ public class SalesRestControllerTests {
 
         MvcResult extensions = mockMvc.perform(post("/api/sales/orders/" + id + "/extensions").with(user("customer").password("customer").roles("CUSTOMER"))
                 .content(mapper.writeValueAsString(orderAccepted)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andReturn();
 
         Resource<PurchaseOrderDTO> orderExtensions = mapper.readValue(extensions.getResponse().getContentAsString(), new TypeReference<Resource<PurchaseOrderDTO>>() {});
@@ -746,7 +746,7 @@ public class SalesRestControllerTests {
         System.out.println(entry_DTOS.getStatus());
         assert((entry_DTOS.getStatus().equals(OPEN)));
 
-        MvcResult result3 = mockMvc.perform(get("/api/sales/orders/" + id + "/cancel").with(user("customer").password("customer").roles("CUSTOMER"))
+        MvcResult result3 = mockMvc.perform(delete("/api/sales/orders/" + id + "/cancel").with(user("customer").password("customer").roles("CUSTOMER"))
         ).andExpect(status().isOk())
                 .andExpect(header().string("Location", isEmptyOrNullString()))
                 .andReturn();
@@ -800,7 +800,7 @@ public class SalesRestControllerTests {
         System.out.println(orderdispatched);
 
 
-        MvcResult cancelResult = mockMvc.perform(get("/api/sales/orders/" + id + "/cancel").with(user("customer").password("customer").roles("CUSTOMER"))
+        MvcResult cancelResult = mockMvc.perform(delete("/api/sales/orders/" + id + "/cancel").with(user("customer").password("customer").roles("CUSTOMER"))
         ).andExpect(status().isOk())
                 .andExpect(header().string("Location", isEmptyOrNullString()))
                 .andReturn();

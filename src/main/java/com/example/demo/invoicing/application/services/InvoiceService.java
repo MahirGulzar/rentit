@@ -2,18 +2,15 @@ package com.example.demo.invoicing.application.services;
 
 import com.example.demo.inventory.domain.repository.PlantInventoryEntryRepository;
 import com.example.demo.invoicing.application.dto.InvoiceDTO;
-import com.example.demo.invoicing.application.integrations.flows.InvoicingFlow;
 import com.example.demo.invoicing.application.integrations.gateways.InvoicingGateway;
 import com.example.demo.invoicing.domain.model.Invoice;
 import com.example.demo.invoicing.domain.model.InvoiceStatus;
 import com.example.demo.invoicing.domain.repository.InvoiceRepository;
 import com.example.demo.invoicing.infrastructure.InvoiceIdentifierFactory;
-import com.example.demo.mailing.USER;
 import com.example.demo.mailing.domain.repository.CustomerRepository;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.domain.model.PurchaseOrder;
 import com.example.demo.sales.domain.repository.PurchaseOrderRepository;
-import com.example.demo.sales.rest.controllers.SalesRestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,7 +70,6 @@ public class InvoiceService {
 
     InvoiceIdentifierFactory invoiceIdentifierFactory = new InvoiceIdentifierFactory();
 
-
     @Autowired
     @Qualifier("dataSource")
     DataSource dataSource;
@@ -84,19 +80,19 @@ public class InvoiceService {
 
         jt = new JdbcTemplate(dataSource);
         jt.execute("insert into plant_inventory_entry (id, name, description, price) values (1, 'Mini excavator', '1.5 Tonne Mini excavator', 150);" +
-                "insert into plant_inventory_entry (id, name, description, price) values (2, 'Mini excavator', '3 Tonne Mini excavator', 200);" +
-                "insert into plant_inventory_entry (id, name, description, price) values (3, 'Midi excavator', '5 Tonne Midi excavator', 250);" +
-                "insert into plant_inventory_entry (id, name, description, price) values (4, 'Midi excavator', '8 Tonne Midi excavator', 300);" +
-                "insert into plant_inventory_entry (id, name, description, price) values (5, 'Maxi excavator', '15 Tonne Large excavator', 400);" +
-                "insert into plant_inventory_entry (id, name, description, price) values (6, 'Maxi excavator', '20 Tonne Large excavator', 450);" +
-                "insert into plant_inventory_entry (id, name, description, price) values (7, 'HS dumper', '1.5 Tonne Hi-Swivel Dumper', 150);" +
-                "insert into plant_inventory_entry (id, name, description, price) values (8, 'FT dumper', '2 Tonne Front Tip Dumper', 180);" +
-                "insert into plant_inventory_entry (id, name, description, price) values (9, 'FT dumper', '2 Tonne Front Tip Dumper', 200);" +
-                "insert into plant_inventory_entry (id, name, description, price) values (10, 'FT dumper', '2 Tonne Front Tip Dumper', 300);" +
-                "insert into plant_inventory_entry (id, name, description, price) values (11, 'FT dumper', '3 Tonne Front Tip Dumper', 400);" +
-                "insert into plant_inventory_entry (id, name, description, price) values (12, 'Loader', 'Hewden Backhoe Loader', 200);" +
-                "insert into plant_inventory_entry (id, name, description, price) values (13, 'D-Truck', '15 Tonne Articulating Dump Truck', 250);" +
-                "insert into plant_inventory_entry (id, name, description, price) values (14, 'D-Truck', '30 Tonne Articulating Dump Truck', 300);" +
+                "insert into plant_inventory_entry (id, name, description, price) values (2, 'Mini excavator', '3 Tonne Mini excavator Site-12', 200);" +
+                "insert into plant_inventory_entry (id, name, description, price) values (3, 'Midi excavator', '5 Tonne Midi excavator Site-12', 250);" +
+                "insert into plant_inventory_entry (id, name, description, price) values (4, 'Midi excavator', '8 Tonne Midi excavator Site-12', 300);" +
+                "insert into plant_inventory_entry (id, name, description, price) values (5, 'Maxi excavator', '15 Tonne Large excavator Site-12', 400);" +
+                "insert into plant_inventory_entry (id, name, description, price) values (6, 'Maxi excavator', '20 Tonne Large excavator Site-12', 450);" +
+                "insert into plant_inventory_entry (id, name, description, price) values (7, 'HS dumper', '1.5 Tonne Hi-Swivel Dumper Site-12', 150);" +
+                "insert into plant_inventory_entry (id, name, description, price) values (8, 'FT dumper', '2 Tonne Front Tip Dumper Site-12', 180);" +
+                "insert into plant_inventory_entry (id, name, description, price) values (9, 'FT dumper', '2 Tonne Front Tip Dumper Site-12', 200);" +
+                "insert into plant_inventory_entry (id, name, description, price) values (10, 'FT dumper', '2 Tonne Front Tip Dumper Site-12', 300);" +
+                "insert into plant_inventory_entry (id, name, description, price) values (11, 'FT dumper', '3 Tonne Front Tip Dumper Site-12', 400);" +
+                "insert into plant_inventory_entry (id, name, description, price) values (12, 'Loader', 'Hewden Backhoe Loader Site-12', 200);" +
+                "insert into plant_inventory_entry (id, name, description, price) values (13, 'D-Truck', '15 Tonne Articulating Dump Truck Site-12', 250);" +
+                "insert into plant_inventory_entry (id, name, description, price) values (14, 'D-Truck', '30 Tonne Articulating Dump Truck Site-12', 300);" +
                 "insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (1, 1, 'A01', 'SERVICEABLE');" +
                 "insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (2, 2, 'A02', 'SERVICEABLE');"+
                 "insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (3, 1, 'A02', 'SERVICEABLE');" +
@@ -124,29 +120,26 @@ public class InvoiceService {
 
     public void sendInvoice(Resource<PurchaseOrderDTO> purchaseOrderDTO) {
 
-        USER.current_uri=purchaseOrderDTO.getContent().getConsumerURI();
-        USER.destination_email=USER.users.get(USER.current_uri);
 
-        USER.destination_email = customerRepository.findByConsumerURI(purchaseOrderDTO.getContent().getConsumerURI()).get(0).getEmailAddress();
+        String destinationEmail = customerRepository.findByConsumerURI(purchaseOrderDTO.getContent().getConsumerURI()).get(0).getEmailAddress();
 
-
-
+        System.out.println("Sending Invoice to ------> "+destinationEmail);
 
         LocalDate localDate = LocalDate.now();
         localDate.plusDays(14);
 
 
         Invoice invoice = Invoice.of(invoiceIdentifierFactory.nextInvoiceID(), purchaseOrderDTO.getContent().get_id(), purchaseOrderDTO.getContent().getTotal(),
-                localDate, InvoiceStatus.UNPAID);
+                localDate, InvoiceStatus.UNPAID,null);
 
         invoiceRepository.save(invoice);
 
-        sendInvoice(invoiceAssembler.toResource(invoice));
+        sendInvoice(invoiceAssembler.toResource(invoice),destinationEmail);
     }
 
-    public void sendInvoice(InvoiceDTO invoiceDTO) {
-//        sendInvoiceHTTP(invoiceDTO);
-        sendInvoiceMAIL(invoiceDTO);
+    // Followed Email notifications
+    public void sendInvoice(InvoiceDTO invoiceDTO,String destinationEmail) {
+        sendInvoiceMAIL(invoiceDTO,destinationEmail);
     }
 
     private void sendInvoiceHTTP(InvoiceDTO invoiceDTO) {
@@ -160,7 +153,7 @@ public class InvoiceService {
         invoicingGateway.sendInvoice(json);
     }
 
-    private void sendInvoiceMAIL(InvoiceDTO invoiceDTO) {
+    private void sendInvoiceMAIL(InvoiceDTO invoiceDTO,String destinationEmail) {
         String MAIL_SUBJECT = "Invoice Purchase Order No.";
         final String MAIL_TEXT = "Dear customer,\n\nPlease find attached the Invoice corresponding to your above mentioned Purchase Order." +
                 "\n\nKindly yours,\n\nRentIt Team!";
@@ -183,7 +176,7 @@ public class InvoiceService {
         try {
             MimeMessageHelper helper = new MimeMessageHelper(rootMessage, true);
             helper.setFrom(emailFrom);
-            helper.setTo(USER.destination_email);
+            helper.setTo(destinationEmail);
             helper.setSubject(MAIL_SUBJECT + invoiceDTO.get_id());
             helper.setText(MAIL_TEXT);
 
@@ -207,8 +200,9 @@ public class InvoiceService {
 
         JavaMailSender mailSender = new JavaMailSenderImpl();
 
-        PurchaseOrder poByInvoice= purchaseOrderRepository.getOne(invoiceDTO.getPoID());
-        String destinationEmail = USER.users.get(poByInvoice.getConsumerURI());
+        PurchaseOrder order = purchaseOrderRepository.getOne(invoiceDTO.getPoID());
+
+        String destinationEmail = customerRepository.findByConsumerURI(order.getConsumerURI()).get(0).getEmailAddress();
 
         String invoice;
         try {

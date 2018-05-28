@@ -1,13 +1,10 @@
 package com.example.demo.sales.domain.model;
 
 
-import com.example.demo.common.domain.model.Address;
 import com.example.demo.common.domain.model.BusinessPeriod;
-import com.example.demo.common.identifiers.PurchaseOrderID;
 import com.example.demo.inventory.domain.model.PlantInventoryEntry;
 import com.example.demo.inventory.domain.model.PlantReservation;
-import com.example.demo.common.identifiers.CustomerID;
-import com.example.demo.common.identifiers.PlantInventoryEntryID;
+import com.example.demo.mailing.domain.model.Customer;
 import lombok.*;
 
 import javax.persistence.*;
@@ -61,6 +58,9 @@ public class PurchaseOrder {
     @Embedded
     BusinessPeriod rentalPeriod;
 
+    @ManyToOne
+    Customer customer;
+
 
     @ElementCollection
     List<POExtension> extensions = new ArrayList<>();
@@ -110,7 +110,6 @@ public class PurchaseOrder {
     }
 
     public void acceptExtension(PlantReservation reservation) {
-        //todo set status of latest extension accept
         if (extensions.size() > 0) {
             extensions.set(extensions.size() - 1, POExtension.of(pendingExtensionEndDate(), POExtension.Status.ACCEPTED));
             reservations.add(reservation);

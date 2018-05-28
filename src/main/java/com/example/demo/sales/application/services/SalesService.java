@@ -18,7 +18,6 @@ import com.example.demo.inventory.domain.repository.PlantInventoryItemRepository
 import com.example.demo.inventory.domain.repository.PlantReservationRepository;
 import com.example.demo.inventory.domain.validation.PlantInventoryEntryValidator;
 import com.example.demo.invoicing.application.services.InvoiceService;
-import com.example.demo.mailing.USER;
 import com.example.demo.mailing.domain.repository.CustomerRepository;
 import com.example.demo.sales.application.dto.PurchaseOrderDTO;
 import com.example.demo.sales.application.factory.ReservationFactory;
@@ -54,7 +53,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 @Service
 public class SalesService {
@@ -655,7 +653,6 @@ public class SalesService {
 
 
     public void sendPONotication(Resource<PurchaseOrderDTO> purchaseOrderDTO) {
-        USER.current_uri=purchaseOrderDTO.getContent().getConsumerURI();
 
         // Removing Links for consumer
 
@@ -691,8 +688,10 @@ public class SalesService {
                 "\n\nKindly yours,\n\nRentIt Team!";
         JavaMailSender mailSender = new JavaMailSenderImpl();
 
-//        String destinationEmail = customerRepository.findByConsumerURI(purchaseOrderDTO.getContent().getConsumerURI()).get(0).getEmailAddress();
+        String destinationEmail = customerRepository.findByConsumerURI(purchaseOrderDTO.getContent().getConsumerURI()).get(0).getEmailAddress();
 
+
+        System.out.println("Sending Notification to ---------> : "+destinationEmail);
 
 
         String poDTO;
@@ -708,7 +707,7 @@ public class SalesService {
         try {
             MimeMessageHelper helper = new MimeMessageHelper(rootMessage, true);
             helper.setFrom(emailFrom);
-            helper.setTo("esiteam12@gmail.com");
+            helper.setTo(destinationEmail);
             helper.setSubject(MAIL_SUBJECT + purchaseOrderDTO.getContent().get_id());
             helper.setText(MAIL_TEXT);
 
@@ -721,13 +720,5 @@ public class SalesService {
 
         poGateway.sendNotification(rootMessage);
     }
-
-
-    //todo to-be
-    public void sendPONotificationByHttp()
-    {
-
-    }
-
 
 }

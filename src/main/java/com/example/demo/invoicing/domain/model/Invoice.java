@@ -1,14 +1,12 @@
 package com.example.demo.invoicing.domain.model;
 
+import com.example.demo.sales.domain.model.PurchaseOrder;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -26,6 +24,9 @@ public class Invoice {
 
     @Enumerated(EnumType.STRING)
     InvoiceStatus status;
+
+    @OneToOne
+    PurchaseOrder purchaseOrder;
 
     public void setStatus(InvoiceStatus status){
         this.status = status;

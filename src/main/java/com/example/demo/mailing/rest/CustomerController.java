@@ -31,7 +31,6 @@ public class CustomerController {
     public CustomerDTO registerCustomer(
             @RequestParam(name = "emailAddress") String emailAddress,
             @RequestParam(name = "builtITUri") String builtITUri) throws CustomerNotFoundException {
-//        USER.users.put(builtITUri,emailAddress);
 
         return mailingService.createCustomer(emailAddress,builtITUri);
     }

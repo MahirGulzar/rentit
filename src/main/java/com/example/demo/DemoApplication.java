@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import com.example.demo.mailing.MailServer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -19,9 +18,19 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+
+
+/**
+ * ESI PROJECT SPRING 2018
+ * TEAM-12
+ *
+ * Team Members:
+ *
+ * 		1- Mahir Gulzar
+ * 		2- Junaid Ahmed
+ * 		3- Ankit Garg
+ * 		4- Bilal Shahid
+ */
 
 @SpringBootApplication
 @EnableScheduling
@@ -59,15 +68,9 @@ public class DemoApplication {
 
 		SpringApplication.run(DemoApplication.class, args);
 
-//		ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-		MailServer mailServer = new MailServer();
-		mailServer.initDb();
-//		exec.scheduleAtFixedRate(new Runnable() {
-//			@Override
-//			public void run() {
-//				mailServer.check();
-//			}
-//		}, 0, 30, TimeUnit.SECONDS);
+		// Run initDb on heroku
+//		MailServer mailServer = new MailServer();
+//		mailServer.initDb();
 	}
 
 
